@@ -205,7 +205,7 @@ class Custom_Types {
 			'show_in_admin_bar'   => true,
 			'menu_position'       => 5,
 			'menu_icon'           => 'dashicons-admin-post',
-			'show_in_nav_menus'   => true,
+			'show_in_nav_menus'   => false,
 			'publicly_queryable'  => false, // ẩn bài viết ở front-end
 			'exclude_from_search' => true, // loại khỏi kết quả tìm kiếm
 			'has_archive'         => false,

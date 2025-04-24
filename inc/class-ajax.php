@@ -220,7 +220,7 @@ class Ajax {
 			
 		} else {
 			$response['code'] = -1;
-			$response['msg'] = 'Chưa vượt qua kiểm tra spam. Xin thử lại!';
+			$response['msg'] = 'Chưa xác minh! Xin thử lại.';
 		}
 
 		$response = apply_filters( 'order_submit', $response );

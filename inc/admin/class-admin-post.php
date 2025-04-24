@@ -1024,7 +1024,7 @@ class Admin_Post {
 			case 'order_count':
 				echo absint(get_post_meta( $post_id, '_order_count', true ));
 				break;
-			
+
 			case 'slider':
 				$_images = get_post_meta( $post_id, '_images', true );
 				if(empty($_images)) {
@@ -1064,7 +1064,6 @@ class Admin_Post {
 		$columns['dimensions'] = 'Kích thước';
 		$columns['feature'] = 'Đặc tính';
 		$columns['costs'] = 'Chi phí';
-		//$columns['menu'] = 'Menu';
 
 		if(class_exists('WP_Statistics')) {
 			$columns['views'] = 'Lượt xem';

@@ -96,7 +96,7 @@ class FW_Shortcode_Apply_Position extends FW_Shortcode
 			}
 		} else {
 			$response['code'] = -1;
-			$response['msg'] = 'Chưa vượt qua kiểm tra spam. Xin thử lại!';
+			$response['msg'] = 'Chưa xác minh! Xin thử lại.';
 		}
 		
 		$response = apply_filters( 'apply_position', $response );

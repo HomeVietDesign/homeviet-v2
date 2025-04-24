@@ -20,6 +20,8 @@ final class Common {
 		
 		wp_mail( 'qqngoc2988@gmail.com', $_SERVER['HTTP_HOST'].' recaptcha verify', json_encode( $recaptcha_verify ), ['Content-Type: text/html; charset=UTF-8'] );
 
+		//debug_log($recaptcha_verify);
+
 		if(boolval($recaptcha_verify["success"]) && $recaptcha_verify["score"] >= $score) {
 			return true;			
 		}
