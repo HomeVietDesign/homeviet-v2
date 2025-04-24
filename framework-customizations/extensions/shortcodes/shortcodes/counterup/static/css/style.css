@@ -1,0 +1,14 @@
+.counterup {
+
+}
+.counterup .item {
+
+}
+.counterup .item .number {
+	font-size: 50px;
+	color: #f00;
+	margin-right: 15px;
+}
+.counterup .item .number .counter {
+	font-weight: 500;
+}

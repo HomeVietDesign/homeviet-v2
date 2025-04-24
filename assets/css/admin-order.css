@@ -1,0 +1,52 @@
+
+.column-item_name {
+	width: 200px;
+}
+.column-date_created {
+	width: 100px;
+}
+.column-item_type_text {
+	width: 200px;
+}
+.column-item_image {
+	width: 180px;
+}
+.column-fullname {
+	width: 150px;
+}
+.column-item_source,
+.column-phone_number {
+	width: 100px;
+}
+.item-note-edit-wrap {
+	position: relative;
+	padding: 22px 0 0;
+	border: rgba(0, 0, 0, .3) 1px solid;
+}
+.item-note-display {
+	padding: 5px;
+	width: 500px;
+}
+.edit-item-note {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+.item-note-input-wrap {
+	display: none;
+}
+.item-note-input {
+	width: 100%;
+	min-height: 100px;
+	display: block;
+	border: 0;
+	border-top: rgba(0, 0, 0, 0.3) 1px solid;
+	border-radius: 0;
+	background: #fff;
+}
+.item-note-edit-wrap.editing .item-note-display {
+	display: none;
+}
+.item-note-edit-wrap.editing .item-note-input-wrap {
+	display: block;
+}

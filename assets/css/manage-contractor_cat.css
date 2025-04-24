@@ -1,0 +1,27 @@
+.inline-edit-col label:last-child,
+#slug-description,
+/*#description-description,*/
+#name-description,
+/*.term-description-wrap,*/
+.term-slug-wrap,
+#parent-description {
+	display: none;
+}
+.manage-column.column-note {
+	width: 400px;
+}
+.note.column-note textarea {
+	width: 100%;
+}
+.parent-only {
+	height: 28px;
+	line-height: 24px;
+	margin-right: 15px;
+	padding: 0 10px;
+	border: rgba(0, 0, 0, .4) 1px solid;
+	border-radius: 3px;
+}
+.change-parent {
+	width: 100%;
+	max-width: 200px!important;
+}

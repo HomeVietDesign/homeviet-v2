@@ -1,0 +1,10 @@
+.taxonomy-passwords.column-taxonomy-passwords span.sep {
+	display: none;
+}
+
+.taxonomy-passwords.column-taxonomy-passwords span.term-pass {
+	display: inline-block;
+	padding: 1px 5px;
+	border: rgba(0, 0, 0, .3) 1px solid;
+	margin: 3px;
+}

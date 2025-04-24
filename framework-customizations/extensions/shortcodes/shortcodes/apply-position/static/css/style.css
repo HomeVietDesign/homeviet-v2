@@ -1,0 +1,11 @@
+.fw-shortcode-apply-position {
+	background: #071F41;
+}
+.apply-position-form {
+	margin: 0 auto;
+	max-width: 500px;
+	padding: 20px 15px;
+}
+.apply-position-form .row-control > div {
+	width: 330px;
+}

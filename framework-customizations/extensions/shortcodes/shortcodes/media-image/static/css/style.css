@@ -1,0 +1,13 @@
+.shortcode-image {
+	position: relative;
+}
+.shortcode-image a {
+	display: block;
+}
+.shortcode-image img {
+	width: 100%;
+	height: auto;
+}
+.shortcode-image.lightbox img {
+	cursor: pointer;
+}

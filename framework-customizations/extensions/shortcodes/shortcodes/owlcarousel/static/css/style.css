@@ -1,0 +1,44 @@
+.fw-shortcode-owlcarousel .owl-carousel {
+	background-color: #000;
+}
+.fw-shortcode-owlcarousel .owl-carousel .owl-nav button.owl-next, 
+.fw-shortcode-owlcarousel .owl-carousel .owl-nav button.owl-prev {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	display: flex;
+	width: 32px;
+	height: 32px;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	background-color: rgba(0, 0, 0, .6);
+	margin-right: 10px;
+}
+.fw-shortcode-owlcarousel .owl-carousel .owl-nav button.owl-next {
+	right: 30px;
+}
+.fw-shortcode-owlcarousel .owl-carousel .owl-nav button.owl-prev {
+	left: 30px;
+}
+.fw-shortcode-owlcarousel .owl-dots {
+	position: absolute;
+	bottom: 10px;
+	left: 50%;
+	transform: translateX(-50%);
+}
+.fw-shortcode-owlcarousel .owl-dots {
+	display: flex;
+	justify-content: center;
+}
+.fw-shortcode-owlcarousel .owl-dots .owl-dot {
+	display: block;
+	width: 15px;
+	height: 15px;
+	background-color: #fff;
+	opacity: 0.5;
+	margin: 5px;
+}
+.fw-shortcode-owlcarousel .owl-dots .owl-dot.active {
+	opacity: 1;
+}

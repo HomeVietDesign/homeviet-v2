@@ -1,0 +1,9 @@
+.fw-text-boxies {
+	text-align: center;
+}
+.fw-text-boxies .fw-text-box-item {
+	display: inline-block;
+}
+.fw-text-boxies .fw-text-box-item p:last-child {
+	margin-bottom: 0;
+}
