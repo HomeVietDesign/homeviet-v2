@@ -459,7 +459,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
 		// chọn mẫu submit
 		let ajax_order = null;
-		function submit_order_product(event, token='') {
+		function submit_order_product(event) {
 			
 			let submit_button = $('#order-product-submit'),
 				attachment = parseInt($('#product_attachment').val()),
@@ -469,6 +469,7 @@ window.addEventListener('DOMContentLoaded', function(){
 				phone = $('#product_customer_phone').val(),
 				phone_number = '',
 				name = $('#product_customer_name').val(),
+				token = $('[name="cf-turnstile-response"]').val(),
 
 				feedback_name = $('#product_customer_name').next('.invalid-feedback'),
 				feedback_phone = $('#product_customer_phone').closest('.input-group').find('.invalid-feedback'),
@@ -586,15 +587,7 @@ window.addEventListener('DOMContentLoaded', function(){
 		$('#frm-order-product').on('submit', function(e){
 			e.preventDefault();
 
-			if(typeof grecaptcha != 'undefined') {
-				grecaptcha.ready(function() {
-					grecaptcha.execute(theme.sitekey, {action: 'order_product'}).then(function(token) {
-						submit_order_product(e, token);
-					}); // recaptcha execute
-				}); // recaptcha ready
-			} else {
-				submit_order_product(e, '');
-			}
+			submit_order_product(e);
 
 			return false;
 

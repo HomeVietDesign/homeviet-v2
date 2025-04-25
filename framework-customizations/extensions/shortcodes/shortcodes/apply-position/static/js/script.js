@@ -1,21 +1,23 @@
 window.addEventListener('DOMContentLoaded', function(){
 	jQuery(function($){
 
-		function submit_apply_position(event, token='') {
+		function submit_apply_position(event) {
 			let $form = $(event.currentTarget),
 				$message = $form.find('.apply-position-message'),
 				$submit = $form.find('.apply-position-submit'),
 				$position = $form.find('[name="position"]'),
 				$candidate_name = $form.find('[name="candidate_name"]'),
 				$candidate_phone = $form.find('[name="candidate_phone"]');
+				$token = $form.find('[name="cf-turnstile-response"]');
 				patt_phone = /^0[1-9]\d{8}$/gm,
 				position = $position.val(),
 				phone = $candidate_phone.val(),
-				name = $candidate_name.val();
+				name = $candidate_name.val(),
+				token = $token.val();
 
 			$message.html('');
 
-			//console.log($form);
+			//console.log('token:'+token);
 
 			if(phone=='' || name=='' || !patt_phone.test(phone)) {
 				$message.html('<div class="text-danger">Bạn cần điền đầy đủ và hợp lệ tên, số điện thoại!</div>');
@@ -77,17 +79,7 @@ window.addEventListener('DOMContentLoaded', function(){
 		$('.apply-position-form').on('submit', function(e){
 			e.preventDefault();
 
-			let $this = $(this);
-
-			if(typeof grecaptcha != 'undefined') {
-				grecaptcha.ready(function() {
-					grecaptcha.execute(theme.sitekey, {action: 'apply_position'}).then(function(token) {
-						submit_apply_position(e, token);
-					}); // recaptcha execute
-				}); // recaptcha ready
-			} else {
-				submit_apply_position(e, '');
-			}
+			submit_apply_position(e);
 
 			return false;
 

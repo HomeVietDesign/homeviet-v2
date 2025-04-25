@@ -99,6 +99,10 @@ class Head {
 		if(''!=$custom_script) {
 			echo $custom_script;
 		}
+		?>
+		<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
+		<?php
+
 	}
 
 	public static function instance() {

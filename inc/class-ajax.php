@@ -125,8 +125,7 @@ class Ajax {
 			'fb_pxl_code' => ''
 		];
 
-	
-		if( \HomeViet\Common::recaptcha_verify($token, 0.5) ) {
+		if( \HomeViet\Common::cf_captcha_verify($token) ) {
 
 			if($attachment && $id && ''!=$code && ''!=$name && ''!=$phone) {
 

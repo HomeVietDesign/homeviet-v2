@@ -59,6 +59,8 @@ class Assets {
 				true
 			);
 		}
+
+
 	}
 
 	public static function enqueue_scripts() {
@@ -130,8 +132,8 @@ class Assets {
 		$data = [
 			'home_url'=>esc_url(home_url()), 
 			'ajax_url'=>esc_url(admin_url('admin-ajax.php')),
-			//'thank_you_page'=>($thank_you_page)?esc_url(get_permalink($thank_you_page[0])):'',
-			'sitekey'=>$recaptcha_keys['sitekey'], 
+			'sitekey'=>$recaptcha_keys['sitekey'],
+			'cf_sitekey'=>fw_get_db_settings_option('cf_turnstile_key'),
 			'is_user_logged_in' => (is_user_logged_in())?1:0,
 			'preview' => (isset($_GET['preview']))?1:0,
 			'popup_content_timeout' => absint(fw_get_db_settings_option('popup_content_timeout', 120)),

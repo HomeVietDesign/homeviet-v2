@@ -71,6 +71,7 @@ class Footer {
 						<input type="hidden" id="product_code" name="product_code" value="" required>
 						<input type="hidden" id="product_id" name="product_id" value="" required>
 						<input type="hidden" id="ctype" name="ctype" value="normal" required>
+
 						<?php
 						$product_order_popup_desc = get_option('product_order_popup_desc', '');
 						if($product_order_popup_desc!='') {
@@ -85,6 +86,9 @@ class Footer {
 						</div>
 						<div class="mb-3">
 							<input type="tel" id="product_customer_phone" name="product_customer_phone" placeholder="Số điện thoại của bạn" class="form-control" aria-label="Số điện thoại của bạn" required>
+						</div>
+						<div class="d-none">
+							<div id="cf-turnstile-order" class="cf-turnstile" data-sitekey="<?=esc_attr(fw_get_db_settings_option('cf_turnstile_key'))?>"></div>
 						</div>
 						<div class="mb-3">
 							<button type="submit" class="btn btn-lg btn-danger text-uppercase fw-bold text-yellow text-nowrap d-block w-100" id="order-product-submit" disabled>Bấm gửi đi</button>
@@ -104,6 +108,18 @@ class Footer {
 		if(''!=$custom_script) {
 			echo $custom_script;
 		}
+		?>
+		<!-- <script type="text/javascript">
+			window.onloadTurnstileCallback = function () {
+				turnstile.render("#example-container", {
+				sitekey: "<YOUR_SITE_KEY>",
+				callback: function (token) {
+				console.log(`Challenge Success ${token}`);
+				},
+				});
+			};
+		</script> -->
+		<?php
 	}
 
 	public function footer_fixed() {

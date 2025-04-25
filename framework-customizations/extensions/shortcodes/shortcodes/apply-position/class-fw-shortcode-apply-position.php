@@ -32,8 +32,7 @@ class FW_Shortcode_Apply_Position extends FW_Shortcode
 			'fb_pxl_code' => ''
 		];
 
-
-		if(\HomeViet\Common::recaptcha_verify($token, 0.5)) {
+		if( \HomeViet\Common::cf_captcha_verify($token) ) {
 
 			if(''!=$name && ''!=$phone) {
 				$mail_to = [

@@ -114,6 +114,16 @@ $options = array(
 				'limit' => 1,
 				'label' => 'Trang sự kiện gửi số điện thoại',
 			],
+
+			'cf_turnstile_key' => array(
+				'label' => __( 'Recaptcha key' ),
+				'type'  => 'text',
+			),
+			'cf_turnstile_secret' => array(
+				'label' => __( 'Recaptcha secret' ),
+				'type'  => 'text',
+			),
+
 		),
 	),
 );

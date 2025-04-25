@@ -22,6 +22,9 @@ if(''!=$position && ''!=$submit_text) {
 				<label for="candidate_phone">Số điện thoại:</label>
 				<div><input type="text" name="candidate_phone" class="form-control form-control-sm rounded-0" required></div>
 			</div>
+			<div class="d-none">
+				<div class="cf-turnstile" data-sitekey="<?=esc_attr(fw_get_db_settings_option('cf_turnstile_key'))?>"></div>
+			</div>
 			<div class="apply-position-message py-2 text-center"></div>
 			<div class="text-center"><button type="submit" class="apply-position-submit btn btn-danger rounded-0"><?=esc_html($submit_text)?></button></div>
 		</form>
