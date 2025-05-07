@@ -96,7 +96,7 @@ class Footer {
 						</div>
 						<div id="order-product-message"></div>
 						<div id="order-product-preview" class="position-relative"></div>
-					</dformiv>
+					</form>
 				</div>
 			</div>
 		</div>

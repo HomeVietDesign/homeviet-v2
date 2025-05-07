@@ -73,15 +73,15 @@ if($location) $location = array_reverse($location);
 			<?php
 			if(has_role('administrator')) {
 				$prefix = '';
-				switch (strtolower($_SERVER['HTTP_HOST'])) {
-				 	case 'transonarchi.com':
-				 		$prefix = 'HD';
-				 		break;
+				// switch (strtolower($_SERVER['HTTP_HOST'])) {
+				//  	case 'transonarchi.com':
+				//  		$prefix = 'HD';
+				//  		break;
 				 	
-				 	case 'ktstranson.com':
-				 		$prefix = 'TC';
-				 		break;
-				 } 
+				//  	case 'ktstranson.com':
+				//  		$prefix = 'TC';
+				//  		break;
+				//  } 
 				?>
 				<div class="position-absolute start-0 bottom-0 p-1"><?=esc_html($prefix.$post->ID)?></div>
 				<?php

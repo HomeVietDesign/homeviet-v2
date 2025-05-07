@@ -1020,6 +1020,9 @@ class Admin_Post {
 				}
 				echo esc_html($prefix.$post_id);
 				break;
+			case 'RID':
+				echo esc_html(fw_get_db_post_option($post_id, '_ref'));
+				break;
 
 			case 'order_count':
 				echo absint(get_post_meta( $post_id, '_order_count', true ));
@@ -1060,6 +1063,7 @@ class Admin_Post {
 
 		$columns['format'] = 'Loại nội dung';
 		$columns['ID'] = 'ID';
+		$columns['RID'] = 'RID';
 		$columns['tasks'] = 'Tác vụ';
 		$columns['dimensions'] = 'Kích thước';
 		$columns['feature'] = 'Đặc tính';
