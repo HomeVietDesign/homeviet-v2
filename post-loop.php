@@ -93,7 +93,7 @@ if($location) $location = array_reverse($location);
 				$_area = explode('/', $_area);
 			?>
 			<div class="position-absolute top-0 end-0 p-2 text-yellow total-area">
-				<span>Tổng diện tích: </span><span class="fw-bold"><?php echo number_format(absint(end($_area)), 0, '.',','); ?></span><span>m<sup>2</sup></span>
+				<span class="fw-bold"><?php echo number_format(absint(end($_area)), 0, '.',','); ?></span><span>m<sup>2</sup></span>
 			</div>
 			<?php
 			}
