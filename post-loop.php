@@ -51,7 +51,6 @@ $design_cost = absint(get_option('product_design_cost'));
 $_show_general_design_cost = get_post_meta($post->ID, '_show_general_design_cost', true);
 
 $_area = get_post_meta($post->ID, '_area', true);
-$_area = explode('/', $_area);
 
 $location = get_the_terms( $post, 'location' );
 if($location) $location = array_reverse($location);
@@ -91,6 +90,7 @@ if($location) $location = array_reverse($location);
 			}
 
 			if(!empty($_area)) {
+				$_area = explode('/', $_area);
 			?>
 			<div class="position-absolute top-0 end-0 p-2 text-yellow total-area">
 				<span>Tổng diện tích: </span><span class="fw-bold"><?php echo number_format(absint(end($_area)), 0, '.',','); ?></span><span>m<sup>2</sup></span>
