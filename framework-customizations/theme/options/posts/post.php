@@ -13,10 +13,7 @@ $options = array(
 		'title'   => 'Đặc tính',
 		'type'    => 'box',
         'options' => array(
-        	'_ref' => array(
-				'type' => 'text',
-				'label' => 'Mã tân cổ',
-			),
+        	
         	'_featured' => array(
 				'label' => 'Nổi bật?',
 				'desc'  => '',
@@ -53,26 +50,10 @@ $options = array(
 					'post-meta' => '_allow_order',
 				),
 			),
-			/*
-			'_get_premium' => array(
-				'label' => 'Nút Tư vấn VIP?',
-				'desc'  => 'Khi nút này được bật sẽ thay thế cho nút Chọn mẫu',
-				'value'  => 'no',
-				'type'  => 'switch',
-				'left-choice' => array(
-			        'value' => 'no',
-			        'label' => 'Tắt',
-			    ),
-			    'right-choice' => array(
-			        'value' => 'yes',
-			        'label' => 'Bật',
-			    ),
-				'fw-storage' => array(
-					'type' => 'post-meta',
-					'post-meta' => '_get_premium',
-				),
+			'_ref' => array(
+				'type' => 'text',
+				'label' => 'Mã tân cổ',
 			),
-			*/
 		),
     ),
     array(
@@ -113,7 +94,7 @@ $options = array(
     ),
 	array(
 		'context' => 'side',
-		'title'   => 'Thông tin công trình',
+		'title'   => 'Kích thước công trình',
 		'type'    => 'box',
         'options' => array(
 			'_breadth' => array(
@@ -154,6 +135,13 @@ $options = array(
 					'post-meta' => '_area'
 				)
 			),
+        ),
+    ),
+    array(
+		'context' => 'side',
+		'title'   => 'Giá trị công trình',
+		'type'    => 'box',
+        'options' => array(
 			'_total_amount' => array(
 				'type'  => 'numeric',
 				'integer'  => false,
