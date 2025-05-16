@@ -3,11 +3,6 @@ global $post;
 
 $src = get_the_post_thumbnail_url( $post, 'full' );
 
-// $thumbnail_size = 'medium_large';
-// if(strtolower( substr( $src, -4 ) )==='.gif') {
-	$thumbnail_size = 'full';
-//}
-
 $video_local = fw_get_db_post_option($post->ID, 'video');
 $video_url = fw_get_db_post_option($post->ID, 'video_url');
 $video_youtube = fw_get_db_post_option($post->ID, 'video_youtube');
@@ -50,7 +45,10 @@ $design_fee = ('yes' == $_show_general_design_fee)?floatval($product_design_fee)
 $design_cost = absint(get_option('product_design_cost'));
 $_show_general_design_cost = get_post_meta($post->ID, '_show_general_design_cost', true);
 
-$_area = get_post_meta($post->ID, '_area', true);
+//$_area = get_post_meta($post->ID, '_area', true);
+$area_1 = floatval(fw_get_db_post_option($post->ID, 'area_1'));
+$floors = floatval(fw_get_db_post_option($post->ID, 'floors'));
+$area = $area_1*$floors;
 
 $location = get_the_terms( $post, 'location' );
 if($location) $location = array_reverse($location);
@@ -64,7 +62,7 @@ if($location) $location = array_reverse($location);
 			 class="entry-thumbnail" href="<?php the_permalink(); ?>"
 			<?php } ?>
 			>
-				<span class="d-block"><?php the_post_thumbnail($thumbnail_size, ['alt'=>esc_attr(get_the_title())]); ?></span>
+				<span class="d-block"><?php the_post_thumbnail('full', ['alt'=>esc_attr(get_the_title())]); ?></span>
 				<?php if($data_video['type']!='') { ?>
 				<span class="play-video-button position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"><span class="d-flex justify-content-center align-items-center play-video-icon"><span class="dashicons dashicons-controls-play"></span></span></span>
 				<?php } ?>
@@ -89,11 +87,10 @@ if($location) $location = array_reverse($location);
 				<?php
 			}
 
-			if(!empty($_area)) {
-				$_area = explode('/', $_area);
+			if(!empty($area)) {
 			?>
 			<div class="position-absolute top-0 end-0 p-2 text-yellow total-area">
-				<span class="fw-bold"><?php echo number_format(absint(end($_area)), 0, '.',','); ?></span><span>m<sup>2</sup></span>
+				<span>DT: </span><span class="fw-bold"><?php echo number_format($area, 0, '.',','); ?></span><span>m<sup>2</sup></span>
 			</div>
 			<?php
 			}
