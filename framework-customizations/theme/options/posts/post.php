@@ -127,14 +127,14 @@ $options = array(
 				'decimals' => 1,
 				'label' => 'Số tầng cao'
 			),
-			'_area' => array(
-				'type' => 'text',
-				'label' => 'Diện tích(m2)',
-				'fw-storage' => array(
-					'type' => 'post-meta',
-					'post-meta' => '_area'
-				)
-			),
+			// '_area' => array(
+			// 	'type' => 'text',
+			// 	'label' => 'Diện tích(m2)',
+			// 	'fw-storage' => array(
+			// 		'type' => 'post-meta',
+			// 		'post-meta' => '_area'
+			// 	)
+			// ),
         ),
     ),
     array(
