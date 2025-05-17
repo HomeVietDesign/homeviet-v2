@@ -7,15 +7,6 @@ final class Template_Tags {
 		global $post;
 		
 		$_total_amount = floatval(get_post_meta($post->ID, '_total_amount', true));
-		/*
-		$_design_cost = get_post_meta($post->ID, '_design_cost', true);
-		$product_design_cost = get_option('product_design_cost');
-		$_show_general_design_cost = get_post_meta($post->ID, '_show_general_design_cost', true);
-
-		$_sale_off = get_post_meta($post->ID, '_sale_off', true);
-		$product_sale_off = get_option('product_sale_off');
-		$_show_general_sale_off = get_post_meta($post->ID, '_show_general_sale_off', true);
-		*/
 
 		$_design_fee = get_post_meta($post->ID, '_design_fee', true);
 		$product_design_fee = get_option('product_design_fee');

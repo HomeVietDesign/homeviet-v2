@@ -13,6 +13,7 @@ $options = array(
 		'title'   => 'Đặc tính',
 		'type'    => 'box',
         'options' => array(
+        	
         	'_featured' => array(
 				'label' => 'Nổi bật?',
 				'desc'  => '',
@@ -49,26 +50,10 @@ $options = array(
 					'post-meta' => '_allow_order',
 				),
 			),
-			/*
-			'_get_premium' => array(
-				'label' => 'Nút Tư vấn VIP?',
-				'desc'  => 'Khi nút này được bật sẽ thay thế cho nút Chọn mẫu',
-				'value'  => 'no',
-				'type'  => 'switch',
-				'left-choice' => array(
-			        'value' => 'no',
-			        'label' => 'Tắt',
-			    ),
-			    'right-choice' => array(
-			        'value' => 'yes',
-			        'label' => 'Bật',
-			    ),
-				'fw-storage' => array(
-					'type' => 'post-meta',
-					'post-meta' => '_get_premium',
-				),
+			'_ref' => array(
+				'type' => 'text',
+				'label' => 'Mã tân cổ',
 			),
-			*/
 		),
     ),
     array(
@@ -80,7 +65,7 @@ $options = array(
 				'type' => 'multi-upload',
 				'label' => 'Danh sách ảnh',
 				'images_only' => true,
-				'files_ext' => array( 'png', 'jpg', 'jpeg' ),
+				'files_ext' => array( 'png', 'jpg', 'jpeg', 'webp' ),
 				'fw-storage' => array(
 					'type' => 'post-meta',
 					'post-meta' => '_images'
@@ -109,17 +94,9 @@ $options = array(
     ),
 	array(
 		'context' => 'side',
-		'title'   => 'Thông tin công trình',
+		'title'   => 'Kích thước công trình',
 		'type'    => 'box',
         'options' => array(
-        	// '_location' => array(
-			// 	'type' => 'text',
-			// 	'label' => 'Địa điểm',
-			// 	'fw-storage' => array(
-			// 		'type' => 'post-meta',
-			// 		'post-meta' => '_location'
-			// 	)
-			// ),
 			'_breadth' => array(
 				'type' => 'text',
 				'label' => 'Rộng mặt tiền(m)',
@@ -138,14 +115,33 @@ $options = array(
 					'post-meta' => '_length'
 				)
 			),
-			'_area' => array(
-				'type' => 'text',
-				'label' => 'Diện tích(m2)',
-				'fw-storage' => array(
-					'type' => 'post-meta',
-					'post-meta' => '_area'
-				)
+			'area_1' => array(
+				'type' => 'numeric',
+				'integer' => false,
+				'decimals' => 1,
+				'label' => 'Diện tích 1 sàn(m2)'
 			),
+			'floors' => array(
+				'type' => 'numeric',
+				'integer' => false,
+				'decimals' => 1,
+				'label' => 'Số tầng cao'
+			),
+			// '_area' => array(
+			// 	'type' => 'text',
+			// 	'label' => 'Diện tích(m2)',
+			// 	'fw-storage' => array(
+			// 		'type' => 'post-meta',
+			// 		'post-meta' => '_area'
+			// 	)
+			// ),
+        ),
+    ),
+    array(
+		'context' => 'side',
+		'title'   => 'Giá trị công trình',
+		'type'    => 'box',
+        'options' => array(
 			'_total_amount' => array(
 				'type'  => 'numeric',
 				'integer'  => false,

@@ -611,8 +611,8 @@ body:not(.single) #video-player video {
 	padding-bottom: 0;
 	margin-bottom: 0;
 }
+.total-area,
 .costs-info {
-/*	background: rgba(0, 24, 48, .8);*/
 	text-shadow: 2px 2px 3px #001830, -2px 2px 3px #001830, 2px -2px 3px #001830, -2px -2px 3px #001830;
 }
 .total_amount {
