@@ -37,18 +37,15 @@ $_featured = get_post_meta($post->ID, '_featured', true);
 
 $allow_order = get_post_meta($post->ID, '_allow_order', true);
 
-$_design_fee = get_post_meta($post->ID, '_design_fee', true);
-$product_design_fee = get_option('product_design_fee');
-$_show_general_design_fee = get_post_meta($post->ID, '_show_general_design_fee', true);
-$design_fee = ('yes' == $_show_general_design_fee)?floatval($product_design_fee):floatval($_design_fee);
+$_design_price = absint(get_post_meta($post->ID, '_design_price', true));
+$general_design_price = absint(get_option('product_design_price'));
+$_use_general_design_price = get_post_meta($post->ID, '_use_general_design_price', true);
 
-$design_cost = absint(get_option('product_design_cost'));
-$_show_general_design_cost = get_post_meta($post->ID, '_show_general_design_cost', true);
+$design_price = ($_use_general_design_price=='yes') ? $general_design_price : $_design_price;
 
-//$_area = get_post_meta($post->ID, '_area', true);
-$area_1 = floatval(fw_get_db_post_option($post->ID, 'area_1'));
-$floors = floatval(fw_get_db_post_option($post->ID, 'floors'));
-$area = $area_1*$floors;
+$_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
+$_floors = floatval(get_post_meta($post->ID, '_floors', true));
+$area = $_area_1*$_floors;
 
 $location = get_the_terms( $post, 'location' );
 if($location) $location = array_reverse($location);
@@ -72,18 +69,8 @@ if($location) $location = array_reverse($location);
 			
 			<?php
 			if(has_role('administrator')) {
-				$prefix = '';
-				// switch (strtolower($_SERVER['HTTP_HOST'])) {
-				//  	case 'transonarchi.com':
-				//  		$prefix = 'HD';
-				//  		break;
-				 	
-				//  	case 'ktstranson.com':
-				//  		$prefix = 'TC';
-				//  		break;
-				//  } 
 				?>
-				<div class="position-absolute start-0 bottom-0 p-1"><?=esc_html($prefix.$post->ID)?></div>
+				<div class="position-absolute start-0 bottom-0 p-1"><?=esc_html($post->ID)?></div>
 				<?php
 			}
 
@@ -109,14 +96,14 @@ if($location) $location = array_reverse($location);
 			?></span></div>
 			<?php } ?>
 
-			<?php if($design_cost>0 && $_show_general_design_cost=='yes') { ?>
-			<div class="design_cost position-absolute top-0 end-0 product-design-fee d-flex p-2 text-yellow align-items-end">
-				<span>Phí thiết kế: <b><?php echo esc_html($design_cost); ?></b>k/m2</span>
+			<?php if($design_price>0) { ?>
+			<div class="design_price position-absolute top-0 end-0 product-design-fee d-flex p-2 text-yellow align-items-end">
+				<span>Phí thiết kế: <b><?php echo esc_html($design_price); ?></b>k/m2</span>
 			</div>
 			<?php } ?>
 			
 			<h3 class="entry-title text-center<?php
-			echo (($design_cost>0 && $_show_general_design_cost=='yes')||$location)?' mt-4':'';
+			echo (($design_price>0 && $_show_general_design_price=='yes')||$location)?' mt-4':'';
 			?>">
 				<?php
 				if($allow_order=='yes') {

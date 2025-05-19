@@ -70,7 +70,7 @@ class FW_Option_Type_Numeric extends FW_Option_Type
 
         $wrapper_attr = array(
             'id'    => $option['attr']['id'],
-            'class' => $option['attr']['class'],
+            'class' => $option['attr']['class'].' '.sanitize_html_class($option['width']).'-width',
         );
 
         unset(
@@ -130,6 +130,7 @@ class FW_Option_Type_Numeric extends FW_Option_Type
             'value' => 0,
             'integer' => true,
             'negative' => false,
+            'width' => 'fixed',
         );
     }
 

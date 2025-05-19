@@ -40,48 +40,34 @@ $options = array(
 					'wp-option' => 'single_product_footer',
 				),
 			],
-			'product_total_percent' => array(
-				'label' => 'Hệ số % tổng đầu tư',
-				'desc'  => "Dùng để nhân với tổng đầu tư gốc tính ra tổng đầu tư mới. Đơn vị là %.",
-				'type'  => 'numeric',
-				//'integer'  => false,
-				'value' => 100,
-				'fw-storage' => array(
-					'type' => 'wp-option',
-					'wp-option' => 'product_total_percent',
-				),
-			),
-			'product_design_fee' => array(
-				'label' => 'Phí thiết kế',
-				'desc'  => "Đơn vị là % của tổng mức đầu tư",
-				'type'  => 'numeric',
-				'integer'  => false,
-				'value' => '',
-				'fw-storage' => array(
-					'type' => 'wp-option',
-					'wp-option' => 'product_design_fee',
-				),
-			),
-			'product_design_cost' => array(
+
+			'product_design_price' => array(
 				'label' => 'Giá thiết kế chung',
 				'desc'  => 'Đơn vị k/m2',
-				'type'  => 'text',
+				'type'  => 'numeric',
+				'integer' => true,
+				'negative' => false,
+				'size' => 'full',
 				'value' => '',
 				'fw-storage' => array(
 					'type' => 'wp-option',
-					'wp-option' => 'product_design_cost',
+					'wp-option' => 'product_design_price',
 				),
 			),
-			'product_sale_off' => array(
-				'label' => 'Sale off',
-				'desc'  => '',
-				'type'  => 'text',
+			'product_price' => array(
+				'label' => 'Giá đầu tư chung',
+				'desc'  => 'Đơn vị k/m2',
+				'type'  => 'numeric',
+				'integer' => true,
+				'negative' => false,
+				'size' => 'full',
 				'value' => '',
 				'fw-storage' => array(
 					'type' => 'wp-option',
-					'wp-option' => 'product_sale_off',
+					'wp-option' => 'product_price',
 				),
 			),
+			
 			'product_order_button_text' => array(
 				'label' => 'Nhãn nút chọn mẫu ở chi tiết',
 				'desc'  => '',
