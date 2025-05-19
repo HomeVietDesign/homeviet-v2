@@ -186,6 +186,8 @@ class Custom_Types {
 	public function _admin_action_rename_menu() {
 		global $menu, $submenu;
 
+		remove_menu_page( 'edit-comments.php' ); // ẩn menu Comments
+		
 		if ( isset( $menu[5] ) ) {
 			$menu[5][0] = 'Sản phẩm';
 		}
