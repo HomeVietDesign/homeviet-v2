@@ -103,7 +103,7 @@ if($location) $location = array_reverse($location);
 			<?php } ?>
 			
 			<h3 class="entry-title text-center<?php
-			echo (($design_price>0 && $_show_general_design_price=='yes')||$location)?' mt-4':'';
+			echo (($design_price>0 && $_use_general_design_price=='yes')||$location)?' mt-4':'';
 			?>">
 				<?php
 				if($allow_order=='yes') {

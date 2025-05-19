@@ -58,11 +58,9 @@ while (have_posts()) {
 
 		}
 
-		$get_premium = get_post_meta($post->ID, '_get_premium', true);
 		$allow_order = get_post_meta($post->ID, '_allow_order', true);
 
 		$product_order_button_text = get_option('product_order_button_text', '');
-		$product_order_premium_button_text = get_option('product_order_premium_button_text', '');
 
 		?>
 		<div id="product-top-info" class="container-xl">
@@ -156,10 +154,7 @@ while (have_posts()) {
 									if($allow_order=='yes' && $product_order_button_text) {
 										echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger order-product d-block my-3 fw-bold'], esc_html($product_order_button_text));	
 									}
-									
-									if($get_premium=='yes' && $product_order_premium_button_text!='') {
-										echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'premium', 'class'=>'btn btn-danger order-premium-product d-block my-3 fw-bolder'], $product_order_premium_button_text);	
-									}
+					
 								}
 								$popup_content = fw_get_db_settings_option('popup_content', '');
 								$popup_content_button_text = fw_get_db_settings_option('popup_content_button_text', '');

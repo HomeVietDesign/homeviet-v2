@@ -78,16 +78,7 @@ $options = array(
 					'wp-option' => 'product_order_button_text',
 				),
 			),
-			'product_order_premium_button_text' => array(
-				'label' => 'Nhãn nút chọn mẫu VIP ở chi tiết',
-				'desc'  => '',
-				'type'  => 'text',
-				'value' => '',
-				'fw-storage' => array(
-					'type' => 'wp-option',
-					'wp-option' => 'product_order_premium_button_text',
-				),
-			),
+			
 			'product_loop_order_button_text' => array(
 				'label' => 'Nhãn nút chọn mẫu ở danh sách',
 				'desc'  => '',
@@ -104,16 +95,7 @@ $options = array(
 					'wp-option' => 'product_order_popup_title',
 				),
 			),
-			'product_order_premium_popup_title' => array(
-				'label' => 'Tiêu đề form chọn mẫu VIP',
-				'desc'  => '',
-				'type'  => 'text',
-				'value' => '',
-				'fw-storage' => array(
-					'type' => 'wp-option',
-					'wp-option' => 'product_order_premium_popup_title',
-				),
-			),
+			
 			'product_order_popup_desc' => array(
 				'label' => 'Nội dung miêu tả form chọn mẫu',
 				'desc'  => '',

@@ -51,6 +51,8 @@ class Admin_Post {
 
 			add_action( 'wp_ajax_change_breadth', [$this, 'ajax_change_breadth'] );
 			add_action( 'wp_ajax_change_length', [$this, 'ajax_change_length'] );
+			add_action( 'wp_ajax_change_area_1', [$this, 'ajax_change_area_1'] );
+			add_action( 'wp_ajax_change_floors', [$this, 'ajax_change_floors'] );
 			add_action( 'wp_ajax_change_design_price', [$this, 'ajax_change_design_price'] );
 			add_action( 'wp_ajax_change_use_general_design_price', [$this, 'ajax_change_use_general_design_price'] );
 			add_action( 'wp_ajax_change_use_general_price', [$this, 'ajax_change_use_general_price'] );
@@ -211,6 +213,38 @@ class Admin_Post {
 		}
 
 		$response = get_post_meta($post_id, '_design_price', true);
+		
+		wp_send_json($response);
+
+	}
+
+	public function ajax_change_floors() {
+		$post_id = isset($_POST['id']) ? absint($_POST['id']) : 0;
+		$floors = isset($_POST['floors']) ? sanitize_text_field($_POST['floors']) : '';
+
+		if($floors!='') $floors = floatval($floors);
+
+		if( check_ajax_referer('quick_edit_'.$post_id, 'nonce', false) && current_user_can('edit_post', $post_id) ) {
+			update_post_meta($post_id, '_floors', $floors);
+		}
+
+		$response = get_post_meta($post_id, '_floors', true);
+		
+		wp_send_json($response);
+
+	}
+
+	public function ajax_change_area_1() {
+		$post_id = isset($_POST['id']) ? absint($_POST['id']) : 0;
+		$area_1 = isset($_POST['area_1']) ? sanitize_text_field($_POST['area_1']) : '';
+
+		if($area_1!='') $area_1 = floatval($area_1);
+
+		if( check_ajax_referer('quick_edit_'.$post_id, 'nonce', false) && current_user_can('edit_post', $post_id) ) {
+			update_post_meta($post_id, '_area_1', $area_1);
+		}
+
+		$response = get_post_meta($post_id, '_area_1', true);
 		
 		wp_send_json($response);
 
@@ -743,6 +777,46 @@ class Admin_Post {
 						});
 					});
 
+					$('.quick-edit-field._floors').on('change', function(e){
+						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), floors = _this.val();
+						$.ajax({
+							url: ajaxurl,
+							type: 'post',
+							dataType: 'json',
+							data: {id: id, nonce: nonce, action:'change_floors', floors: floors},
+							beforeSend: function() {
+								_this.prop('disabled', true);
+							},
+							success: function(response) {
+								//console.log(response);
+								_this.val(response);
+							},
+							complete: function() {
+								_this.prop('disabled', false);
+							}
+						});
+					});
+
+					$('.quick-edit-field._area_1').on('change', function(e){
+						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), area_1 = _this.val();
+						$.ajax({
+							url: ajaxurl,
+							type: 'post',
+							dataType: 'json',
+							data: {id: id, nonce: nonce, action:'change_area_1', area_1: area_1},
+							beforeSend: function() {
+								_this.prop('disabled', true);
+							},
+							success: function(response) {
+								//console.log(response);
+								_this.val(response);
+							},
+							complete: function() {
+								_this.prop('disabled', false);
+							}
+						});
+					});
+
 					$('.quick-edit-field._length').on('change', function(e){
 						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), length = _this.val();
 						$.ajax({
@@ -878,12 +952,20 @@ class Admin_Post {
 				break;
 			
 			case 'dimensions':
-				$_breadth = get_post_meta($post_id, '_breadth', true);
-				$_length = get_post_meta($post_id, '_length', true);
+				$_breadth = floatval(get_post_meta($post_id, '_breadth', true));
+				$_length = floatval(get_post_meta($post_id, '_length', true));
+				$_area_1 = floatval(get_post_meta($post_id, '_area_1', true));
+				$_floors = floatval(get_post_meta($post_id, '_floors', true));
 
+				if($_breadth==0) $_breadth = '';
+				if($_length==0) $_length = '';
+				if($_area_1==0) $_area_1 = '';
+				if($_floors==0) $_floors = '';
 				?>
 				<label><span>Mặt tiền:</span><input type="text" class="quick-edit-field _breadth" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_breadth)?>"><span>m</span></label>
 				<label><span>Chiều sâu:</span><input type="text" class="quick-edit-field _length" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_length)?>"><span>m</span></label>
+				<label><span>DT 1 sàn:</span><input type="text" class="quick-edit-field _area_1" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_area_1)?>"><span>m2</span></label>
+				<label><span>Số tầng:</span><input type="text" class="quick-edit-field _floors" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_floors)?>"></label>
 				<?php
 				break;
 			case 'costs':

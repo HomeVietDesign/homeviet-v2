@@ -23,6 +23,11 @@ final class Template_Tags {
 		$_total_factor = floatval(get_post_meta($post->ID, '_total_factor', true));
 		if($_total_factor==0) $_total_factor=1;
 
+		// debug($price);
+		// debug($_area_1);
+		// debug($_floors);
+		// debug($_total_factor);
+
 		$_total_amount = $price * $area * $_total_factor / 1000000; // tỷ
 
 		if($_total_amount>0 || '' != $design_price):
@@ -33,7 +38,7 @@ final class Template_Tags {
 			<div class="total_amount text-end"><strong><?php echo esc_html(number_format($_total_amount,2,'.',',')); ?></strong> tỷ</div>
 			<?php endif; ?>
 
-			<?php if($design_price>0 && is_single() && $_show_general_design_price=='yes'): ?>
+			<?php if($design_price>0 && is_single() && $_use_general_design_price=='yes'): ?>
 			<div class="product-design-fee d-flex text-yellow align-items-end">
 				<span class="d-block me-1">Phí thiết kế:</span>
 				<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
