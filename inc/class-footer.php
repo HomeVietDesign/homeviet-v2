@@ -148,25 +148,16 @@ class Footer {
 							$attachment = get_post_thumbnail_id($post);
 						}
 
-						$get_premium = get_post_meta($post->ID, '_get_premium', true);
 						$allow_order = get_post_meta($post->ID, '_allow_order', true);
-
 						$product_order_button_text = get_option('product_order_button_text', '');
-						$product_order_premium_button_text = get_option('product_order_premium_button_text', '');
 
 						if($attachment) {
 							?>
 							<div class="actions-fixed hide">
-								
 								<?php
-								
 								if($allow_order=='yes' && $product_order_button_text!='') {
 									echo '<div class="my-1">'.wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger d-block order-product'], esc_html($product_order_button_text)).'</div>';
 								}
-								if($get_premium=='yes' && $product_order_premium_button_text!='') {
-									echo '<div class="my-1">'.wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'premium', 'class'=>'btn btn-danger d-block order-premium-product'], $product_order_premium_button_text).'</div>';	
-								}
-								
 								?>
 								
 							</div>
@@ -184,14 +175,6 @@ class Footer {
 					</div>
 					<?php
 					}
-				}
-				
-				if($popup_content!='' && $popup_content_button_text != '') {
-				?>
-				<!-- <div class="my-1">
-					<button type="button" class="btn-popup-open btn-popup-content-open btn btn-danger d-block w-100 fw-bold" style="color:#ff0;" data-bs-toggle="modal" data-bs-target="#modal-popup"><?=esc_html($popup_content_button_text)?></button>
-				</div> -->
-				<?php
 				}
 
 				if($hotline!='' || $zalo!='' || ($popup_content!='' && $popup_content_button_text != '')) {
@@ -295,7 +278,7 @@ class Footer {
 			add_action('wp_footer', [$this, 'site_footer'], 10);
 			add_action('wp_footer', [$this, 'footer_fixed'], 20);
 			add_action('wp_footer', [$this, 'order_product_modal'], 20);
-			add_action('wp_footer', [$this, 'logout_post_password'], 15);
+			//add_action('wp_footer', [$this, 'logout_post_password'], 15);
 		}
 	}
 

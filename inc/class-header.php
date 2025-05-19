@@ -18,7 +18,7 @@ class Header {
 		self::primary_menu();
 		//self::primary_menu_2();
 
-		if(!(is_singular('contractor_page')||is_singular('contractor')) && (has_nav_menu('secondary_left') || has_nav_menu('secondary_right'))) {
+		if(has_nav_menu('secondary_left') || has_nav_menu('secondary_right')) {
 			?>
 			<nav id="secondary-nav" class="">
 				<div class="container p-0">
@@ -94,85 +94,13 @@ class Header {
 		
 	}
 
-	public static function contractor_menu() {
-		global $view;
-
-		$parent = null;
-		if($view->post_parent>0) {
-			$parent = get_post($view->post_parent);
-		}
-
-		$contractor_cats = get_terms([
-			'taxonomy' => 'contractor_cat',
-			'hide_empty' => false,
-			//'hierarchical' => true,
-			'parent' => 0
-		]);
-		
-		if($contractor_cats) {
-		?>
-		<nav id="main-nav">
-			<div class="main-nav-inner">
-				<ul class="menu d-flex flex-wrap justify-content-center">
-				<?php
-				foreach ($contractor_cats as $key => $value) {
-					$children = get_terms([
-						'taxonomy' => 'contractor_cat',
-						'hide_empty' => false,
-						'parent' => $value->term_id
-					]);
-					//debug($children);
-
-					if($children) {
-						$page_id = get_term_meta( $value->term_id, '_page', true );
-					?>
-					<li class="menu-item menu-item-has-children d-flex position-relative align-items-center<?php
-					if($parent && $parent->ID==$page_id) {
-						echo ' current-menu-ancestor current-menu-parent';
-					} elseif ($view->ID==$page_id) {
-						echo ' current-menu-item';
-					}
-					?>">
-						<a href="<?php echo esc_url(get_permalink($page_id)); ?>"><?=esc_html($value->name)?></a>
-						<a href="javascript:void(0);" class="toggle-sub-menu d-flex align-items-center"><span class="dashicons dashicons-arrow-down-alt2"></span></a>
-						<ul class="sub-menu position-absolute">
-						<?php
-						foreach ($children as $child) {
-							$page_id = get_term_meta( $child->term_id, '_page', true );
-							?>
-							<li class="menu-item<?php
-							if ($view->ID==$page_id) {
-								echo ' current-menu-item';
-							}
-							?>">
-								<a href="<?php echo esc_url(get_permalink($page_id)); ?>"><?=esc_html($child->name)?></a>
-							</li>
-							<?php
-						}
-						?>
-						</ul>
-					</li>
-					<?php
-					}
-				}
-				?>
-				</ul>
-			</div>
-		</nav>
-		<?php
-		}
-	}
-
 	public static function primary_menu() {
 		$object = get_queried_object();
 		$display_menu = 'yes';
 		$menu = false;
 		$nav_menu = '';
-		if(is_singular( 'contractor' ) || is_singular( 'contractor_page' )) {
-			self::contractor_menu();
-			return;
-			//$menu = fw_get_db_settings_option('contractor_menu');
-		} elseif(is_page() || is_single() || is_singular( 'seo_post' )) {
+		
+		if(is_page() || is_single() || is_singular( 'seo_post' )) {
 			$display_menu = fw_get_db_post_option($object->ID, 'display_menu', 'yes');
 			$menu = fw_get_db_post_option($object->ID, 'apply_menu');
 		} else if(is_category() || is_tax()) {

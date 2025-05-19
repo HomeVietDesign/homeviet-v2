@@ -32,7 +32,7 @@ class Theme {
 			include_once THEME_DIR.'/inc/wp-statistics/class-wp-statistics.php';
 		}
 
-		include_once THEME_DIR.'/inc/class-authentication.php';
+		//include_once THEME_DIR.'/inc/class-authentication.php';
 		
 		if(unyson_exists()) {
 

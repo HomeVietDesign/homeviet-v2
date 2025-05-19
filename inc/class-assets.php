@@ -112,23 +112,6 @@ class Assets {
 
 		//$thank_you_page = fw_get_db_settings_option('thank_you_page', '');
 
-		$provinces = get_terms([
-			'taxonomy' => 'province',
-			'fields' => 'id=>name',
-			'hide_empty' => false,
-		]);
-
-		$a_provinces = [];
-
-		if($provinces) {
-			foreach ($provinces as $id => $name) {
-				$a_provinces[] = [
-					'id' => $id,
-					'text' => $name
-				];
-			}
-		}
-
 		$data = [
 			'home_url'=>esc_url(home_url()), 
 			'ajax_url'=>esc_url(admin_url('admin-ajax.php')),
@@ -138,7 +121,6 @@ class Assets {
 			'preview' => (isset($_GET['preview']))?1:0,
 			'popup_content_timeout' => absint(fw_get_db_settings_option('popup_content_timeout', 120)),
 			'nonce' => wp_create_nonce( 'global' ),
-			'provinces' => $a_provinces
 
 		];
 
@@ -151,41 +133,6 @@ class Assets {
 		ob_start();
 		?>
 		<script type="text/javascript">
-			/*
-			function remove_savedlist() {
-				setCookie('savedlist', '', -1);
-			}
-
-			function remove_from_savedlist(id) {
-				id = ''+id;
-				let savedlist = get_savedlist();
-				const index = savedlist.indexOf(id);
-				if(index!==-1) {
-					savedlist.splice(index, 1);
-				}
-				setCookie('savedlist', savedlist, 14);
-			}
-
-			function add_to_savedlist(id) {
-				let savedlist = get_savedlist();
-				id = ''+id;
-				if(savedlist.indexOf(id)===-1) {
-					savedlist.push(id);
-				}
-				setCookie('savedlist', savedlist, 14);
-			}
-
-			function get_savedlist() {
-				let savedlist = getCookie('savedlist');
-				if(savedlist!='') {
-					savedlist = savedlist.split(',');
-					//if(typeof savedlist == 'string') savedlist = [savedlist];
-				} else {
-					savedlist = [];
-				}
-				return savedlist;
-			}
-			*/
 			const isValidUrl = urlString=> {
 				let httpRegex = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
 				return httpRegex.test(urlString);

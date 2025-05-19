@@ -1044,9 +1044,9 @@ class Admin_Post {
 		$columns['ID'] = 'ID';
 		$columns['RID'] = 'RID';
 		$columns['feature'] = 'Đặc tính';
-		$columns['tasks'] = 'Tác vụ';
 		$columns['dimensions'] = 'Kích thước';
 		$columns['costs'] = 'Chi phí';
+		$columns['tasks'] = 'Tác vụ';
 
 		if(class_exists('WP_Statistics')) {
 			$columns['views'] = 'Lượt xem';

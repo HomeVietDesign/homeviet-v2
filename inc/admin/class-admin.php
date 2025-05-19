@@ -10,14 +10,7 @@ class Admin {
 		require_once THEME_DIR.'/inc/simplehtmldom/simple_html_dom.php';
 		require_once THEME_DIR.'/inc/admin/class-select-post-export.php';
 		require_once THEME_DIR.'/inc/admin/class-admin-post.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-contractor.php';
 		require_once THEME_DIR.'/inc/admin/class-admin-media.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-passwords.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-province.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-contractor_page.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-contractor_cat.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-contractor_rating.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-contractor_class.php';
 		//require_once THEME_DIR.'/inc/admin/class-admin-update-posts.php';
 
 		if(is_admin()) {

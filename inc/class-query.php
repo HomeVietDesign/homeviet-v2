@@ -11,7 +11,6 @@ class Query {
 
 		//add_filter( 'posts_request', [$this, 'debug_request'], 10, 2 );
 
-		add_filter( 'posts_clauses', [$this, 'custom_fields_search'], 10, 2 );
 		add_filter( 'posts_clauses', [$this, 'post_name_search'], 10, 2 );
 
 	}
@@ -58,33 +57,6 @@ class Query {
 			$pieces['distinct'] = "DISTINCT";
 			//debug_log($pieces);
 		}
-
-		return $pieces;
-	}
-
-	public function custom_fields_search($pieces, $wp_query) {
-
-		if($wp_query->get('post_type', '')=='contractor' && $wp_query->get('s')!='' ) {
-			global $wpdb;
-
-			$keywords        = explode(' ', $wp_query->get('s'));
-			$escaped_percent = $wpdb->placeholder_escape();
-			$query           = "";
-
-			foreach ($keywords as $word) {
-				$query .= " (pms.meta_value LIKE '{$escaped_percent}{$word}{$escaped_percent}') OR ";
-			}
-
-			if ( ! empty( $query ) ) { // append necessary WHERE and JOIN options.
-				$pieces['where'] = str_replace( "((({$wpdb->posts}.post_title LIKE '{$escaped_percent}", "( {$query} (({$wpdb->posts}.post_title LIKE '{$escaped_percent}", $pieces['where'] );
-				$pieces['join'] = $pieces['join'] . " INNER JOIN {$wpdb->postmeta} AS pms ON ({$wpdb->posts}.ID = pms.post_id) ";
-			}
-
-			$pieces['distinct'] = "DISTINCT";
-			//debug_log($pieces);
-		}
-
-		
 
 		return $pieces;
 	}

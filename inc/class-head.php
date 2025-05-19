@@ -8,7 +8,7 @@ class Head {
 	private function __construct() {
 		//add_action('wp_head', [$this, 'youtube_api_scripts'], 10);
 		add_action('wp_head', [$this, 'head_scripts'], 50);
-		add_action('wp_head', [$this, 'noindex'], 10);
+		//add_action('wp_head', [$this, 'noindex'], 10);
 		//add_action('wp_head', [$this, 'product_open_graph'], 10);
 	}
 

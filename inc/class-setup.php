@@ -14,17 +14,9 @@ class Setup {
 
 		add_filter( 'edit_post_link', [$this, 'edit_post_link_target'] );
 
-		add_action( 'init', [$this, 'add_rewrite_rule'] );
-		add_filter( 'query_vars', [$this, 'add_query_vars'] );
-		add_filter( 'template_include', [$this, 'template_include'], 9999, 1 );
-
 		add_filter( 'posts_search', [$this, 'seo_post_search_by_title'], 10, 2 );
 
 		add_filter( 'mime_types', [$this, 'fix_rar_mime_type'] );
-
-		add_action( 'wp_loaded', [$this, 'wp_loaded'], 10 );
-		add_action( 'admin_init', [$this, 'ajax_set_global_view'], 10 );
-		add_action( 'template_redirect', [$this, 'set_global_view'], 5 );
 
 		if(has_role('administrator')) {
 			//add_action( 'template_redirect', [$this, 'redirect_first_province'], 0 );
@@ -73,21 +65,6 @@ class Setup {
 		return $search;
 	}
 
-	public function template_include($template) {
-		if ( get_query_var( 'contractor_search_page' ) == false || get_query_var( 'contractor_search_page' ) == '' ) {
-			return $template;
-		}
-		return THEME_DIR . '/contractor-search-page.php';
-	}
-
-	public function add_query_vars($query_vars) {
-		$query_vars[] = 'contractor_search_page';
-    	return $query_vars;
-	}
-
-	public function add_rewrite_rule() {
-	    add_rewrite_rule( '^contractor-search$', 'index.php?contractor_search_page=1', 'top' );
-	}
 
 	public function edit_post_link_target($link) {
 
@@ -108,100 +85,6 @@ class Setup {
 		);
 
 		return array_merge( $size_names, $new_sizes );
-	}
-
-	public function set_global_view() {
-		global $view;
-		$view_id = isset($_REQUEST['view'])?absint($_REQUEST['view']):((is_singular()||is_page())?get_the_ID():0);
-		if($view_id) {
-			$view = get_post($view_id);
-		}
-	}
-
-	public function ajax_set_global_view() {
-		if(defined('DOING_AJAX') && DOING_AJAX) {
-			global $view;
-			
-			$view_id = isset($_REQUEST['view'])?absint($_REQUEST['view']):0;
-			if($view_id) {
-				$view = get_post($view_id);
-			}
-		}
-	}
-
-	public function wp_loaded() {
-		global $current_password, $current_password_province, $current_province;
-
-		$current_password = null;
-		if(isset($_COOKIE[ 'wp-postpass_' . COOKIEHASH ])) {
-			$passwords = get_terms( ['taxonomy'=>'passwords', 'hide_empty'=>false] );
-			//debug_log($passwords);
-			if(is_array($passwords) && !empty($passwords)) {
-			    require_once ABSPATH . WPINC . '/class-phpass.php';
-			    $hasher = new \PasswordHash( 8, true );
-			    $hash = wp_unslash( $_COOKIE[ 'wp-postpass_' . COOKIEHASH ] );
-			    if ( str_starts_with( $hash, '$P$B' ) ) {
-			        foreach ($passwords as $key => $value) {
-			            if($hasher->CheckPassword( $value->name, $hash )) {
-			                $current_password = $value;
-			                break;
-			            }
-			        }
-			    }
-			}
-		}
-		
-		$province = isset($_REQUEST['province'])?absint($_REQUEST['province']):0;
-		$current_province = get_term_by( 'term_id', $province, 'province' );
-
-		$view_province = false;
-
-		if($current_password) {
-			$password_province = get_term_meta( $current_password->term_id, 'province', true );
-			if($password_province) {
-				$current_password_province = get_term_by( 'term_id', $password_province[0], 'province' );
-				if($current_password_province instanceof \WP_Term) {
-					$default_province = (int) get_option( 'default_term_province', 0 );
-					if($current_password_province->term_id==$default_province) $view_province = true;
-				} else {
-					$current_password_province = null;
-				}
-			}
-		}
-		
-		if(has_role('administrator') || $view_province) {
-			add_filter('post_type_link', [$this, 'contractor_page_link'], 10, 2);
-		}
-
-		// elseif($current_password) {
-		// 	$province = get_term_meta( $current_password->term_id, 'province', true );
-
-		// 	if($province) $current_province = get_term_by('term_id', $province[0], 'province');
-
-		// }
-
-	}
-
-	public function contractor_page_link($post_link, $post) {
-		if($post->post_type=='contractor_page') {
-			global $current_province;
-			if($current_province) {
-				$post_link = add_query_arg('province', $current_province->term_id, $post_link);
-			}
-
-		}
-
-		return $post_link;
-	}
-
-	public function redirect_first_province() {
-		if(is_singular( 'contractor_page' )) {
-			global $current_province, $default_province;
-			if(!$current_province && $default_province) {
-				wp_safe_redirect( get_permalink() );
-				exit;
-			}
-		}
 	}
 	
 	public function after_setup_theme() {

@@ -55,60 +55,6 @@ window.addEventListener('DOMContentLoaded', function(){
 			$(this).find('[type="submit"]').prop('disabled', true);
 		});
 		
-
-		let debounced_contractor_search = debounce((event) => {
-			let kw = $('#contractor-search-input').val().trim(),
-				province = parseInt($('#contractor-search-province').val()),
-				view = parseInt($('#contractor-search-view').val()),
-				$result_wrap_el = $('#contractor-search-result-wrap'),
-				$result_el = $result_wrap_el.find('.contractor-search-result'),
-				$loading = $result_wrap_el.find('.loading');
-
-			$loading.removeClass('invisible');
-			$result_el.addClass('invisible');
-
-			if(kw.length>2) {
-				$loading.html('Đang tìm kiếm...');
-				$.ajax({
-					url: theme.ajax_url+'?action=contractor_search',
-					method:'POST',
-					data:{kw: kw, view: view, province: province},
-					//dataType:'json',
-					beforeSend:function(){
-						
-					},
-					success:function(response){
-						//console.log(response);
-						$result_el.html(response);
-						$result_el.removeClass('invisible');
-						$loading.addClass('invisible');
-
-						$result_el.find(".change-province").select2({
-							data: theme.provinces,
-							width: '100%',
-							allowClear: true,
-							dropdownAutoWidth: true,
-							dropdownCssClass: 'change-province-dropdown',
-							placeholder: 'Chọn tỉnh'
-						});
-					},
-					complete: function() {
-						
-					}
-				});
-			} else if(kw.length>1) {
-
-				$loading.html('Nhập từ khóa từ 3 ký tự trở lên');
-			} else {
-				$result_el.html('');
-				$loading.addClass('invisible');
-			}
-		}, 800); // Wait 800ms after the last keypress
-
-		$(document).on('input', '#contractor-search-input', function(event) {
-			debounced_contractor_search(event);
-		});
-		
 		$('.logout-post-password').on('click', function(e){
 			e.preventDefault();
 			let $this = $(this),
@@ -289,52 +235,6 @@ window.addEventListener('DOMContentLoaded', function(){
 			}, 1000*parseInt(theme.popup_content_timeout));
 			
 		}
-		
-		/*
-		let popped = getCookie('popped');
-		if($('#modal-popup-image').length>0 && theme.preview!='1' && !popped) {
-			
-			const popup = new bootstrap.Modal('#modal-popup-image');
-			
-			setTimeout(function(){
-				popup.show();
-				setCookie('popped', 1, 1);
-			}, 1000*parseInt(theme.popup_timeout));
-			
-		}
-		
-		// xử lý link nhảy cóc
-		function goToAncho(ancho_name) {
-			let ancho = $('[name="'+ancho_name+'"]'), header_height = $('#site-header').height();
-			if(ancho.length>0) {
-				$('html, body').scrollTop((ancho.offset().top-header_height));
-				setTimeout(function(){
-					$('html, body').scrollTop((ancho.offset().top-header_height));
-				}, 1000);
-			}
-		}
-
-		let hash;
-		hash = window.location.hash.replace('#','');
-		if(hash!='' && $('[name="'+hash+'"]').length>0) {
-			goToAncho(hash);
-		}
-
-		var main = $( '#query-monitor-main' );
-		var menu_item = $( '#wp-admin-bar-query-monitor' );
-
-		$('a[href^="#"]').on('click', function(e){
-			e.preventDefault();
-			hash = $(this).attr('href').replace('#','');
-			if ( menu_item && main && hash.match(/^qm-/) ) {
-				main.toggleClass('qm-show');
-			} else {
-				goToAncho(hash);
-			}
-			return false;
-			
-		});
-		*/
 		
 		$('a[href$="#"]').on('click', function(e){
 			e.preventDefault();
@@ -646,80 +546,6 @@ window.addEventListener('DOMContentLoaded', function(){
 			}
 		}).on('hidden.bs.modal', function (e) {
 			$('#video-player').html('<div class="ratio ratio-16x9"></div>');
-		});
-
-		function matchKWS(params, data) {
-			// If there are no search terms, return all of the data
-			if ($.trim(params.term) === '') {
-				return null;
-			}
-
-			// Do not display the item if there is no 'text' property
-			if (typeof data.text === 'undefined') {
-				return null;
-			}
-
-			// `params.term` should be the term that is used for searching
-			// `data.text` is the text that is displayed for the data object
-			if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
-				var modifiedData = $.extend({}, data, true);
-
-				// You can return modified objects from here
-				// This includes matching the `children` how you want in nested data sets
-				return modifiedData;
-			}
-
-			// Return `null` if the term should not be displayed
-			return null;
-		}
-		
-		$('#keyword-search').select2({
-			// matcher: matchKWS,
-			// data: theme.kws,
-			ajax: {
-				url: theme.ajax_url,
-				dataType: 'json',
-				data: function (params) {
-					var query = {
-						search: params.term,
-						action: 'get_seo_post'
-					}
-					return query;
-				},
-				delay: 500,
-				cache: true
-			},
-			dropdownParent: $('#modal-keyword-search .modal-body'),
-			allowClear: false,
-			placeholder: 'Tìm công trình theo tỉnh',
-			dropdownCssClass: 'kws-dropdown',
-			language: {
-				inputTooLong: function(n) {
-					return "Vui lòng xóa bớt ký tự";
-				},
-				inputTooShort: function(n) {
-					return "Vui lòng nhập thêm ký tự";
-				},
-				loadingMore: function() {
-					return "Đang lấy thêm kết quả…";
-				},
-				maximumSelected: function(n) {
-					return "Chỉ có thể chọn giới hạn lựa chọn";
-				},
-				noResults: function() {
-					return "Không tìm thấy kết quả";
-				},
-				searching: function() {
-					return "Đang tìm…";
-				},
-				removeAllItems: function() {
-					return "Xóa tất cả các mục";
-				}
-			}
-		});
-		
-		$('#keyword-search').on('change', function(e) {
-			location.href = $(this).val();
 		});
 
 
