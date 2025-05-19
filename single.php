@@ -13,8 +13,12 @@ while (have_posts()) {
 		if($location) $location = array_reverse($location);
 		$_breadth = get_post_meta($post->ID, '_breadth', true);
 		$_length = get_post_meta($post->ID, '_length', true);
-		$_area = get_post_meta($post->ID, '_area', true);
+		//$_area = get_post_meta($post->ID, '_area', true);
 		$_functions = get_post_meta($post->ID, '_functions', true);
+
+		$_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
+		$_floors = floatval(get_post_meta($post->ID, '_floors', true));
+		$area = $_area_1*$_floors;
 		
 		$_images = get_post_meta($post->ID, '_images', true);
 
@@ -23,7 +27,7 @@ while (have_posts()) {
 			$attachment = get_post_thumbnail_id($post);
 		}
 
-		if($_breadth!='' || $_length!='' || $_area!='' || $location!='') {
+		if($_breadth!='' || $_length!='' || $area!='' || $location!='') {
 			$has_land_info = true;
 		}
 
@@ -140,8 +144,8 @@ while (have_posts()) {
 								<?php if($_length) { ?>
 								<div class="mb-2 d-flex justify-content-between"><span>Chiều sâu:</span><span class="flex-grow-1 border-bottom border-dark">&nbsp;</span><span><?=esc_html($_length)?>m</span></div>
 								<?php } ?>
-								<?php if($_area) { ?>
-								<div class="mb-2 d-flex justify-content-between"><span>Diện tích sàn tầng 1:</span><span class="flex-grow-1 border-bottom border-dark">&nbsp;</span><span><?=esc_html($_area)?>m<sup>2</sup></span></div>
+								<?php if($_area_1) { ?>
+								<div class="mb-2 d-flex justify-content-between"><span>Diện tích sàn tầng 1:</span><span class="flex-grow-1 border-bottom border-dark">&nbsp;</span><span><?=esc_html($_area_1)?>/<?=esc_html(number_format($area, 0, '.',','))?>m<sup>2</sup></span></div>
 								<?php } ?>
 							</div>
 							<?php } ?>

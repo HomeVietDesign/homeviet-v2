@@ -3,11 +3,6 @@ global $post;
 
 $src = get_the_post_thumbnail_url( $post, 'full' );
 
-// $thumbnail_size = 'medium_large';
-// if(strtolower( substr( $src, -4 ) )==='.gif') {
-	$thumbnail_size = 'full';
-//}
-
 $video_local = fw_get_db_post_option($post->ID, 'video');
 $video_url = fw_get_db_post_option($post->ID, 'video_url');
 $video_youtube = fw_get_db_post_option($post->ID, 'video_youtube');
@@ -42,13 +37,15 @@ $_featured = get_post_meta($post->ID, '_featured', true);
 
 $allow_order = get_post_meta($post->ID, '_allow_order', true);
 
-$_design_fee = get_post_meta($post->ID, '_design_fee', true);
-$product_design_fee = get_option('product_design_fee');
-$_show_general_design_fee = get_post_meta($post->ID, '_show_general_design_fee', true);
-$design_fee = ('yes' == $_show_general_design_fee)?floatval($product_design_fee):floatval($_design_fee);
+$_design_price = absint(get_post_meta($post->ID, '_design_price', true));
+$general_design_price = absint(get_option('product_design_price'));
+$_use_general_design_price = get_post_meta($post->ID, '_use_general_design_price', true);
 
-$design_cost = absint(get_option('product_design_cost'));
-$_show_general_design_cost = get_post_meta($post->ID, '_show_general_design_cost', true);
+$design_price = ($_use_general_design_price=='yes') ? $general_design_price : $_design_price;
+
+$_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
+$_floors = floatval(get_post_meta($post->ID, '_floors', true));
+$area = $_area_1*$_floors;
 
 $location = get_the_terms( $post, 'location' );
 if($location) $location = array_reverse($location);
@@ -62,7 +59,7 @@ if($location) $location = array_reverse($location);
 			 class="entry-thumbnail" href="<?php the_permalink(); ?>"
 			<?php } ?>
 			>
-				<span class="d-block"><?php the_post_thumbnail($thumbnail_size, ['alt'=>esc_attr(get_the_title())]); ?></span>
+				<span class="d-block"><?php the_post_thumbnail('full', ['alt'=>esc_attr(get_the_title())]); ?></span>
 				<?php if($data_video['type']!='') { ?>
 				<span class="play-video-button position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"><span class="d-flex justify-content-center align-items-center play-video-icon"><span class="dashicons dashicons-controls-play"></span></span></span>
 				<?php } ?>
@@ -72,19 +69,17 @@ if($location) $location = array_reverse($location);
 			
 			<?php
 			if(has_role('administrator')) {
-				$prefix = '';
-				switch (strtolower($_SERVER['HTTP_HOST'])) {
-				 	case 'transonarchi.com':
-				 		$prefix = 'HD';
-				 		break;
-				 	
-				 	case 'ktstranson.com':
-				 		$prefix = 'TC';
-				 		break;
-				 } 
 				?>
-				<div class="position-absolute start-0 bottom-0 p-1"><?=esc_html($prefix.$post->ID)?></div>
+				<div class="position-absolute start-0 bottom-0 p-1"><?=esc_html($post->ID)?></div>
 				<?php
+			}
+
+			if(!empty($area)) {
+			?>
+			<div class="position-absolute top-0 end-0 p-2 text-yellow total-area">
+				<span>DT: </span><span class="fw-bold"><?php echo number_format($area, 0, '.',','); ?></span><span>m<sup>2</sup></span>
+			</div>
+			<?php
 			}
 			?>
 		</div>
@@ -101,14 +96,14 @@ if($location) $location = array_reverse($location);
 			?></span></div>
 			<?php } ?>
 
-			<?php if($design_cost>0 && $_show_general_design_cost=='yes') { ?>
-			<div class="design_cost position-absolute top-0 end-0 product-design-fee d-flex p-2 text-yellow align-items-end">
-				<span>Phí thiết kế: <b><?php echo esc_html($design_cost); ?></b>k/m2</span>
+			<?php if($design_price>0) { ?>
+			<div class="design_price position-absolute top-0 end-0 product-design-fee d-flex p-2 text-yellow align-items-end">
+				<span>Phí thiết kế: <b><?php echo esc_html($design_price); ?></b>k/m2</span>
 			</div>
 			<?php } ?>
 			
 			<h3 class="entry-title text-center<?php
-			echo (($design_cost>0 && $_show_general_design_cost=='yes')||$location)?' mt-4':'';
+			echo (($design_price>0 && $_show_general_design_price=='yes')||$location)?' mt-4':'';
 			?>">
 				<?php
 				if($allow_order=='yes') {

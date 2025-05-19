@@ -13,6 +13,7 @@ $options = array(
 		'title'   => 'Đặc tính',
 		'type'    => 'box',
         'options' => array(
+        	
         	'_featured' => array(
 				'label' => 'Nổi bật?',
 				'desc'  => '',
@@ -49,26 +50,10 @@ $options = array(
 					'post-meta' => '_allow_order',
 				),
 			),
-			/*
-			'_get_premium' => array(
-				'label' => 'Nút Tư vấn VIP?',
-				'desc'  => 'Khi nút này được bật sẽ thay thế cho nút Chọn mẫu',
-				'value'  => 'no',
-				'type'  => 'switch',
-				'left-choice' => array(
-			        'value' => 'no',
-			        'label' => 'Tắt',
-			    ),
-			    'right-choice' => array(
-			        'value' => 'yes',
-			        'label' => 'Bật',
-			    ),
-				'fw-storage' => array(
-					'type' => 'post-meta',
-					'post-meta' => '_get_premium',
-				),
+			'_ref' => array(
+				'type' => 'text',
+				'label' => 'Mã tân cổ',
 			),
-			*/
 		),
     ),
     array(
@@ -80,7 +65,7 @@ $options = array(
 				'type' => 'multi-upload',
 				'label' => 'Danh sách ảnh',
 				'images_only' => true,
-				'files_ext' => array( 'png', 'jpg', 'jpeg' ),
+				'files_ext' => array( 'png', 'jpg', 'jpeg', 'webp' ),
 				'fw-storage' => array(
 					'type' => 'post-meta',
 					'post-meta' => '_images'
@@ -109,17 +94,9 @@ $options = array(
     ),
 	array(
 		'context' => 'side',
-		'title'   => 'Thông tin công trình',
+		'title'   => 'Kích thước công trình',
 		'type'    => 'box',
         'options' => array(
-        	// '_location' => array(
-			// 	'type' => 'text',
-			// 	'label' => 'Địa điểm',
-			// 	'fw-storage' => array(
-			// 		'type' => 'post-meta',
-			// 		'post-meta' => '_location'
-			// 	)
-			// ),
 			'_breadth' => array(
 				'type' => 'text',
 				'label' => 'Rộng mặt tiền(m)',
@@ -138,105 +115,110 @@ $options = array(
 					'post-meta' => '_length'
 				)
 			),
-			'_area' => array(
-				'type' => 'text',
-				'label' => 'Diện tích(m2)',
+			'_area_1' => array(
+				'type' => 'numeric',
+				'integer' => false,
+				'decimals' => 1,
+				'label' => 'Diện tích 1 sàn(m2)',
 				'fw-storage' => array(
 					'type' => 'post-meta',
-					'post-meta' => '_area'
+					'post-meta' => '_area_1'
 				)
 			),
-			'_total_amount' => array(
-				'type'  => 'numeric',
-				'integer'  => false,
-				'value' => '',
-				'label' => 'Tổng mức đầu tư (tỷ)',
+			'_floors' => array(
+				'type' => 'numeric',
+				'integer' => false,
+				'decimals' => 1,
+				'label' => 'Số tầng cao',
 				'fw-storage' => array(
 					'type' => 'post-meta',
-					'post-meta' => '_total_amount'
+					'post-meta' => '_floors'
 				)
 			),
-			'_design_fee' => array(
-				'type'  => 'numeric',
-				'integer'  => false,
-				'value' => '',
-				'label' => 'Phí thiết kế',
-				'desc'  => 'Đơn vị là % của tổng mức đầu tư',
-				'fw-storage' => array(
-					'type' => 'post-meta',
-					'post-meta' => '_design_fee'
-				)
-			),
-			'_show_general_design_fee' => array(
-				'label' => 'Dùng phí TK chung?',
-				'desc'  => '',
-				'value'  => 'no',
-				'type'  => 'switch',
-				'left-choice' => array(
-			        'value' => 'yes',
-			        'label' => 'Có',
-			    ),
-			    'right-choice' => array(
-			        'value' => 'no',
-			        'label' => 'Không',
-			    ),
-			    'fw-storage' => array(
-					'type' => 'post-meta',
-					'post-meta' => '_show_general_design_fee'
-				)
-			),
-			'_design_cost' => array(
-				'type' => 'text',
+        ),
+    ),
+    array(
+		'context' => 'side',
+		'title'   => 'Giá trị công trình',
+		'type'    => 'box',
+        'options' => array(
+        	'_design_price' => array(
+				'type' => 'numeric',
+				'integer' => true,
+				'negative' => false,
+				'size' => 'full',
 				'label' => 'Giá thiết kế',
+				'desc'  => 'Đơn vị k/m2',
 				'fw-storage' => array(
 					'type' => 'post-meta',
-					'post-meta' => '_design_cost'
+					'post-meta' => '_design_price'
 				)
 			),
-			'_show_general_design_cost' => array(
-				'label' => 'Dùng giá TK chung?',
+			'_use_general_design_price' => array(
+				'label' => 'Dùng giá thiết kế chung?',
 				'desc'  => '',
-				'value'  => 'no',
+				'value'  => 'yes',
 				'type'  => 'switch',
 				'left-choice' => array(
-			        'value' => 'yes',
-			        'label' => 'Có',
-			    ),
-			    'right-choice' => array(
 			        'value' => 'no',
 			        'label' => 'Không',
 			    ),
+			    'right-choice' => array(
+			        'value' => 'yes',
+			        'label' => 'Đúng',
+			    ),
 			    'fw-storage' => array(
 					'type' => 'post-meta',
-					'post-meta' => '_show_general_design_cost'
+					'post-meta' => '_use_general_design_price'
 				)
 			),
-			'_sale_off' => array(
-				'type' => 'text',
-				'label' => 'Giảm giá',
+			'_price' => array(
+				'type' => 'numeric',
+				'integer' => true,
+				'negative' => false,
+				'size' => 'full',
+				'label' => 'Đơn giá đầu tư',
+				'desc'  => 'Đơn vị k/m2',
 				'fw-storage' => array(
 					'type' => 'post-meta',
-					'post-meta' => '_sale_off'
+					'post-meta' => '_price'
 				)
 			),
-			'_show_general_sale_off' => array(
-				'label' => 'Dùng giảm giá chung?',
+			'_use_general_price' => array(
+				'label' => 'Dùng giá đầu tư chung?',
 				'desc'  => '',
-				'value'  => 'no',
+				'value'  => 'yes',
 				'type'  => 'switch',
 				'left-choice' => array(
-			        'value' => 'yes',
-			        'label' => 'Có',
-			    ),
-			    'right-choice' => array(
 			        'value' => 'no',
 			        'label' => 'Không',
 			    ),
+			    'right-choice' => array(
+			        'value' => 'yes',
+			        'label' => 'Đúng',
+			    ),
 			    'fw-storage' => array(
 					'type' => 'post-meta',
-					'post-meta' => '_show_general_sale_off'
+					'post-meta' => '_use_general_price'
 				)
 			),
+			'_total_factor' => array(
+				'type'  => 'numeric',
+				'integer'  => false,
+				'negative' => false,
+				'value' => 1,
+				'label' => 'Hệ số tổng',
+				'desc'  => 'Hệ số của tổng mức đầu tư',
+				'fw-storage' => array(
+					'type' => 'post-meta',
+					'post-meta' => '_total_factor'
+				)
+			),
+			'note' => array(
+				'type' => 'html',
+				'label' => 'Công thức tính',
+				'html' => 'Tổng đầu tư = Diện tích 1 sàn x Số tầng cao x Đơn giá x Hệ số tổng'
+			)
         ),
     ),
 	array(

@@ -6,81 +6,40 @@ final class Template_Tags {
 	public static function product_cost() {
 		global $post;
 		
-		$_total_amount = floatval(get_post_meta($post->ID, '_total_amount', true));
-		/*
-		$_design_cost = get_post_meta($post->ID, '_design_cost', true);
-		$product_design_cost = get_option('product_design_cost');
-		$_show_general_design_cost = get_post_meta($post->ID, '_show_general_design_cost', true);
+		$_design_price = absint(get_post_meta($post->ID, '_design_price', true)); //giá thiết kế riêng
+		$general_design_price = absint(get_option('product_design_price')); //giá thiết kế chung
+		$_use_general_design_price = get_post_meta($post->ID, '_use_general_design_price', true); //dùng giá thiết kế chung?
+		$design_price = ($_use_general_design_price=='yes') ? $general_design_price : $_design_price; //giá thiết kế cuối cùng
+		
+		$_price = absint(get_post_meta($post->ID, '_price', true)); //giá đầu tư
+		$general_price = absint(get_option('product_price'));
+		$_use_general_price = get_post_meta($post->ID, '_use_general_price', true);
+		$price = ($_use_general_price=='yes') ? $general_price : $_price;
 
-		$_sale_off = get_post_meta($post->ID, '_sale_off', true);
-		$product_sale_off = get_option('product_sale_off');
-		$_show_general_sale_off = get_post_meta($post->ID, '_show_general_sale_off', true);
-		*/
+		$_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
+		$_floors = floatval(get_post_meta($post->ID, '_floors', true));
+		$area = $_area_1*$_floors;
 
-		$_design_fee = get_post_meta($post->ID, '_design_fee', true);
-		$product_design_fee = get_option('product_design_fee');
-		$_show_general_design_fee = get_post_meta($post->ID, '_show_general_design_fee', true);
-		$design_fee = ('yes' == $_show_general_design_fee)?floatval($product_design_fee):floatval($_design_fee);
+		$_total_factor = floatval(get_post_meta($post->ID, '_total_factor', true));
+		if($_total_factor==0) $_total_factor=1;
 
-		$product_total_percent = floatval(get_option('product_total_percent'));
+		$_total_amount = $price * $area * $_total_factor / 1000000; // tỷ
 
-		$_total_amount *= $product_total_percent/100;
-
-		$design_cost = absint(get_option('product_design_cost'));
-		$_show_general_design_cost = get_post_meta($post->ID, '_show_general_design_cost', true);
-
-		if($_total_amount>0 || '' != $design_cost || '' != $design_fee):
-
-			/*
-			$old_design_cost = ('yes' == $_show_general_design_cost && '' != $product_design_cost)?$product_design_cost:(('' != $_design_cost)?$_design_cost:'');
-			if($old_design_cost!='') {
-				$old_design_cost = absint(str_replace('k/m2', '', $old_design_cost)); //...k
-			}
-			$sale_off = ('yes' == $_show_general_sale_off && '' != $product_sale_off)?$product_sale_off:(('' != $_sale_off)?$_sale_off:'');
-			if($sale_off!='') {
-				$sale_off = absint(str_replace('%', '', $sale_off)); //...%
-			}
-
-			$design_cost = ($sale_off!='') ? ceil($old_design_cost*(1-$sale_off/100)) : $old_design_cost;
-			*/
+		if($_total_amount>0 || '' != $design_price):
 
 		?>
 		<div class="costs-info position-absolute end-0 bottom-0 py-1 px-2">
 			<?php if($_total_amount>0): ?>
-			<div class="total_amount text-end"><strong><?php echo esc_html($_total_amount); ?></strong> tỷ</div>
+			<div class="total_amount text-end"><strong><?php echo esc_html(number_format($_total_amount,2,'.',',')); ?></strong> tỷ</div>
 			<?php endif; ?>
 
-			<!-- <?php if($design_fee>0 && is_single()): ?>
+			<?php if($design_price>0 && is_single() && $_show_general_design_price=='yes'): ?>
 			<div class="product-design-fee d-flex text-yellow align-items-end">
 				<span class="d-block me-1">Phí thiết kế:</span>
-				<span class="d-block fs-5 fw-bold lh-sm"><?=$design_fee?></span>
-				<span class="d-block fw-bold">%</span>
-			</div>
-			<?php endif; ?> -->
-
-			<?php if($design_cost>0 && is_single() && $_show_general_design_cost=='yes'): ?>
-			<div class="product-design-fee d-flex text-yellow align-items-end">
-				<span class="d-block me-1">Phí thiết kế:</span>
-				<span class="d-block fs-5 fw-bold lh-sm"><?=$design_cost?></span>
+				<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
 				<span class="d-block">k/m2</span>
 			</div>
 			<?php endif; ?>
-
-			<?php //debug($design_cost); ?>
-			<!-- <div class="d-flex align-items-center">
-				<?php //if($design_cost!='') { ?>
-				<div class="design_cost">
-					<span>Thiết kế: <b><?php //echo esc_html($design_cost); ?></b>k/m2</span>
-					<?php
-					//if('' != $sale_off) {
-						?>
-						<s><?php //echo esc_html($old_design_cost); ?>k/m2</s>
-						<?php
-					//}
-					?>
-				</div>
-				<?php //} ?>
-			</div> -->
 		</div>
 		<?php endif;
 	}
