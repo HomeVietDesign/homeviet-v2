@@ -145,6 +145,8 @@ class Ajax {
 					echo 'Facebook';
 				} elseif (strpos($referrer, 'google')!==false || strpos($referrer, 'gclid')!==false) {
 					echo 'Google';
+				} elseif (strpos($referrer, 'youtube')!==false) {
+					echo 'Youtube';
 				} elseif (strpos($referrer, 'zalo')!==false) {
 					echo 'Zalo';
 				} else {
