@@ -974,7 +974,7 @@ class Admin_Post {
 				$_total_factor = get_post_meta($post_id, '_total_factor', true);
 
 				?>
-				<label><span>Giá thiết kế:</span><input type="text" class="quick-edit-field _design_price" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_design_price)?>"><span>k/m2</span></label>
+				<label><span>Giá thiết kế:</span><input type="text" class="quick-edit-field _design_price" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_design_price)?>"></label>
 				<label><span>Giá đầu tư:</span><input type="text" class="quick-edit-field _price" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_price)?>"><span>k/m2</span></label>
 				<label><span>Hệ số đầu tư:</span><input type="text" class="quick-edit-field _total_factor" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_total_factor)?>"><span></span></label>
 				<?php
