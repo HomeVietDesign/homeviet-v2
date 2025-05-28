@@ -10,7 +10,7 @@ class Select_Post_Export {
 	private function __construct() {
         if(is_admin()) {
             add_action( 'admin_init', [$this, 'admin_init'] );
-            //add_action( 'wp_ajax_post_image_import', [$this, 'ajax_post_image_import'] );
+            add_action( 'wp_ajax_post_image_import', [$this, 'ajax_post_image_import'] );
             add_filter( 'export_skip_postmeta', [$this, 'export_skip_postmeta'], 10, 2 );
 
             add_action( 'admin_notices', [$this, 'imported_images_notice'] );
@@ -129,7 +129,7 @@ class Select_Post_Export {
 
                 }
                 
-                // $content = $this->post_images_import_process_content($post_import->post_content);
+                //$content = $this->post_images_import_process_content($post_import->post_content);
                 // wp_update_post( ['ID' => $post_import->ID, 'post_content' => $content] );
 
                 delete_post_meta( $post_import->ID, '_handle_import' );

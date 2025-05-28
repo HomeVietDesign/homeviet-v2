@@ -368,12 +368,12 @@ class Admin_Post {
 		return $disable;
 	}
 
-	public function post_content_editor($post) {
-		wp_editor( self::unescape($post->post_content), 'content', [
-			'tinymce' => true,
-			'textarea_rows' => 15,
-		] );
-	}
+	// public function post_content_editor($post) {
+	// 	wp_editor( self::unescape($post->post_content), 'content', [
+	// 		'tinymce' => true,
+	// 		'textarea_rows' => 15,
+	// 	] );
+	// }
 
 	public function switch_boxes() {
 

@@ -37,8 +37,8 @@ $_featured = get_post_meta($post->ID, '_featured', true);
 
 $allow_order = get_post_meta($post->ID, '_allow_order', true);
 
-$_design_price = absint(get_post_meta($post->ID, '_design_price', true));
-$general_design_price = absint(get_option('product_design_price'));
+$_design_price = get_post_meta($post->ID, '_design_price', true);
+$general_design_price = get_option('product_design_price');
 $_use_general_design_price = get_post_meta($post->ID, '_use_general_design_price', true);
 
 $design_price = ($_use_general_design_price=='yes') ? $general_design_price : $_design_price;
@@ -65,7 +65,7 @@ if($location) $location = array_reverse($location);
 				<?php } ?>
 			</a>
 
-			<?php \HomeViet\Template_Tags::product_cost(); ?>
+			<?php \HomeViet\Template_Tags::product_cost('loop'); ?>
 			
 			<?php
 			if(has_role('administrator')) {
@@ -97,8 +97,8 @@ if($location) $location = array_reverse($location);
 			<?php } ?>
 
 			<?php if($design_price>0) { ?>
-			<div class="design_price position-absolute top-0 end-0 product-design-fee d-flex p-2 text-yellow align-items-end">
-				<span>Phí thiết kế: <b><?php echo esc_html($design_price); ?></b>k/m2</span>
+			<div class="design_price position-absolute top-0 end-0 d-flex p-2 text-yellow align-items-end">
+				<span>Phí thiết kế: <b><?php echo esc_html($design_price); ?></b></span>
 			</div>
 			<?php } ?>
 			

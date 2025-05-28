@@ -91,7 +91,7 @@ while (have_posts()) {
 										}
 										?>
 										</div>
-										<?php \HomeViet\Template_Tags::product_cost(); ?>
+										<?php \HomeViet\Template_Tags::product_cost('single'); ?>
 									</div>
 									<div class="navigation-thumbs owl-carousel owl-theme">
 									<?php
@@ -121,7 +121,7 @@ while (have_posts()) {
 										the_post_thumbnail('full');
 									}
 
-									\HomeViet\Template_Tags::product_cost();
+									\HomeViet\Template_Tags::product_cost('single');
 								} ?>
 			
 							</div>
@@ -185,10 +185,8 @@ while (have_posts()) {
 
 		</div>
 		<?php
-	}
-	the_content();
-
-	if(!post_password_required( $post )) {
+		the_content();
+		
 		$_footer_content = get_post_meta($post->ID, '_footer_content', 'yes');
 		//if($has_land_info || $_footer_content=='yes') {
 		if($_footer_content=='yes') {

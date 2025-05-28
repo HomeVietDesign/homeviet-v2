@@ -20,7 +20,7 @@ final class Common {
 			$verify = wp_remote_retrieve_body($verify);
 			$response = json_decode($verify);
 
-			wp_mail( 'qqngoc2988@gmail.com', $_SERVER['HTTP_HOST'].' cf captcha verify', json_encode( $response ), ['Content-Type: text/html; charset=UTF-8'] );
+			//wp_mail( 'qqngoc2988@gmail.com', $_SERVER['HTTP_HOST'].' cf captcha verify', json_encode( $response ), ['Content-Type: text/html; charset=UTF-8'] );
 
 			//debug_log($response);
 

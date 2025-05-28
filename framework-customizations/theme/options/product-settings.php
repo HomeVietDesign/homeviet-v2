@@ -43,11 +43,11 @@ $options = array(
 
 			'product_design_price' => array(
 				'label' => 'Giá thiết kế chung',
-				'desc'  => 'Đơn vị k/m2',
-				'type'  => 'numeric',
-				'integer' => true,
-				'negative' => false,
-				'size' => 'full',
+				'desc'  => '',
+				'type'  => 'text',
+				// 'integer' => true,
+				// 'negative' => false,
+				// 'size' => 'full',
 				'value' => '',
 				'fw-storage' => array(
 					'type' => 'wp-option',
