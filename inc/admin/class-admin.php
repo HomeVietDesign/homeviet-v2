@@ -10,6 +10,7 @@ class Admin {
 		require_once THEME_DIR.'/inc/simplehtmldom/simple_html_dom.php';
 		require_once THEME_DIR.'/inc/admin/class-select-post-export.php';
 		require_once THEME_DIR.'/inc/admin/class-admin-post.php';
+		require_once THEME_DIR.'/inc/admin/class-admin-price.php';
 		require_once THEME_DIR.'/inc/admin/class-admin-media.php';
 		//require_once THEME_DIR.'/inc/admin/class-admin-update-posts.php';
 
@@ -29,8 +30,18 @@ class Admin {
 
 			add_action( 'admin_print_styles-edit.php', array($this,'admin_edit_styles') );
 			add_action( 'admin_print_scripts', [$this,'admin_print_head_scripts'] );
+
+			add_filter( 'quick_edit_show_taxonomy', [$this, 'hide_tags_from_quick_edit'], 10, 3 );
 		}
 
+	}
+
+	public function hide_tags_from_quick_edit($show_in_quick_edit, $taxonomy_name, $post_type) {
+		if( in_array($taxonomy_name, ['location', 'post_tag']) && $post_type=='post') {
+			$show_in_quick_edit = false;
+		}
+
+		return $show_in_quick_edit;
 	}
 
 	public function admin_print_head_scripts() {

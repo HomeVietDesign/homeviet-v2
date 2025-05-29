@@ -2,7 +2,7 @@
 if(!class_exists('Walker_Category_Checklist')) {
 	include_once ABSPATH . 'wp-admin/includes/class-walker-category-checklist.php';
 }
-class Walker_Passwords_Checklist extends Walker_Category_Checklist {
+class Walker_Price_Checklist extends Walker_Category_Checklist {
 
 	/**
 	 * Start the element output.
@@ -54,7 +54,7 @@ class Walker_Passwords_Checklist extends Walker_Category_Checklist {
 				'<div class="' . $inner_class . '" data-term-id=' . $category->term_id .
 				' tabindex="0" role="checkbox" aria-checked="' . $aria_checked . '">' .
 				/** This filter is documented in wp-includes/category-template.php */
-				esc_html( $category->description.' ('.$category->name.')' ) . '</div>';
+				esc_html( $category->name.': '.$category->description ) . '</div>';
 		} else {
 			$is_selected         = in_array( $category->term_id, $args['selected_cats'], true );
 			$is_disabled         = ! empty( $args['disabled'] );
@@ -66,7 +66,7 @@ class Walker_Passwords_Checklist extends Walker_Category_Checklist {
 				checked( $is_selected, true, false ) .
 				disabled( $is_disabled, true, false ) . ' /> ' .
 				/** This filter is documented in wp-includes/category-template.php */
-				esc_html( $category->description.' ('.$category->name.')' ) . '</label>';
+				esc_html( $category->name.': '.$category->description ) . '</label>';
 		}
 	}
 

@@ -41,19 +41,6 @@ $options = array(
 				),
 			],
 
-			'product_design_price' => array(
-				'label' => 'Giá thiết kế chung',
-				'desc'  => '',
-				'type'  => 'text',
-				// 'integer' => true,
-				// 'negative' => false,
-				// 'size' => 'full',
-				'value' => '',
-				'fw-storage' => array(
-					'type' => 'wp-option',
-					'wp-option' => 'product_design_price',
-				),
-			),
 			'product_price' => array(
 				'label' => 'Giá đầu tư chung',
 				'desc'  => 'Đơn vị k/m2',

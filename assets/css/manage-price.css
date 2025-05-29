@@ -1,0 +1,8 @@
+.inline-edit-col label:last-child,
+#slug-description,
+#name-description,
+#description-description,
+.term-slug-wrap,
+.term-parent-wrap {
+	display: none;
+}

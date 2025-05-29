@@ -234,14 +234,48 @@ class Custom_Types {
 		register_taxonomy( 'location', 'post', $args ); // our new 'format' taxonomy
 
 		
-		$default_province = [
-			'name' => 'Toàn quốc',
-			'slug' => 'toan-quoc',
-			'description' => 'Mặc định'
-		];
-		$default = (int) get_option( 'default_term_province', -1 );
+		// $default_province = [
+		// 	'name' => 'Toàn quốc',
+		// 	'slug' => 'toan-quoc',
+		// 	'description' => 'Mặc định'
+		// ];
+		// $default = (int) get_option( 'default_term_province', -1 );
 
 		//delete_option( 'default_term_province' );
+
+		$labels = array(
+			'name'              => 'Giá thiết kế',
+			'singular_name'     => 'Giá thiết kế',
+			'search_items'      => 'Tìm Giá thiết kế',
+			'all_items'         => 'Tất cả Giá thiết kế',
+			'edit_item'         => 'Sửa Giá thiết kế',
+			'update_item'       => 'Cập nhật Giá thiết kế',
+			'add_new_item'      => 'Thêm Giá thiết kế mới',
+			'new_item_name'     => 'Giá thiết kế mới',
+			'menu_name'         => 'Giá thiết kế',
+		);
+		$default_price = [
+			'name' => 'Giá chung',
+			'slug' => 'gia-chung',
+			'description' => ''
+		];
+		$default = (int) get_option( 'default_term_price', -1 );
+		// delete_option( 'default_term_prices' );
+		$args = array(
+			'hierarchical'      => true,
+			'labels'            => $labels,
+			'show_ui'           => true,
+			'show_admin_column' => true,
+			'query_var'         => false,
+			'rewrite'           => false,
+			'public' => false,
+			'show_in_menu' => true,
+			'show_in_nav_menus' => false,
+			'show_tagcloud' => false,
+			'default_term' => ($default>0)?$default:$default_price
+			
+		);
+		register_taxonomy( 'price', 'post', $args );
 
 	}
 	

@@ -142,36 +142,6 @@ $options = array(
 		'title'   => 'Giá trị công trình',
 		'type'    => 'box',
         'options' => array(
-        	'_design_price' => array(
-				'type' => 'text',
-				// 'integer' => true,
-				// 'negative' => false,
-				// 'size' => 'full',
-				'label' => 'Giá thiết kế',
-				'desc'  => '',
-				'fw-storage' => array(
-					'type' => 'post-meta',
-					'post-meta' => '_design_price'
-				)
-			),
-			'_use_general_design_price' => array(
-				'label' => 'Dùng giá thiết kế chung?',
-				'desc'  => '',
-				'value'  => 'yes',
-				'type'  => 'switch',
-				'left-choice' => array(
-			        'value' => 'no',
-			        'label' => 'Không',
-			    ),
-			    'right-choice' => array(
-			        'value' => 'yes',
-			        'label' => 'Đúng',
-			    ),
-			    'fw-storage' => array(
-					'type' => 'post-meta',
-					'post-meta' => '_use_general_design_price'
-				)
-			),
 			'_price' => array(
 				'type' => 'numeric',
 				'integer' => true,

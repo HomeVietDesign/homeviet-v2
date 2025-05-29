@@ -734,29 +734,6 @@ class Admin_Post {
 						});
 					});
 
-					$('.change_use_general_design_price').on('click', function(e){
-						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), use_general_design_price = (_this.prop('checked'))?'yes':'no';
-						$.ajax({
-							url: ajaxurl,
-							type: 'post',
-							dataType: 'json',
-							data: {id: id, nonce: nonce, action:'change_use_general_design_price', use_general_design_price: use_general_design_price},
-							beforeSend: function() {
-								_this.prop('disabled', true);
-							},
-							success: function(response) {
-								if(response) {
-									_this.prop('checked', true);
-								} else {
-									_this.prop('checked', false);
-								}
-							},
-							complete: function() {
-								_this.prop('disabled', false);
-							}
-						});
-					});
-
 					$('.quick-edit-field._breadth').on('change', function(e){
 						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), breadth = _this.val();
 						$.ajax({
@@ -837,26 +814,6 @@ class Admin_Post {
 						});
 					});
 
-					$('.quick-edit-field._design_price').on('change', function(e){
-						console.log(e);
-						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), design_price = _this.val();
-						$.ajax({
-							url: ajaxurl,
-							type: 'post',
-							dataType: 'json',
-							data: {id: id, nonce: nonce, action:'change_design_price', design_price: design_price},
-							beforeSend: function() {
-								_this.prop('disabled', true);
-							},
-							success: function(response) {
-								//console.log(response);
-								_this.val(response);
-							},
-							complete: function() {
-								_this.prop('disabled', false);
-							}
-						});
-					});
 
 					$('.quick-edit-field._price').on('change', function(e){
 						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), price = _this.val();
@@ -916,16 +873,13 @@ class Admin_Post {
 			
 			case 'tasks':
 				$footer_content = get_post_meta($post_id, '_footer_content', 'no');
-				$use_general_design_price = get_post_meta($post_id, '_use_general_design_price', 'no');
 				$use_general_price = get_post_meta($post_id, '_use_general_price', 'no');
 				?>
 				
 				<p>
 					<label><input type="checkbox" class="change_footer_content" <?php checked( $footer_content, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Hiện nội dung dưới cuối?</label>
 				</p>
-				<p>
-					<label><input type="checkbox" class="change_use_general_design_price" <?php checked( $use_general_design_price, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Dùng giá TK chung?</label>
-				</p>
+				
 				<p>
 					<label><input type="checkbox" class="change_use_general_price" <?php checked( $use_general_price, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Dùng giá ĐT chung?</label>
 				</p>
@@ -945,9 +899,9 @@ class Admin_Post {
 				<p>
 					<label><input type="checkbox" class="change_allow_order" <?php checked( $allow_order, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Chọn mẫu?</label>
 				</p>
-				<p>
+				<!-- <p>
 					<label><input type="checkbox" class="change_up_nha88" <?php checked( $up_nha88, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Up Nha88?</label>
-				</p>
+				</p> -->
 				<?php
 				break;
 			
@@ -969,12 +923,10 @@ class Admin_Post {
 				<?php
 				break;
 			case 'costs':
-				$_design_price = get_post_meta($post_id, '_design_price', true);
 				$_price = get_post_meta($post_id, '_price', true);
 				$_total_factor = get_post_meta($post_id, '_total_factor', true);
 
 				?>
-				<label><span>Giá thiết kế:</span><input type="text" class="quick-edit-field _design_price" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_design_price)?>"></label>
 				<label><span>Giá đầu tư:</span><input type="text" class="quick-edit-field _price" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_price)?>"><span>k/m2</span></label>
 				<label><span>Hệ số đầu tư:</span><input type="text" class="quick-edit-field _total_factor" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_total_factor)?>"><span></span></label>
 				<?php
@@ -1040,20 +992,20 @@ class Admin_Post {
 			unset($columns['tags']);
 		}
 
-		$columns['format'] = 'Loại nội dung';
-		$columns['ID'] = 'ID';
-		$columns['RID'] = 'RID';
+		// $columns['format'] = 'Loại nội dung';
+		// $columns['ID'] = 'ID';
+		// $columns['RID'] = 'RID';
 		$columns['feature'] = 'Đặc tính';
 		$columns['dimensions'] = 'Kích thước';
 		$columns['costs'] = 'Chi phí';
 		$columns['tasks'] = 'Tác vụ';
 
-		if(class_exists('WP_Statistics')) {
-			$columns['views'] = 'Lượt xem';
-		}
+		// if(class_exists('WP_Statistics')) {
+		// 	$columns['views'] = 'Lượt xem';
+		// }
 
-		$columns['order_count'] = 'Lượt gửi sđt';
-		//$columns['slider'] = 'Slider';
+		// $columns['order_count'] = 'Lượt gửi sđt';
+		// $columns['slider'] = 'Slider';
 		
 		return $columns;
 

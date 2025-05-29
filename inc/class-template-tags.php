@@ -5,11 +5,10 @@ final class Template_Tags {
 
 	public static function product_cost($position='loop') {
 		global $post;
-		
-		$_design_price = get_post_meta($post->ID, '_design_price', true); //giá thiết kế riêng
-		$general_design_price = get_option('product_design_price'); //giá thiết kế chung
-		$_use_general_design_price = get_post_meta($post->ID, '_use_general_design_price', true); //dùng giá thiết kế chung?
-		$design_price = ($_use_general_design_price=='yes') ? $general_design_price : $_design_price; //giá thiết kế cuối cùng
+
+		$design_price = '';
+		$prices = get_the_terms( $post, 'price' );
+		if($prices) $design_price = $prices[0]->description;
 		
 		$_price = absint(get_post_meta($post->ID, '_price', true)); //giá đầu tư
 		$general_price = absint(get_option('product_price'));
@@ -38,7 +37,7 @@ final class Template_Tags {
 			<div class="total_amount text-end"><strong><?php echo esc_html(number_format($_total_amount,2,'.',',')); ?></strong> tỷ</div>
 			<?php endif; ?>
 
-			<?php if($design_price>0 && $position=='single' && $_use_general_design_price=='yes'): ?>
+			<?php if($design_price>0 && $position=='single'): ?>
 			<div class="product-design-fee d-flex text-yellow align-items-end">
 				<span class="d-block me-1">Phí thiết kế:</span>
 				<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
