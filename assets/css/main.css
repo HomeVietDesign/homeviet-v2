@@ -313,18 +313,19 @@ img.aligncenter {
 }
 
 .post-masonry .post-summary {
-	padding: 10px 0;
+	padding: 20px 0;
 }
 .post-masonry .post-summary .entry-title {
 	font-size: 18px;
 	font-weight: 500;
 	margin: 0;
-	padding: 10px;
+	padding: 0 10px;
 	line-height: 1.4;
-}
-.post-masonry .inner .entry-title a.title {
 	color: #0f0;
 	transition: color .2s ease-in-out;
+}
+.post-masonry .post-summary .entry-title.mt {
+	padding-top: 35px;
 }
 /*.post-masonry .inner:hover .entry-title a {
 	color: #fff;
@@ -612,6 +613,7 @@ body:not(.single) #video-player video {
 	margin-bottom: 0;
 }
 .total-area,
+.design-price,
 .costs-info {
 	text-shadow: 2px 2px 3px #001830, -2px 2px 3px #001830, 2px -2px 3px #001830, -2px -2px 3px #001830;
 }
@@ -726,6 +728,9 @@ div[id^="modal-fw-shortcode-design-cost-"] .btn-close,
 .single-gallery .slider {
 	margin-bottom: 10px;
 }
+/*.single-gallery > .position-relative {
+	min-height: 200px;
+}*/
 .single-gallery .slider video {
 	vertical-align: middle;
 }

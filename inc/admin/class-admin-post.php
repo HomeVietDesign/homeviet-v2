@@ -53,8 +53,8 @@ class Admin_Post {
 			add_action( 'wp_ajax_change_length', [$this, 'ajax_change_length'] );
 			add_action( 'wp_ajax_change_area_1', [$this, 'ajax_change_area_1'] );
 			add_action( 'wp_ajax_change_floors', [$this, 'ajax_change_floors'] );
-			add_action( 'wp_ajax_change_design_price', [$this, 'ajax_change_design_price'] );
-			add_action( 'wp_ajax_change_use_general_design_price', [$this, 'ajax_change_use_general_design_price'] );
+
+			add_action( 'wp_ajax_change_display_design_price', [$this, 'ajax_change_display_design_price'] );
 			add_action( 'wp_ajax_change_use_general_price', [$this, 'ajax_change_use_general_price'] );
 			add_action( 'wp_ajax_change_price', [$this, 'ajax_change_price'] );
 			add_action( 'wp_ajax_change_total_factor', [$this, 'ajax_change_total_factor'] );
@@ -159,19 +159,19 @@ class Admin_Post {
 		wp_send_json($response);
 	}
 
-	public function ajax_change_use_general_design_price() {
+	public function ajax_change_display_design_price() {
 		$post_id = isset($_POST['id']) ? absint($_POST['id']) : 0;
-		$use_general_design_price = isset($_POST['use_general_design_price']) ? sanitize_key($_POST['use_general_design_price']) : '';
+		$display_design_price = isset($_POST['display_design_price']) ? sanitize_key($_POST['display_design_price']) : '';
 
-		if($use_general_design_price !== 'yes') $use_general_design_price = 'no';
+		if($display_design_price !== 'yes') $display_design_price = 'no';
 
 		if( check_ajax_referer('quick_edit_'.$post_id, 'nonce', false) && current_user_can('edit_post', $post_id) ) {
-			update_post_meta($post_id, '_use_general_design_price', $use_general_design_price);
+			fw_set_db_post_option($post_id, 'display_design_price', $display_design_price);
 		}
 
 		$response = false;
-		$use_general_design_price = get_post_meta($post_id, '_use_general_design_price', true);
-		if($use_general_design_price == 'yes') $response = true;
+		$display_design_price = fw_get_db_post_option($post_id, 'display_design_price', 'yes');
+		if($display_design_price == 'yes') $response = true;
 
 		wp_send_json($response);
 	}
@@ -199,20 +199,6 @@ class Admin_Post {
 		}
 
 		$response = get_post_meta($post_id, '_price', true);
-		
-		wp_send_json($response);
-
-	}
-
-	public function ajax_change_design_price() {
-		$post_id = isset($_POST['id']) ? absint($_POST['id']) : 0;
-		$design_price = isset($_POST['design_price']) ? sanitize_text_field($_POST['design_price']) : '';
-
-		if( check_ajax_referer('quick_edit_'.$post_id, 'nonce', false) && current_user_can('edit_post', $post_id) ) {
-			update_post_meta($post_id, '_design_price', $design_price);
-		}
-
-		$response = get_post_meta($post_id, '_design_price', true);
 		
 		wp_send_json($response);
 
@@ -734,6 +720,29 @@ class Admin_Post {
 						});
 					});
 
+					$('.change_display_design_price').on('click', function(e){
+						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), display_design_price = (_this.prop('checked'))?'yes':'no';
+						$.ajax({
+							url: ajaxurl,
+							type: 'post',
+							dataType: 'json',
+							data: {id: id, nonce: nonce, action:'change_display_design_price', display_design_price: display_design_price},
+							beforeSend: function() {
+								_this.prop('disabled', true);
+							},
+							success: function(response) {
+								if(response) {
+									_this.prop('checked', true);
+								} else {
+									_this.prop('checked', false);
+								}
+							},
+							complete: function() {
+								_this.prop('disabled', false);
+							}
+						});
+					});
+
 					$('.quick-edit-field._breadth').on('change', function(e){
 						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), breadth = _this.val();
 						$.ajax({
@@ -874,6 +883,7 @@ class Admin_Post {
 			case 'tasks':
 				$footer_content = get_post_meta($post_id, '_footer_content', 'no');
 				$use_general_price = get_post_meta($post_id, '_use_general_price', 'no');
+				$display_design_price = fw_get_db_post_option($post_id, 'display_design_price', 'yes');
 				?>
 				
 				<p>
@@ -883,6 +893,9 @@ class Admin_Post {
 				<p>
 					<label><input type="checkbox" class="change_use_general_price" <?php checked( $use_general_price, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Dùng giá ĐT chung?</label>
 				</p>
+				<!-- <p>
+					<label><input type="checkbox" class="change_display_design_price" <?php checked( $display_design_price, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Hiện giá thiết kế?</label>
+				</p> -->
 				<?php
 				break;
 

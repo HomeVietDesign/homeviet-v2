@@ -37,10 +37,7 @@ class Assets {
 		wp_register_style( 'owlcarousel', THEME_URI.'/libs/owlcarousel/assets/owl.carousel.min.css', [], '2.3.4' );
 		wp_register_style( 'select2', THEME_URI.'/libs/select2/dist/css/select2.min.css', [], '4.0.13' );
 
-		$deps = ['bootstrap','dashicons','select2'];
-		if(is_single()) {
-			$deps[] = 'owlcarousel';
-		}
+		$deps = ['bootstrap','dashicons','select2','owlcarousel'];
 
 		wp_enqueue_style( 'TranSon', THEME_URI.'/assets/css/main.css', $deps, date('YmdHis', filemtime(THEME_DIR . '/assets/css/main.css')) );
 	}
@@ -88,12 +85,10 @@ class Assets {
 			'imagesloaded',
 			'isotope',
 			'select2',
+			'owlcarousel',
 			//'lodash',
 		];
-		if(is_single()) {
-			$deps[] = 'owlcarousel';
-		}
-	
+		
 		wp_enqueue_script( 'TranSon', THEME_URI.'/assets/js/main.js', $deps, date('YmdHis', filemtime(THEME_DIR . '/assets/js/main.js')), true);
 
 		// $kws = fw_get_db_settings_option('product_keywords');

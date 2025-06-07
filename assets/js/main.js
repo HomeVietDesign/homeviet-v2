@@ -132,6 +132,17 @@ window.addEventListener('DOMContentLoaded', function(){
 			}
 		}
 		
+		$('.entry-thumbnail.owl-carousel').owlCarousel({
+			items:1,
+			lazyLoad:false,
+			loop:false,
+			autoplay:true,
+			autoHeight:true,
+			autoplayTimeout:3000,
+			autoplayHoverPause:true,
+			nav: false,
+			dots: false
+		});
 
 		if($('body').hasClass('single')) {
 
@@ -154,7 +165,10 @@ window.addEventListener('DOMContentLoaded', function(){
 			if(sync1.hasClass('has-video')) {
 				args.autoplay = false;
 			}
-			var slides = sync1.owlCarousel(args).on('changed.owl.carousel', syncPosition);
+			var slides = sync1.owlCarousel(args).on('changed.owl.carousel', syncPosition).on('loaded.owl.lazy', function(e){
+				let owl = $(this);
+				owl.parent().find('.design-price, .costs-info').removeClass('hidden');
+			});
 
 			function syncPosition(el) {
 				$owl_slider = $(this).data('owl.carousel');

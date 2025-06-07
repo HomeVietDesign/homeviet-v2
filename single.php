@@ -16,6 +16,10 @@ while (have_posts()) {
 		//$_area = get_post_meta($post->ID, '_area', true);
 		$_functions = get_post_meta($post->ID, '_functions', true);
 
+		$design_price = '';
+		$prices = get_the_terms( $post, 'price' );
+		if($prices) $design_price = $prices[0]->description;
+
 		$_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
 		$_floors = floatval(get_post_meta($post->ID, '_floors', true));
 		$area = $_area_1*$_floors;
@@ -75,6 +79,12 @@ while (have_posts()) {
 								?>
 								<div class="single-gallery">
 									<div class="position-relative">
+										<?php if($design_price!=''): ?>
+										<div class="design-price hidden d-flex text-yellow align-items-end position-absolute top-0 end-0 z-3 py-1 px-2">
+											<span class="d-block me-1">Phí thiết kế:</span>
+											<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
+										</div>
+										<?php endif; ?>
 										<div class="slider owl-carousel owl-theme<?php
 										if($data_video['type']!='') {
 											echo ' has-video';
@@ -115,13 +125,19 @@ while (have_posts()) {
 								</div>
 								<?php
 								} else {
+									if($design_price!=''): ?>
+										<div class="d-flex text-yellow align-items-end position-absolute top-0 end-0 z-3">
+											<span class="d-block me-1">Phí thiết kế:</span>
+											<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
+										</div>
+										<?php endif;
 									if($data_video['type']!='') {
 										echo $data_video['content'];
 									} else {
 										the_post_thumbnail('full');
 									}
 
-									\HomeViet\Template_Tags::product_cost('single');
+									\HomeViet\Template_Tags::product_cost();
 								} ?>
 			
 							</div>

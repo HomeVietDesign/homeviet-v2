@@ -254,13 +254,13 @@ class Custom_Types {
 			'new_item_name'     => 'Giá thiết kế mới',
 			'menu_name'         => 'Giá thiết kế',
 		);
-		$default_price = [
-			'name' => 'Giá chung',
-			'slug' => 'gia-chung',
-			'description' => ''
-		];
-		$default = (int) get_option( 'default_term_price', -1 );
-		// delete_option( 'default_term_prices' );
+		// $default_price = [
+		// 	'name' => 'Giá chung',
+		// 	'slug' => 'gia-chung',
+		// 	'description' => ''
+		// ];
+		// $default = (int) get_option( 'default_term_price', -1 );
+		// delete_option( 'default_term_price' );
 		$args = array(
 			'hierarchical'      => true,
 			'labels'            => $labels,
@@ -272,7 +272,7 @@ class Custom_Types {
 			'show_in_menu' => true,
 			'show_in_nav_menus' => false,
 			'show_tagcloud' => false,
-			'default_term' => ($default>0)?$default:$default_price
+			//'default_term' => ($default>0)?$default:$default_price
 			
 		);
 		register_taxonomy( 'price', 'post', $args );

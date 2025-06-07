@@ -47,43 +47,50 @@ $area = $_area_1*$_floors;
 
 $location = get_the_terms( $post, 'location' );
 if($location) $location = array_reverse($location);
+
+$_images = get_post_meta($post->ID, '_images', true);
 ?>
 <div <?php post_class('post-masonry col-md-6'); ?>>
 	<div class="inner <?php echo ($_featured=='yes')? 'featured':''; ?>">
 		<div class="post-thumbnail">
-			<a <?php if($data_video['type']!='') { ?>
-			  class="entry-thumbnail open-modal-player" href="#modal-video-player" data-bs-toggle="modal" data-video="<?=esc_attr(json_encode($data_video))?>" data-url="<?php the_permalink(); ?>" title="Xem video"
-			<?php } else { ?>
-			 class="entry-thumbnail" href="<?php the_permalink(); ?>"
-			<?php } ?>
-			>
+			<?php if($data_video['type']!='') { ?>
+			<a class="entry-thumbnail open-modal-player" href="#modal-video-player" data-bs-toggle="modal" data-video="<?=esc_attr(json_encode($data_video))?>" data-url="<?php the_permalink(); ?>" title="Xem video">
 				<span class="d-block"><?php the_post_thumbnail('full', ['alt'=>esc_attr(get_the_title())]); ?></span>
 				<?php if($data_video['type']!='') { ?>
 				<span class="play-video-button position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"><span class="d-flex justify-content-center align-items-center play-video-icon"><span class="dashicons dashicons-controls-play"></span></span></span>
 				<?php } ?>
 			</a>
+			<?php } else { ?>
+			<span class="entry-thumbnail owl-carousel owl-theme">
+				<?php
+				the_post_thumbnail( 'full' );
+				if($_images) {
+					echo wp_get_attachment_image( $_images[0]['attachment_id'], 'full', false );
+				}
+				?>
+			</span>
+			<?php } ?>
 
-			<?php \HomeViet\Template_Tags::product_cost('loop'); ?>
+			<?php \HomeViet\Template_Tags::product_cost(); ?>
 			
 			<?php
 			if(has_role('administrator')) {
 				?>
-				<div class="position-absolute start-0 bottom-0 p-1"><?=esc_html($post->ID)?></div>
+				<div class="position-absolute start-0 bottom-0 p-1 z-3"><?=esc_html($post->ID)?></div>
 				<?php
 			}
 
 			if(!empty($area)) {
 			?>
-			<div class="position-absolute top-0 end-0 p-2 text-yellow total-area">
+			<div class="position-absolute top-0 end-0 p-2 text-yellow total-area z-3">
 				<span>DT: </span><span class="fw-bold"><?php echo number_format($area, 0, '.',','); ?></span><span>m<sup>2</sup></span>
 			</div>
 			<?php
 			}
 			?>
-		</div>
-		<div class="post-summary position-relative">
+
 			<?php if($location) { ?>
-			<div class="location position-absolute p-2 d-flex start-0 top-0 z-3"><span><?php
+			<div class="location position-absolute p-2 d-flex start-0 bottom-0 z-3"><span><?php
 			foreach ($location as $key => $loca) {
 				if($key==0) {
 					echo esc_html($loca->name);
@@ -93,25 +100,27 @@ if($location) $location = array_reverse($location);
 			}
 			?></span></div>
 			<?php } ?>
-
+		</div>
+		<div class="post-summary position-relative">
+			<?php
+			if($allow_order=='yes') {
+				echo '<div class="position-absolute start-0 top-0 m-2">';
+				echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger btn-sm order-product fw-bold text-uppercase text-yellow'], esc_html(fw_get_db_settings_option('product_loop_order_button_text')));	
+				echo '</div>';
+			}
+			?>
 			<?php if($design_price!='') { ?>
-			<div class="design_price position-absolute top-0 end-0 d-flex p-2 text-yellow align-items-end">
+			<div class="design-price position-absolute top-0 end-0 d-flex p-2 text-yellow align-items-end">
 				<span>Phí thiết kế: <b><?php echo esc_html($design_price); ?></b></span>
 			</div>
 			<?php } ?>
 			
-			<h3 class="entry-title text-center<?php
-			echo ($design_price!=''||$location)?' mt-4':'';
-			?>">
-				<?php
-				if($allow_order=='yes') {
-					echo '<div class="mb-2">';
-					echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger btn-sm order-product fw-bold text-uppercase text-yellow'], esc_html(fw_get_db_settings_option('product_loop_order_button_text')));	
-					echo '</div>';
-				}
-				?>
-				<a href="<?php the_permalink(); ?>" class="title"><?php the_title(); ?></a>
+			<h3 class="entry-title text-center<?php echo ($design_price!=''||$allow_order=='yes')?' mt':''; ?>">
+				<?php the_title(); ?>
 			</h3>
+
+			<div class="text-center mt-3"><a href="<?php the_permalink(); ?>" class="view-detail text-uppercase btn btn-sm btn-primary fw-bold">Xem chi tiết</a></div>
+
 			<?php edit_post_link( '<span class="dashicons dashicons-edit"></span>' ); ?>
 			<?php
 			if(''!=$post->post_excerpt) {

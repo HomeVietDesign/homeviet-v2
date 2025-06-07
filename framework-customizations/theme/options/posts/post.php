@@ -188,7 +188,21 @@ $options = array(
 				'type' => 'html',
 				'label' => 'Công thức tính',
 				'html' => 'Tổng đầu tư = Diện tích 1 sàn x Số tầng cao x Đơn giá x Hệ số tổng'
-			)
+			),
+			// 'display_design_price' => array(
+			// 	'label' => 'Hiển thị giá thiết kế?',
+			// 	'desc'  => '',
+			// 	'value'  => 'yes',
+			// 	'type'  => 'switch',
+			// 	'left-choice' => array(
+			//         'value' => 'no',
+			//         'label' => 'Không',
+			//     ),
+			//     'right-choice' => array(
+			//         'value' => 'yes',
+			//         'label' => 'Có',
+			//     ),
+			// ),
         ),
     ),
 	array(

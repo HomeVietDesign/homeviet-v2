@@ -3,13 +3,9 @@ namespace HomeViet;
 
 final class Template_Tags {
 
-	public static function product_cost($position='loop') {
+	public static function product_cost($position='') {
 		global $post;
 
-		$design_price = '';
-		$prices = get_the_terms( $post, 'price' );
-		if($prices) $design_price = $prices[0]->description;
-		
 		$_price = absint(get_post_meta($post->ID, '_price', true)); //giá đầu tư
 		$general_price = absint(get_option('product_price'));
 		$_use_general_price = get_post_meta($post->ID, '_use_general_price', true);
@@ -29,20 +25,11 @@ final class Template_Tags {
 
 		$_total_amount = $price * $area * $_total_factor / 1000000; // tỷ
 
-		if($_total_amount>0 || '' != $design_price):
+		if($_total_amount>0):
 
 		?>
-		<div class="costs-info position-absolute end-0 bottom-0 py-1 px-2">
-			<?php if($_total_amount>0): ?>
+		<div class="costs-info position-absolute end-0 bottom-0 py-1 px-2 <?php echo ($position=='single')?'hidden':''; ?> z-3">
 			<div class="total_amount text-end"><strong><?php echo esc_html(number_format($_total_amount,2,'.',',')); ?></strong> tỷ</div>
-			<?php endif; ?>
-
-			<?php if($design_price>0 && $position=='single'): ?>
-			<div class="product-design-fee d-flex text-yellow align-items-end">
-				<span class="d-block me-1">Phí thiết kế:</span>
-				<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
-			</div>
-			<?php endif; ?>
 		</div>
 		<?php endif;
 	}
