@@ -393,7 +393,12 @@ img.aligncenter {
 	left: 50%;
 	margin-left: -5px;
 }
-
+.post-thumbnail .bx-wrapper {
+	margin-bottom: 0;;
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+}
 .pagination-links {
 	display: flex;
 	justify-content: center;

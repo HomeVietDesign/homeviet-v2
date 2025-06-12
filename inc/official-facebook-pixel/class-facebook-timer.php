@@ -1,14 +1,14 @@
 <?php
 /**
- * Facebook Pixel Plugin FacebookEClick class.
+ * Facebook Pixel Plugin FacebookTimer class.
  *
- * This file contains the main logic for FacebookEClick.
+ * This file contains the main logic for FacebookTimer.
  *
  * @package FacebookPixelPlugin
  */
 
 /**
- * Define FacebookEClick class.
+ * Define FacebookTimer class.
  *
  * @return void
  */
@@ -38,75 +38,49 @@ use FacebookAds\Object\ServerSide\Event;
 use FacebookAds\Object\ServerSide\UserData;
 
 /**
- * FacebookEClick class.
+ * FacebookTimer class.
  */
-class FacebookEClick extends FacebookWordpressIntegrationBase {
-    const TRACKING_NAME = 'eclick';
+class FacebookTimer extends FacebookWordpressIntegrationBase {
+    const TRACKING_NAME = 'timer';
 
     public static function inject_pixel_code() {
 		add_action( 'wp_footer', array( __CLASS__, 'injectClickSentListener' ),  );
 
-		add_action( 'wp_ajax_track_eclick', [ __CLASS__, 'ajax_track_eclick'] );
-		add_action( 'wp_ajax_nopriv_track_eclick', [ __CLASS__, 'ajax_track_eclick'] );
-
-		add_filter( 'track_eclick', array( __CLASS__, 'trackEClick' ) );
+		add_filter( 'track_timer', array( __CLASS__, 'trackTimer' ) );
     }
 
-	public static function ajax_track_eclick() {
-		$ename = $_POST['ename'];
-		$response = ['ename' => $ename, 'fb_pxl_code' => ''];
-		$response = apply_filters( 'track_eclick', $response );
-		wp_send_json( $response );
-	}
 
     public static function injectClickSentListener() {
-        ob_start();
-    ?>
-    <!-- Meta Pixel Event Code -->
-    <script type='text/javascript'>
-    window.addEventListener('DOMContentLoaded', function(){
-		jQuery(function($){
-			$('a[href^="https://zalo.me/"]').on('click', function(event){
-				$.ajax({
-					url:theme.ajax_url+'?action=track_eclick',
-					method:'POST',
-					async:false,
-					dataType: 'json',
-					//data: {ename: 'Purchase'},
-                    data: {ename: 'Nhắn zalo'},
-					beforeSend:function(){
-					},
-					success:function(response){
-						eval(response.fb_pxl_code);
-					}
-				});
-			});
-
-			$('a[href^="tel:"]').on('click', function(event){
-				$.ajax({
-					url:theme.ajax_url+'?action=track_eclick',
-					method:'POST',
-					async:false,
-					dataType: 'json',
-					//data: {ename: 'Purchase'},
-                    data: {ename: 'Gọi điện'},
-					beforeSend:function(){
-					},
-					success:function(response){
-						eval(response.fb_pxl_code);
-					}
-				});
-			});
-		});
-	});
-    </script>
-    <!-- End Meta Pixel Event Code -->
+	    ?>
+	    <!-- Meta Pixel Event Code -->
+	    <script type='text/javascript'>
+		    if (!sessionStorage.getItem('sent3MinEvent')) {
+				setTimeout(function() {
+					fetch('/wp-json/theme-api/timer_event', {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({ event: '3min_view' })
+					}).then(response => {
+						if (!response.ok) {
+							throw new Error('Server response was not OK');
+						}
+						return response.json(); // chuyển về JSON
+					}).then(function(data){
+						//console.log(data);
+						eval(data.fb_pxl_code);
+					});
+					sessionStorage.setItem('sent3MinEvent', 'true');
+				//}, 5000);
+				}, 180000);
+			}
+	    </script>
+	    <!-- End Meta Pixel Event Code -->
         <?php
-        $listener_code = ob_get_clean();
-        echo $listener_code; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
     }
 
-    public static function trackEClick($response) {
+    public static function trackTimer($response) {
     	
         $is_internal_user = FacebookPluginUtils::is_internal_user();
         
@@ -117,7 +91,7 @@ class FacebookEClick extends FacebookWordpressIntegrationBase {
         }
 
         $server_event = ServerEventFactory::safe_create_event(
-            $response['ename'],
+            $response['event'],
             array( __CLASS__, 'readFormData' ),
             array( $response ),
             self::TRACKING_NAME,
@@ -159,4 +133,4 @@ class FacebookEClick extends FacebookWordpressIntegrationBase {
     }
 
 }
-FacebookEClick::inject_pixel_code();
+FacebookTimer::inject_pixel_code();

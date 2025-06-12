@@ -60,15 +60,19 @@ $_images = get_post_meta($post->ID, '_images', true);
 				<span class="play-video-button position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"><span class="d-flex justify-content-center align-items-center play-video-icon"><span class="dashicons dashicons-controls-play"></span></span></span>
 				<?php } ?>
 			</a>
-			<?php } else { ?>
-			<span class="entry-thumbnail owl-carousel owl-theme">
-				<?php
-				the_post_thumbnail( 'full' );
-				if($_images) {
-					echo wp_get_attachment_image( $_images[0]['attachment_id'], 'full', false );
-				}
-				?>
-			</span>
+			<?php } else {
+				$thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id($post), 'full' );
+			?>
+			<div class="entry-thumbnail">
+				<a href="<?php the_permalink(); ?>"><?php the_post_thumbnail( 'full' ); ?></a>
+				<!-- <div>
+					<?php
+					if($_images) {
+						echo wp_get_attachment_image( $_images[0]['attachment_id'], 'full' );
+					}
+					?>
+				</div> -->
+			</div>
 			<?php } ?>
 
 			<?php \HomeViet\Template_Tags::product_cost(); ?>
@@ -111,7 +115,7 @@ $_images = get_post_meta($post->ID, '_images', true);
 			?>
 			<?php if($design_price!='') { ?>
 			<div class="design-price position-absolute top-0 end-0 d-flex p-2 text-yellow align-items-end">
-				<span>Phí thiết kế: <b><?php echo esc_html($design_price); ?></b></span>
+				<span>Thiết kế: <b><?php echo esc_html($design_price); ?></b></span>
 			</div>
 			<?php } ?>
 			
@@ -119,7 +123,7 @@ $_images = get_post_meta($post->ID, '_images', true);
 				<?php the_title(); ?>
 			</h3>
 
-			<div class="text-center mt-3"><a href="<?php the_permalink(); ?>" class="view-detail text-uppercase btn btn-sm btn-primary fw-bold">Xem chi tiết</a></div>
+			<div class="text-center mt-3"><a href="<?php the_permalink(); ?>" class="view-detail btn btn-sm btn-primary">Xem chi tiết</a></div>
 
 			<?php edit_post_link( '<span class="dashicons dashicons-edit"></span>' ); ?>
 			<?php

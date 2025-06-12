@@ -81,7 +81,7 @@ while (have_posts()) {
 									<div class="position-relative">
 										<?php if($design_price!=''): ?>
 										<div class="design-price hidden d-flex text-yellow align-items-end position-absolute top-0 end-0 z-3 py-1 px-2">
-											<span class="d-block me-1">Phí thiết kế:</span>
+											<span class="d-block me-1">Thiết kế:</span>
 											<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
 										</div>
 										<?php endif; ?>
@@ -127,7 +127,7 @@ while (have_posts()) {
 								} else {
 									if($design_price!=''): ?>
 										<div class="d-flex text-yellow align-items-end position-absolute top-0 end-0 z-3">
-											<span class="d-block me-1">Phí thiết kế:</span>
+											<span class="d-block me-1">Thiết kế:</span>
 											<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
 										</div>
 										<?php endif;

@@ -11,6 +11,7 @@ final class Official_Facebook_Pixel {
 		include_once THEME_DIR.'/inc/official-facebook-pixel/class-facebook-wpcf7.php';
 		include_once THEME_DIR.'/inc/official-facebook-pixel/class-facebook-order.php';
 		include_once THEME_DIR.'/inc/official-facebook-pixel/class-facebook-eclick.php';
+		include_once THEME_DIR.'/inc/official-facebook-pixel/class-facebook-timer.php';
 		include_once THEME_DIR.'/inc/official-facebook-pixel/class-facebook-apply-position.php';
 	}
 

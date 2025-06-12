@@ -34,10 +34,11 @@ class Assets {
 		
 		wp_register_style( 'bootstrap', THEME_URI.'/libs/bootstrap/css/bootstrap.min.css', [], '5.1.3' );
 
+		wp_register_style( 'bxslider', THEME_URI.'/libs/bxslider/dist/jquery.bxslider.min.css', [], '2.4.17' );
 		wp_register_style( 'owlcarousel', THEME_URI.'/libs/owlcarousel/assets/owl.carousel.min.css', [], '2.3.4' );
 		wp_register_style( 'select2', THEME_URI.'/libs/select2/dist/css/select2.min.css', [], '4.0.13' );
 
-		$deps = ['bootstrap','dashicons','select2','owlcarousel'];
+		$deps = ['bootstrap','dashicons','select2','owlcarousel','bxslider'];
 
 		wp_enqueue_style( 'TranSon', THEME_URI.'/assets/css/main.css', $deps, date('YmdHis', filemtime(THEME_DIR . '/assets/css/main.css')) );
 	}
@@ -74,7 +75,7 @@ class Assets {
 		$recaptcha_keys = Common::get_recaptcha_keys();
 
 		wp_register_script( 'bootstrap', THEME_URI.'/libs/bootstrap/js/bootstrap.bundle.min.js', ['jquery'], '5.1.3', true);
-
+		wp_register_script( 'bxslider', THEME_URI.'/libs/bxslider/dist/jquery.bxslider.min.js', ['jquery'], '4.2.17', true);
 		wp_register_script( 'owlcarousel', THEME_URI.'/libs/owlcarousel/owl.carousel.min.js', ['jquery'], '2.3.4', true);
 		wp_register_script( 'select2', THEME_URI.'/libs/select2/dist/js/select2.full.min.js', ['jquery'], '4.0.13', true);
 		wp_register_script( 'isotope', THEME_URI.'/libs/isotope/isotope.pkgd.min.js', ['jquery'], '3.0.6', true);
@@ -86,6 +87,7 @@ class Assets {
 			'isotope',
 			'select2',
 			'owlcarousel',
+			'bxslider',
 			//'lodash',
 		];
 		

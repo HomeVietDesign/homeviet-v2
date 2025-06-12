@@ -131,18 +131,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
 			}
 		}
-		
-		$('.entry-thumbnail.owl-carousel').owlCarousel({
-			items:1,
-			lazyLoad:false,
-			loop:false,
-			autoplay:true,
-			autoHeight:true,
-			autoplayTimeout:3000,
-			autoplayHoverPause:true,
-			nav: false,
-			dots: false
-		});
 
 		if($('body').hasClass('single')) {
 
@@ -275,25 +263,30 @@ window.addEventListener('DOMContentLoaded', function(){
 		});
 
 		let pmsr = $('.posts-masonry,.list-media');
-		pmsr.imagesLoaded(function(){
-			//setTimeout(function(){
-				pmsr.isotope();
-				pmsr.isotope('layout');
-			//}, 1000);
+		pmsr.imagesLoaded(function(e){
+			pmsr.isotope();
+			pmsr.isotope('layout');
+		});
+
+		$('.entry-thumbnail.slider').bxSlider({
+			auto: false,
+			stopAutoOnClick:true,
+			hideControlOnEnd:true,
+			pager:false
 		});
 		
 		$('.posts-masonry-loadmore-button').on('click', function(e){
 			let $this = $(this),
-					$container = $this.closest('.posts-masonry-section'),
-					$msr = $container.find('.posts-masonry'),
-					cat = parseInt($this.data('cat')),
-					location = parseInt($this.data('location')),
-					catexc = $this.data('catexc'),
-					pages = parseInt($this.data('pages')),
-					page = parseInt($this.data('page'))+1,
-					per = parseInt($this.data('per')),
-					exclude = parseInt($this.data('exclude')),
-					btn_text = $this.text();
+				$container = $this.closest('.posts-masonry-section'),
+				$msr = $container.find('.posts-masonry'),
+				cat = parseInt($this.data('cat')),
+				location = parseInt($this.data('location')),
+				catexc = $this.data('catexc'),
+				pages = parseInt($this.data('pages')),
+				page = parseInt($this.data('page'))+1,
+				per = parseInt($this.data('per')),
+				exclude = parseInt($this.data('exclude')),
+				btn_text = $this.text();
 				//console.log(catexc);
 			$.ajax({
 				url:theme.ajax_url+'?action=posts_masonry_loadmore',
@@ -308,6 +301,14 @@ window.addEventListener('DOMContentLoaded', function(){
 				success:function(response){
 					let $item = $.parseHTML(response);
 					$msr.append($item).isotope('appended', $item);
+
+					$msr.find('.entry-thumbnail.slider').bxSlider({
+						auto: false,
+						stopAutoOnClick:true,
+						hideControlOnEnd:true,
+						pager:false
+					});
+
 					$msr.imagesLoaded(function(){
 						$msr.isotope();
 						$msr.isotope('layout');
@@ -561,7 +562,6 @@ window.addEventListener('DOMContentLoaded', function(){
 		}).on('hidden.bs.modal', function (e) {
 			$('#video-player').html('<div class="ratio ratio-16x9"></div>');
 		});
-
 
 	});// jQuery
 	
