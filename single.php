@@ -66,7 +66,7 @@ while (have_posts()) {
 
 		$product_order_button_text = get_option('product_order_button_text', '');
 
-		$display_value = fw_get_db_post_option($post->ID, 'display_value', 'yes');
+		$display_price = fw_get_db_post_option($post->ID, 'display_price', 'yes');
 		?>
 		<div id="product-top-info" class="container-xl">
 			<h1 id="entry-heading" class="text-center h3 py-3 m-0"><?php the_title(); ?></h1>
@@ -80,7 +80,7 @@ while (have_posts()) {
 								?>
 								<div class="single-gallery">
 									<div class="position-relative">
-										<?php if($design_price!='' && $display_value=='yes'): ?>
+										<?php if($design_price!='' && $display_price=='yes'): ?>
 										<div class="design-price hidden d-flex text-yellow align-items-end position-absolute top-0 end-0 z-3 py-1 px-2">
 											<span class="d-block me-1">Thiết kế:</span>
 											<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
@@ -126,7 +126,7 @@ while (have_posts()) {
 								</div>
 								<?php
 								} else {
-									if($design_price!='' && $display_value=='yes'): ?>
+									if($design_price!='' && $display_price=='yes'): ?>
 										<div class="d-flex text-yellow align-items-end position-absolute top-0 end-0 z-3">
 											<span class="d-block me-1">Thiết kế:</span>
 											<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>

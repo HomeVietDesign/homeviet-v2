@@ -191,7 +191,22 @@ $options = array(
 			),
 
 			'display_value' => array(
-				'label' => 'Hiển thị giá trị?',
+				'label' => 'Hiển thị tổng đầu tư?',
+				'desc'  => '',
+				'value'  => 'yes',
+				'type'  => 'switch',
+				'left-choice' => array(
+			        'value' => 'no',
+			        'label' => 'Không',
+			    ),
+			    'right-choice' => array(
+			        'value' => 'yes',
+			        'label' => 'Có',
+			    ),
+			),
+
+			'display_price' => array(
+				'label' => 'Hiển thị giá thiết kế?',
 				'desc'  => '',
 				'value'  => 'yes',
 				'type'  => 'switch',

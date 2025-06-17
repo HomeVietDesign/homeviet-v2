@@ -41,7 +41,7 @@ $design_price = '';
 $prices = get_the_terms( $post, 'price' );
 if($prices) $design_price = $prices[0]->description;
 
-$display_value = fw_get_db_post_option($post->ID, 'display_value', 'yes');
+$display_price = fw_get_db_post_option($post->ID, 'display_price', 'yes');
 
 $_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
 $_floors = floatval(get_post_meta($post->ID, '_floors', true));
@@ -104,7 +104,7 @@ $_images = get_post_meta($post->ID, '_images', true);
 				echo '</div>';
 			}
 			?>
-			<?php if($design_price!='' && $display_value=='yes') { ?>
+			<?php if($design_price!='' && $display_price=='yes') { ?>
 			<div class="design-price position-absolute top-0 end-0 d-flex p-2 text-yellow align-items-end">
 				<span>Thiết kế: <b><?php echo esc_html($design_price); ?></b></span>
 			</div>

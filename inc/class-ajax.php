@@ -164,12 +164,10 @@ class Ajax {
 				<p>Thiết bị: <?=esc_html($_SERVER['HTTP_USER_AGENT'])?></p>
 				<?php
 				$body = ob_get_clean();
-
-				//$response['msg'] = $body;
 				
-				//$send = wp_mail( $mail_to, $subject, $body, $mail_headers );
+				$send = wp_mail( $mail_to, $subject, $body, $mail_headers );
 				
-				$send = true;
+				//$send = true;
 
 				if($send) {
 					
