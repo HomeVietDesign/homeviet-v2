@@ -177,6 +177,59 @@ class Custom_Types {
 		);
 	
 		register_post_type( 'seo_post', $args );
+
+		// product order
+		$labels = array(
+			'name'               => 'Đơn hàng',
+			'singular_name'      => 'Đơn hàng',
+			'add_new'            => 'Thêm mới Đơn hàng',
+			'add_new_item'       => 'Thêm mới Đơn hàng',
+			'edit_item'          => 'Sửa Đơn hàng',
+			'new_item'           => 'Đơn hàng mới',
+			'view_item'          => 'Xem Đơn hàng',
+			'search_items'       => 'Tìm Đơn hàng',
+			'not_found'          => 'Không có Đơn hàng nào',
+			'not_found_in_trash' => 'Không có Đơn hàng nào trong Thùng rác',
+			'parent_item_colon'  => 'Đơn hàng cha:',
+			'menu_name'          => 'Đơn hàng',
+		);
+	
+		$args = array(
+			'labels'              => $labels,
+			'hierarchical'        => false,
+			//'description'         => 'description',
+			//'taxonomies'          => array(),
+			'public'              => false,
+			'show_ui'             => true,
+			'show_in_menu'        => true,
+			'show_in_admin_bar'   => false,
+			'menu_position'       => 22,
+			'menu_icon'           => 'dashicons-cart',
+			'show_in_nav_menus'   => false,
+			'publicly_queryable'  => true, // ẩn bài viết ở front-end
+			'exclude_from_search' => true, // loại khỏi kết quả tìm kiếm
+			'has_archive'         => false,
+			'query_var'           => false,
+			'can_export'          => true,
+			'rewrite'             => false,
+			'capability_type'     => 'order',
+			'map_meta_cap'     => true,
+			'supports'            => array(
+				'title',
+				//'editor',
+				//'author',
+				//'thumbnail',
+				//'excerpt',
+				//'custom-fields',
+				//'trackbacks',
+				//'comments',
+				// 'revisions',
+				// 'page-attributes',
+				//'post-formats',
+			),
+		);
+	
+		register_post_type( 'product_order', $args );
 	}
 
 	/**

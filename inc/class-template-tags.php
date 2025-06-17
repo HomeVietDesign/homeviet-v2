@@ -6,32 +6,35 @@ final class Template_Tags {
 	public static function product_cost($position='') {
 		global $post;
 
-		$_price = absint(get_post_meta($post->ID, '_price', true)); //giá đầu tư
-		$general_price = absint(get_option('product_price'));
-		$_use_general_price = get_post_meta($post->ID, '_use_general_price', true);
-		$price = ($_use_general_price=='yes') ? $general_price : $_price;
+		$display_value = fw_get_db_post_option($post->ID, 'display_value', 'yes');
+		if($display_value=='yes') {
+			$_price = absint(get_post_meta($post->ID, '_price', true)); //giá đầu tư
+			$general_price = absint(get_option('product_price'));
+			$_use_general_price = get_post_meta($post->ID, '_use_general_price', true);
+			$price = ($_use_general_price=='yes') ? $general_price : $_price;
 
-		$_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
-		$_floors = floatval(get_post_meta($post->ID, '_floors', true));
-		$area = $_area_1*$_floors;
+			$_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
+			$_floors = floatval(get_post_meta($post->ID, '_floors', true));
+			$area = $_area_1*$_floors;
 
-		$_total_factor = floatval(get_post_meta($post->ID, '_total_factor', true));
-		if($_total_factor==0) $_total_factor=1;
+			$_total_factor = floatval(get_post_meta($post->ID, '_total_factor', true));
+			if($_total_factor==0) $_total_factor=1;
 
-		// debug($price);
-		// debug($_area_1);
-		// debug($_floors);
-		// debug($_total_factor);
+			// debug($price);
+			// debug($_area_1);
+			// debug($_floors);
+			// debug($_total_factor);
 
-		$_total_amount = $price * $area * $_total_factor / 1000000; // tỷ
+			$_total_amount = $price * $area * $_total_factor / 1000000; // tỷ
 
-		if($_total_amount>0):
+			if($_total_amount>0) {
 
-		?>
-		<div class="costs-info position-absolute end-0 bottom-0 py-1 px-2 <?php echo ($position=='single')?'hidden':''; ?> z-3">
-			<div class="total_amount text-end"><strong><?php echo esc_html(number_format($_total_amount,2,'.',',')); ?></strong> tỷ</div>
-		</div>
-		<?php endif;
+			?>
+			<div class="costs-info position-absolute end-0 bottom-0 py-1 px-2 <?php echo ($position=='single')?'hidden':''; ?> z-3">
+				<div class="total_amount text-end"><strong><?php echo esc_html(number_format($_total_amount,2,'.',',')); ?></strong> tỷ</div>
+			</div>
+			<?php }
+		}
 	}
 	
 	public static function pagination($query) {

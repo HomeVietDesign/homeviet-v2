@@ -91,7 +91,7 @@ class Footer {
 							<div id="cf-turnstile-order" class="cf-turnstile" data-sitekey="<?=esc_attr(fw_get_db_settings_option('cf_turnstile_key'))?>"></div>
 						</div>
 						<div class="mb-3">
-							<button type="submit" class="btn btn-lg btn-danger text-uppercase fw-bold text-yellow text-nowrap d-block w-100" id="order-product-submit" disabled>Bấm gửi đi</button>
+							<button type="submit" class="btn btn-lg btn-danger text-uppercase fw-bold text-yellow text-nowrap d-block w-100" id="order-product-submit">Bấm gửi đi</button>
 							<div class="invalid-feedback"></div>
 						</div>
 						<div id="order-product-message"></div>
@@ -177,7 +177,7 @@ class Footer {
 					}
 				}
 
-				if($hotline!='' || $zalo!='' || ($popup_content!='' && $popup_content_button_text != '')) {
+				if($zalo!='' || ($popup_content!='' && $popup_content_button_text != '')) {
 					?>
 					<div class="hotline d-flex align-items-center mt-1 justify-content-end">
 						<?php if($popup_content!='' && $popup_content_button_text != '' && !is_singular( 'contractor_page' )) { ?>
@@ -187,12 +187,19 @@ class Footer {
 						<a class="zalo-button btn btn-danger d-block ms-2 btn-lg fw-bold text-yellow <?php //echo (!$has_contractor_actions)?'flex-grow-1':''; ?>flex-grow-1" href="https://zalo.me/<?=esc_attr($zalo)?>"><?=esc_html($zalo_label)?></a>
 						<?php } ?>
 						<?php if($hotline!='') { ?>
-						<a class="alo-phone-img-circle d-block ms-2" href="tel:<?php echo esc_attr($hotline); ?>" title="<?php echo esc_attr($hotline_label); ?>"></a>
+						<!-- <a class="alo-phone-img-circle d-block ms-2" href="tel:<?php echo esc_attr($hotline); ?>" title="<?php echo esc_attr($hotline_label); ?>"></a> -->
 						<?php } ?>
 					</div>
 					<?php
 				}
 				
+				if($hotline!='' && $hotline_label!='') {
+					?>
+					<div class="hotline w-100 mt-1">
+						<a class="d-block btn btn-primary btn-lg fw-bold" href="tel:<?php echo esc_attr($hotline); ?>"><?php echo esc_html($hotline_label); ?></a>
+					</div>
+					<?php
+				}
 				?>
 			</div>
 		</div>

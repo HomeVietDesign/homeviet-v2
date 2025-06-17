@@ -1,0 +1,15 @@
+.product-order-tasks span {
+	text-transform: uppercase;
+	font-weight: bold;
+	display: block;
+	width: 70px;
+	padding: 3px 10px;
+	border: rgba(0, 0, 0, .3) 1px solid;
+}
+.product-order-tasks span.canceled {
+	color: #999;
+}
+
+.product-order-tasks span.purchased {
+	color: #128212;
+}

@@ -12,16 +12,17 @@ class Admin {
 		require_once THEME_DIR.'/inc/admin/class-admin-post.php';
 		require_once THEME_DIR.'/inc/admin/class-admin-price.php';
 		require_once THEME_DIR.'/inc/admin/class-admin-media.php';
+		require_once THEME_DIR.'/inc/admin/class-admin-product-order.php';
 		//require_once THEME_DIR.'/inc/admin/class-admin-update-posts.php';
 
 		if(is_admin()) {
-			if( ! class_exists( 'WP_List_Table' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
-			}
+			// if( ! class_exists( 'WP_List_Table' ) ) {
+			// 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+			// }
 
-			require_once THEME_DIR.'/inc/admin/class-orders-help-tabs.php';
-			require_once THEME_DIR.'/inc/admin/class-orders-list-table.php';
-			require_once THEME_DIR.'/inc/admin/class-admin-order.php';
+			// require_once THEME_DIR.'/inc/admin/class-orders-help-tabs.php';
+			// require_once THEME_DIR.'/inc/admin/class-orders-list-table.php';
+			// require_once THEME_DIR.'/inc/admin/class-admin-order.php';
 
 			add_action( 'manage_posts_custom_column', [ $this, 'custom_columns_value' ], 2, 2 );
 			add_action( 'manage_pages_custom_column', [ $this, 'custom_columns_value' ], 2, 2 );

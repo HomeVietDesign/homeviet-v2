@@ -34,8 +34,14 @@ use FacebookPixelPlugin\Core\FacebookServerSideEvent;
 use FacebookPixelPlugin\Core\FacebookWordPressOptions;
 use FacebookPixelPlugin\Core\ServerEventFactory;
 use FacebookPixelPlugin\Core\PixelRenderer;
+use FacebookPixelPlugin\Core\EventIdGenerator;
 use FacebookAds\Object\ServerSide\Event;
 use FacebookAds\Object\ServerSide\UserData;
+use FacebookAds\Object\ServerSide\CustomData;
+
+// use FacebookAds\Api;
+// use FacebookAds\Object\ServerSide\EventRequest;
+// use FacebookAds\Exception\Exception;
 
 /**
  * FacebookOrder class.
@@ -52,12 +58,65 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
      */
     public static function inject_pixel_code() {
         add_filter( 'order_submit', array( __CLASS__, 'trackServerEvent' ) );
+
+        add_action( 'purchase', [__CLASS__, 'trackPurchaseEvent'] );
         
         add_action(
             'wp_footer',
-            array( __CLASS__, 'injectMailSentListener' ),
+            array( __CLASS__, 'injectOrderProductListener' ),
             10
         );
+
+        add_filter('before_conversions_api_event_sent', [__CLASS__, 'before_conversions_api_event_sent']);
+    }
+
+    public static function before_conversions_api_event_sent($events) {
+        debug_log($events);
+
+        return $events;
+    }
+
+    public static function trackPurchaseEvent($data) {
+        //debug_log($data);
+        
+        $event_data = get_post_meta($data['id'], '_event_data', true);
+        $order_data = get_post_meta($data['id'], '_data', true);
+
+        $user_data = ( new UserData() )
+                    ->setClientIpAddress( $order_data['ip_address'] )
+                    ->setClientUserAgent( $order_data['user_agent'] )
+                    ->setPhones( $event_data['ph'] )
+                    ->setEmails( $event_data['em'] )
+                    ->setFbp( $event_data['fbp'] )
+                    ->setFbc( $event_data['fbc'] );
+
+        $custom_data = (new CustomData())
+                    ->setValue(0.00)
+                    ->setCurrency('VND');
+
+        $event = ( new Event() )
+                ->setEventName( 'Purchase' )
+                //->setEventTime( $event_data['event_time'] )
+                ->setEventTime( time() )
+                ->setEventId( EventIdGenerator::guidv4() )
+            ->setEventSourceUrl(
+                $event_data['event_source_url']
+            )
+                ->setActionSource( 'website' )
+                ->setUserData( $user_data )
+                ->setCustomData( $custom_data );
+        try {
+            FacebookServerSideEvent::send([$event]);
+            wp_update_post([
+                'ID' => $data['id'],
+                'post_status' => 'publish'
+            ]);
+            update_post_meta( $data['id'], '_purchase', 1 );
+
+        } catch( \Exception $e ) {
+            throw $e;
+        }
+
     }
 
     /**
@@ -69,7 +128,7 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
      *
      * @return void
      */
-    public static function injectMailSentListener() {
+    public static function injectOrderProductListener() {
         ob_start();
     ?>
     <!-- Meta Pixel Event Code -->
@@ -89,7 +148,6 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
     }
 
     public static function trackServerEvent( $response ) {
-    	
         $is_internal_user = FacebookPluginUtils::is_internal_user();
         
         //$is_internal_user = false;
@@ -100,7 +158,8 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
         }
 
         $server_event = ServerEventFactory::safe_create_event(
-            'Gửi số',
+            //'Gửi số',
+            'AddToCart',
             array( __CLASS__, 'readFormData' ),
             array( $response ),
             self::TRACKING_NAME,
@@ -112,6 +171,33 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
         if ( count( $events ) === 0 ) {
             return $response;
         }
+
+        $order_data = [
+            'name' => $response['data']['name'],
+            'url' => $server_event->getEventSourceUrl(),
+            'referrer' => base64_decode($response['data']['ref']),
+            'user_agent' => $server_event->getUserData()->getClientUserAgent(),
+            'ip_address'=>$server_event->getUserData()->getClientIpAddress(),
+            'image' => $response['data']['image'],
+            'type' => $response['data']['type'],
+            'id' => $response['data']['id'],
+        ];
+
+        $event_data = [
+            'event_name'=>$server_event->getEventName(),
+            'event_time'=>$server_event->getEventTime(),
+            'event_source_url'=>$server_event->getEventSourceUrl(),
+            'event_id'=>$server_event->getEventId(),
+            'fbc'=>$server_event->getUserData()->getFbc(),
+            'fbp'=>$server_event->getUserData()->getFbp(),
+            'em'=>$server_event->getUserData()->getEmails(),
+            'ph'=>$server_event->getUserData()->getPhones()
+        ];
+
+        if(function_exists('as_enqueue_async_action')) {
+            as_enqueue_async_action('add_product_order', [['order_data'=>$order_data, 'event_data'=>$event_data]], 'order');
+        }
+
         $event_id  = $events[0]->getEventId();
         $fbq_calls = PixelRenderer::render(
             $events,
@@ -142,10 +228,9 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
         }
 
         return array(
-            'email'      => '',
-            'first_name' => '',
-            //'last_name'  => $response['data']['name'],
-            'last_name'  => '',
+            // 'email'      => '',
+            // 'first_name' => '',
+            // 'last_name'  => '',
             'phone'      => $response['data']['phone'],
         );
     }

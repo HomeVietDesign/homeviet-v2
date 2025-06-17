@@ -162,6 +162,37 @@ class Setup {
 		add_filter('get_the_archive_title_prefix', '__return_empty_string');
 
 		add_action( 'pre_get_posts', [$this, 'query_post_type_for_search'] );
+
+		$admin_role = get_role( 'administrator' );
+
+		$admin_role->add_cap('edit_order');
+		$admin_role->add_cap('read_order');
+		$admin_role->add_cap('delete_order');
+		$admin_role->add_cap('edit_orders');
+		$admin_role->add_cap('edit_others_orders');
+		$admin_role->add_cap('delete_orders');
+		$admin_role->add_cap('publish_orders');
+		$admin_role->add_cap('read_private_orders');
+		$admin_role->add_cap('delete_private_orders');
+		$admin_role->add_cap('delete_published_orders');
+		$admin_role->add_cap('delete_others_orders');
+		$admin_role->add_cap('edit_private_orders');
+		$admin_role->add_cap('edit_published_orders');
+
+
+		// $admin_role->remove_cap('edit_order');
+		// $admin_role->remove_cap('read_order');
+		// $admin_role->remove_cap('delete_order');
+		// $admin_role->remove_cap('edit_orders');
+		// $admin_role->remove_cap('edit_others_orders');
+		// $admin_role->remove_cap('delete_orders');
+		// $admin_role->remove_cap('publish_orders');
+		// $admin_role->remove_cap('read_private_orders');
+		// $admin_role->remove_cap('delete_private_orders');
+		// $admin_role->remove_cap('delete_published_orders');
+		// $admin_role->remove_cap('delete_others_orders');
+		// $admin_role->remove_cap('edit_private_orders');
+		// $admin_role->remove_cap('edit_published_orders');
 	}
 
 	public function query_post_type_for_search( $query ) {

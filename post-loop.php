@@ -41,6 +41,8 @@ $design_price = '';
 $prices = get_the_terms( $post, 'price' );
 if($prices) $design_price = $prices[0]->description;
 
+$display_value = fw_get_db_post_option($post->ID, 'display_value', 'yes');
+
 $_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
 $_floors = floatval(get_post_meta($post->ID, '_floors', true));
 $area = $_area_1*$_floors;
@@ -75,7 +77,7 @@ $_images = get_post_meta($post->ID, '_images', true);
 			</div>
 			<?php } ?>
 
-			<?php \HomeViet\Template_Tags::product_cost(); ?>
+			<?php if($display_value=='yes') \HomeViet\Template_Tags::product_cost(); ?>
 			
 			<?php
 			if(has_role('administrator')) {
@@ -93,17 +95,6 @@ $_images = get_post_meta($post->ID, '_images', true);
 			}
 			?>
 
-			<?php if($location) { ?>
-			<div class="location position-absolute p-2 d-flex start-0 bottom-0 z-3"><span><?php
-			foreach ($location as $key => $loca) {
-				if($key==0) {
-					echo esc_html($loca->name);
-				} else {
-					echo ", ".esc_html($loca->name);
-				}
-			}
-			?></span></div>
-			<?php } ?>
 		</div>
 		<div class="post-summary position-relative">
 			<?php
@@ -113,7 +104,7 @@ $_images = get_post_meta($post->ID, '_images', true);
 				echo '</div>';
 			}
 			?>
-			<?php if($design_price!='') { ?>
+			<?php if($design_price!='' && $display_value=='yes') { ?>
 			<div class="design-price position-absolute top-0 end-0 d-flex p-2 text-yellow align-items-end">
 				<span>Thiết kế: <b><?php echo esc_html($design_price); ?></b></span>
 			</div>
@@ -123,7 +114,24 @@ $_images = get_post_meta($post->ID, '_images', true);
 				<?php the_title(); ?>
 			</h3>
 
-			<div class="text-center mt-3"><a href="<?php the_permalink(); ?>" class="view-detail btn btn-sm btn-primary">Xem chi tiết</a></div>
+			<div class="d-flex justify-content-center align-items-center mt-3">
+				<?php if($location) { ?>
+				<div class="location me-3">
+					<span>Địa điểm: </span>
+					<span><?php
+					foreach ($location as $key => $loca) {
+						if($key==0) {
+							echo esc_html($loca->name);
+						} else {
+							echo ", ".esc_html($loca->name);
+						}
+					}
+					?>
+					</span>
+				</div>
+				<?php } ?>
+				<a href="<?php the_permalink(); ?>" class="view-detail btn btn-sm btn-primary">Xem chi tiết</a>
+			</div>
 
 			<?php edit_post_link( '<span class="dashicons dashicons-edit"></span>' ); ?>
 			<?php

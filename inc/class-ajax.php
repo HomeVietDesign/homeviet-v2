@@ -167,16 +167,16 @@ class Ajax {
 
 				//$response['msg'] = $body;
 				
-				$send = wp_mail( $mail_to, $subject, $body, $mail_headers );
+				//$send = wp_mail( $mail_to, $subject, $body, $mail_headers );
 				
-				//$send = true;
+				$send = true;
 
 				if($send) {
 					
-					if(function_exists('as_enqueue_async_action')) {
-						as_enqueue_async_action('count_order_sent', [$id], 'order');
-						as_enqueue_async_action('add_customer_order', [['id'=>$id, 'title'=>get_the_title($id), 'image'=>$attachment_img, 'phone'=>$phone, 'name'=>$name, 'type'=>$type, 'url'=>$url, 'ref'=>$ref, 'user_agent'=>$_SERVER['HTTP_USER_AGENT']]], 'order');
-					}
+					$response['data']['title'] = get_the_title($id);
+					$response['data']['image'] = $attachment_img;
+					$response['data']['type'] = $type;
+					$response['data']['ref'] = $ref;
 					
 					$response['code'] = 1;
 					$response['msg'] = '<p><strong>Yêu cầu của Quý khách đã được gửi đi.</strong> Trợ lý của KTS. Trần Sơn sẽ liên hệ tư vấn trong thời gian sớm nhất.</p><p>Xin cảm ơn!</p>';

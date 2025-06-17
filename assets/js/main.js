@@ -37,45 +37,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
 			return valid;
 		}
-
-		
-		$(document).on('keyup', 'input.wpcf7-form-control', function(e){
-			let $form = $(this).closest('form'),
-				$submit_button = $form.find('[type="submit"]');
-
-			if(check_validity($form)) {
-				$submit_button.prop('disabled', false);
-			} else {
-				$submit_button.prop('disabled', true);
-			}
-
-		});
-
-		$(document).on('submit', '.wpcf7', function( event ) {
-			$(this).find('[type="submit"]').prop('disabled', true);
-		});
-		
-		$('.logout-post-password').on('click', function(e){
-			e.preventDefault();
-			let $this = $(this),
-				url = $this.data('url');
-
-			$.ajax({
-				url:theme.ajax_url+'?action=url_delete_cache',
-				method:'GET',
-				data:{url:url},
-				beforeSend:function(){
-					$this.prop('disabled', true);
-				},
-				success:function(){
-					deleteCookie('wp-postpass_'+$this.data('hash'));
-					$this.remove();
-					location.href = url;
-				}
-			});
-			
-		});
-
+	
 		function set_vh_size() {
 			let vh = $(window).innerHeight();
 			if($('#site-header').length>0) {
@@ -369,7 +331,7 @@ window.addEventListener('DOMContentLoaded', function(){
 			$('#order-product-message').html('');
 			$('#order-product-preview').html('');
 			$('#submit-order').text('Đồng ý');
-			$('#submit-order').prop('disabled',false);
+	
 		});
 
 		// chọn mẫu submit
@@ -453,7 +415,6 @@ window.addEventListener('DOMContentLoaded', function(){
 						dataType: 'json',
 						beforeSend: function(xhr) {
 							submit_button.text('Đang gửi..');
-							//submit_button.prop('disabled',true);
 						},
 						success: function(response) {
 							//console.log(response);
@@ -474,21 +435,21 @@ window.addEventListener('DOMContentLoaded', function(){
 
 							} else {
 								submit_button.text('Đồng ý');
-								submit_button.prop('disabled', false);
 								$('#order-product-message').html('<p class="text-danger">'+response.msg+'</p>');
 							}
 							
 						},
 						error: function() {
 							submit_button.text('Đồng ý');
-							submit_button.prop('disabled', false);
 							$('#order-product-message').html('<p class="text-danger">Có lỗi khi gửi! Vui lòng tải lại trang rồi thử lại. Hoặc liên hệ với ban quản trị về sự cố này.</p>');
 						},
 						complete: function() {
-							
+							submit_button.prop('disabled', false);
 						}
 					});
 
+				} else {
+					submit_button.prop('disabled', false);
 				}
 			}
 		}
@@ -501,36 +462,10 @@ window.addEventListener('DOMContentLoaded', function(){
 
 		$('#frm-order-product').on('submit', function(e){
 			e.preventDefault();
-
 			submit_order_product(e);
-
 			return false;
 
 		}); // submit order
-
-		$('#frm-order-product').find('input.form-control').on('keyup', function(e){
-			let valid = true;
-			$('#frm-order-product').find('input.form-control').each(function(index, el) {
-				switch(el.type) {
-					case 'text':
-						if(el.validity.valueMissing || el.validity.tooLong) {
-							valid = false;
-						}
-						break;
-					case 'tel':
-						if(!check_input_phone_number(el.value)) {
-							valid = false;
-						}
-						break;
-				}
-			});
-			
-			if(valid) {
-				$('#order-product-submit').prop('disabled', false);
-			} else {
-				$('#order-product-submit').prop('disabled', true);
-			}
-		});
 
 		$('#modal-video-player').on('show.bs.modal', function (event) {
 			let $modal = $(this),

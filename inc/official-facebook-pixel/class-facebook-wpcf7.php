@@ -111,13 +111,43 @@ class FacebookWPCF7 extends FacebookWordpressIntegrationBase {
         }
 
         $server_event = ServerEventFactory::safe_create_event(
-            'Gửi số',
+            //'Gửi số',
+            'AddToCart',
             array( __CLASS__, 'readFormData' ),
             array( $form ),
             self::TRACKING_NAME,
             true
         );
         FacebookServerSideEvent::get_instance()->track( $server_event );
+
+        $form_tags = $form->scan_form_tags();
+        $name      = self::getName( $form_tags );
+
+        $order_data = [
+            'name' => (!empty($name)) ? trim(implode(' ', $name)):'',
+            'url' => $server_event->getEventSourceUrl(),
+            'referrer' => urldecode(base64_decode(isset($_COOKIE['_ref'])?$_COOKIE['_ref']:'')),
+            'user_agent' => $server_event->getUserData()->getClientUserAgent(),
+            'ip_address'=>$server_event->getUserData()->getClientIpAddress(),
+            'image' => '',
+            'type' => 'normal',
+            'id' => '',
+        ];
+
+        $event_data = [
+            'event_name'=>$server_event->getEventName(),
+            'event_time'=>$server_event->getEventTime(),
+            'event_source_url'=>$server_event->getEventSourceUrl(),
+            'event_id'=>$server_event->getEventId(),
+            'fbc'=>$server_event->getUserData()->getFbc(),
+            'fbp'=>$server_event->getUserData()->getFbp(),
+            'em'=>$server_event->getUserData()->getEmails(),
+            'ph'=>$server_event->getUserData()->getPhones()
+        ];
+
+        if(function_exists('as_enqueue_async_action')) {
+            as_enqueue_async_action('add_product_order', [['order_data'=>$order_data, 'event_data'=>$event_data]], 'order');
+        }
 
         add_action(
             'wpcf7_feedback_response',
@@ -146,11 +176,12 @@ class FacebookWPCF7 extends FacebookWordpressIntegrationBase {
         if ( FacebookPluginUtils::is_internal_user() ) {
             return $response;
         }
-
-            $events = FacebookServerSideEvent::get_instance()->get_tracked_events();
+        
+        $events = FacebookServerSideEvent::get_instance()->get_tracked_events();
         if ( count( $events ) === 0 ) {
             return $response;
         }
+
         $event_id  = $events[0]->getEventId();
         $fbq_calls = PixelRenderer::render(
             $events,
@@ -188,12 +219,12 @@ class FacebookWPCF7 extends FacebookWordpressIntegrationBase {
         }
 
         $form_tags = $form->scan_form_tags();
-        $name      = self::getName( $form_tags );
+        //$name      = self::getName( $form_tags );
 
         return array(
             'email'      => self::getEmail( $form_tags ),
-            'first_name' => $name[0],
-            'last_name'  => $name[1],
+            //'first_name' => $name[0],
+            //'last_name'  => $name[1],
             'phone'      => self::getPhone( $form_tags ),
         );
     }
@@ -234,7 +265,7 @@ class FacebookWPCF7 extends FacebookWordpressIntegrationBase {
 
         foreach ( $form_tags as $tag ) {
             if ( 'text' === $tag->basetype
-            && strpos( strtolower( $tag->name ), 'name' ) !== false ) {
+            && strpos( strtolower( $tag->name ), 'your_name' ) !== false ) {
                 return ServerEventFactory::split_name(
                     sanitize_text_field(
                         wp_unslash( $_POST[ $tag->name ] ?? null ) // phpcs:ignore WordPress.Security.NonceVerification.Missing

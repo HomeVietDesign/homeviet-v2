@@ -44,13 +44,13 @@ class FacebookTimer extends FacebookWordpressIntegrationBase {
     const TRACKING_NAME = 'timer';
 
     public static function inject_pixel_code() {
-		add_action( 'wp_footer', array( __CLASS__, 'injectClickSentListener' ),  );
+		add_action( 'wp_footer', array( __CLASS__, 'injectTimerSentListener' ),  );
 
 		add_filter( 'track_timer', array( __CLASS__, 'trackTimer' ) );
     }
 
 
-    public static function injectClickSentListener() {
+    public static function injectTimerSentListener() {
 	    ?>
 	    <!-- Meta Pixel Event Code -->
 	    <script type='text/javascript'>
