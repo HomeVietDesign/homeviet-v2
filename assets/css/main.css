@@ -290,6 +290,7 @@ img.aligncenter {
 	color: #fff;
 	text-align: center;
 }
+#secondary-nav ul li.current-menu-item a,
 #secondary-nav ul li a:focus,
 #secondary-nav ul li a:hover {
 	color: #f00;

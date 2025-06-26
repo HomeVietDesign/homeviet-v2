@@ -230,12 +230,12 @@ window.addEventListener('DOMContentLoaded', function(){
 			pmsr.isotope('layout');
 		});
 
-		$('.entry-thumbnail.slider').bxSlider({
-			auto: false,
-			stopAutoOnClick:true,
-			hideControlOnEnd:true,
-			pager:false
-		});
+		// $('.entry-thumbnail.slider').bxSlider({
+		// 	auto: false,
+		// 	stopAutoOnClick:true,
+		// 	hideControlOnEnd:true,
+		// 	pager:false
+		// });
 		
 		$('.posts-masonry-loadmore-button').on('click', function(e){
 			let $this = $(this),
@@ -264,12 +264,12 @@ window.addEventListener('DOMContentLoaded', function(){
 					let $item = $.parseHTML(response);
 					$msr.append($item).isotope('appended', $item);
 
-					$msr.find('.entry-thumbnail.slider').bxSlider({
-						auto: false,
-						stopAutoOnClick:true,
-						hideControlOnEnd:true,
-						pager:false
-					});
+					// $msr.find('.entry-thumbnail.slider').bxSlider({
+					// 	auto: false,
+					// 	stopAutoOnClick:true,
+					// 	hideControlOnEnd:true,
+					// 	pager:false
+					// });
 
 					$msr.imagesLoaded(function(){
 						$msr.isotope();

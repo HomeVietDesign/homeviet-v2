@@ -142,6 +142,18 @@ $options = array(
 		'title'   => 'Giá trị công trình',
 		'type'    => 'box',
         'options' => array(
+        	'display_value' => array(
+				'type'  => 'radio',
+				'value' => 'no',
+				'label' => 'Hiển thị tổng đầu tư',
+				'choices' => array( // Note: Avoid bool or int keys http://bit.ly/1cQgVzk
+					'no' => 'Áp dụng cài đặt chung',
+					'show' => 'Hiển thị',
+					'hide' => 'Ẩn đi',
+				),
+				// Display choices inline instead of list
+				'inline' => false,
+			),
 			'_price' => array(
 				'type' => 'numeric',
 				'integer' => true,
@@ -190,35 +202,6 @@ $options = array(
 				'html' => 'Tổng đầu tư = Diện tích 1 sàn x Số tầng cao x Đơn giá x Hệ số tổng'
 			),
 
-			'display_value' => array(
-				'label' => 'Hiển thị tổng đầu tư?',
-				'desc'  => '',
-				'value'  => 'yes',
-				'type'  => 'switch',
-				'left-choice' => array(
-			        'value' => 'no',
-			        'label' => 'Không',
-			    ),
-			    'right-choice' => array(
-			        'value' => 'yes',
-			        'label' => 'Có',
-			    ),
-			),
-
-			'display_price' => array(
-				'label' => 'Hiển thị giá thiết kế?',
-				'desc'  => '',
-				'value'  => 'yes',
-				'type'  => 'switch',
-				'left-choice' => array(
-			        'value' => 'no',
-			        'label' => 'Không',
-			    ),
-			    'right-choice' => array(
-			        'value' => 'yes',
-			        'label' => 'Có',
-			    ),
-			),
         ),
     ),
 	array(

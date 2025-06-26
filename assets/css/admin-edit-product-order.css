@@ -13,3 +13,19 @@
 .product-order-tasks span.purchased {
 	color: #128212;
 }
+a.page-title-action {
+	display: none!important;
+}
+table.product-order-info {
+	border-collapse: collapse;
+	width: 100%;
+	margin: 20px 0;
+}
+table.product-order-info th {
+
+}
+table.product-order-info th,
+table.product-order-info td {
+	padding: 3px 10px;
+	border-bottom: rgba(0, 0, 0, .3) 1px solid;
+}

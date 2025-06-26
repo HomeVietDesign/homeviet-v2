@@ -9,6 +9,50 @@ $options = array(
 		'type' => 'tab',
 		'title' => 'Sản phẩm',
 		'options' => array(
+			'display_value' => array(
+				'label' => 'Hiển thị tổng đầu tư?',
+				'desc'  => '',
+				'value'  => 'yes',
+				'type'  => 'switch',
+				'left-choice' => array(
+			        'value' => 'no',
+			        'label' => 'Không',
+			    ),
+			    'right-choice' => array(
+			        'value' => 'yes',
+			        'label' => 'Có',
+			    ),
+			),
+
+			'display_price' => array(
+				'label' => 'Hiển thị giá thiết kế?',
+				'desc'  => '',
+				'value'  => 'yes',
+				'type'  => 'switch',
+				'left-choice' => array(
+			        'value' => 'no',
+			        'label' => 'Không',
+			    ),
+			    'right-choice' => array(
+			        'value' => 'yes',
+			        'label' => 'Có',
+			    ),
+			),
+			'display_location' => array(
+				'label' => 'Hiển thị địa điểm?',
+				'desc'  => '',
+				'value'  => 'yes',
+				'type'  => 'switch',
+				'left-choice' => array(
+			        'value' => 'no',
+			        'label' => 'Không',
+			    ),
+			    'right-choice' => array(
+			        'value' => 'yes',
+			        'label' => 'Có',
+			    ),
+			),
+
 			'product_info_heading1' => array(
 				'label' => 'Tiêu đề thông tin mô tả sản phẩm 1',
 				'desc'  => '',
@@ -95,6 +139,7 @@ $options = array(
 					'wp-option' => 'product_order_popup_desc',
 				),
 			),
+
 			/*
 			'product_links' => array(
 				'type' => 'addable-popup',

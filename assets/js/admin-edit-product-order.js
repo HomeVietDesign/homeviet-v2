@@ -34,6 +34,9 @@ window.addEventListener('DOMContentLoaded', function(){
 						$btn_cancel.prop('disabled', false);
 					}
 				});
+			} else {
+				$this.prop('disabled', false);
+				$btn_cancel.prop('disabled', false);
 			}
 
 		});
@@ -70,6 +73,9 @@ window.addEventListener('DOMContentLoaded', function(){
 						$btn_send.prop('disabled', false);
 					}
 				});
+			} else {
+				$this.prop('disabled', false);
+				$btn_send.prop('disabled', false);
 			}
 			
 		});

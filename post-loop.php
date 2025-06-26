@@ -41,7 +41,8 @@ $design_price = '';
 $prices = get_the_terms( $post, 'price' );
 if($prices) $design_price = $prices[0]->description;
 
-$display_price = fw_get_db_post_option($post->ID, 'display_price', 'yes');
+$display_price = fw_get_db_settings_option('display_price', 'yes');
+$display_location = fw_get_db_settings_option('display_location', 'yes');
 
 $_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
 $_floors = floatval(get_post_meta($post->ID, '_floors', true));
@@ -77,7 +78,7 @@ $_images = get_post_meta($post->ID, '_images', true);
 			</div>
 			<?php } ?>
 
-			<?php if($display_value=='yes') \HomeViet\Template_Tags::product_cost(); ?>
+			<?php \HomeViet\Template_Tags::product_cost(); ?>
 			
 			<?php
 			if(has_role('administrator')) {
@@ -106,19 +107,19 @@ $_images = get_post_meta($post->ID, '_images', true);
 			?>
 			<?php if($design_price!='' && $display_price=='yes') { ?>
 			<div class="design-price position-absolute top-0 end-0 d-flex p-2 text-yellow align-items-end">
-				<span>Thiết kế: <b><?php echo esc_html($design_price); ?></b></span>
+				<span><b><?php echo esc_html($design_price); ?></b></span>
 			</div>
 			<?php } ?>
 			
-			<h3 class="entry-title text-center<?php echo ($design_price!=''||$allow_order=='yes')?' mt':''; ?>">
+			<h3 class="entry-title fw-bold text-center<?php echo ($design_price!=''||$allow_order=='yes')?' mt':''; ?>">
 				<?php the_title(); ?>
 			</h3>
 
 			<div class="d-flex justify-content-center align-items-center mt-3">
-				<?php if($location) { ?>
+				<?php if($location && $display_location=='yes') { ?>
 				<div class="location me-3">
 					<span>Địa điểm: </span>
-					<span><?php
+					<span class="fw-bold"><?php
 					foreach ($location as $key => $loca) {
 						if($key==0) {
 							echo esc_html($loca->name);

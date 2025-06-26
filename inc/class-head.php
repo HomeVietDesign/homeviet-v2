@@ -100,7 +100,7 @@ class Head {
 			echo $custom_script;
 		}
 		?>
-		<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
+		<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 		<?php
 
 	}

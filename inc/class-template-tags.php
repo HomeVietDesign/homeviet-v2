@@ -3,11 +3,27 @@ namespace HomeViet;
 
 final class Template_Tags {
 
-	public static function product_cost($position='') {
+	public static function product_cost() {
 		global $post;
 
-		$display_value = fw_get_db_post_option($post->ID, 'display_value', 'yes');
-		if($display_value=='yes') {
+		$general_display_value = fw_get_db_settings_option('display_value', 'yes');
+		$_display_value = fw_get_db_post_option($post->ID, 'display_value', 'no');
+
+		$display_value = false;
+
+		if($_display_value=='no') {
+			if($general_display_value=='yes') {
+				$display_value = true;
+			}
+		} elseif ($_display_value=='show') {
+			$display_value = true;
+		}
+
+		// debug_log($general_display_value);
+		// debug_log($_display_value);
+		//debug_log($display_value);
+		
+		if($display_value) {
 			$_price = absint(get_post_meta($post->ID, '_price', true)); //giá đầu tư
 			$general_price = absint(get_option('product_price'));
 			$_use_general_price = get_post_meta($post->ID, '_use_general_price', true);
@@ -30,7 +46,7 @@ final class Template_Tags {
 			if($_total_amount>0) {
 
 			?>
-			<div class="costs-info position-absolute end-0 bottom-0 py-1 px-2 <?php echo ($position=='single')?'hidden':''; ?> z-3">
+			<div class="costs-info position-absolute end-0 bottom-0 py-1 px-2">
 				<div class="total_amount text-end"><strong><?php echo esc_html(number_format($_total_amount,2,'.',',')); ?></strong> tỷ</div>
 			</div>
 			<?php }

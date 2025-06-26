@@ -206,7 +206,7 @@ class Custom_Types {
 			'menu_position'       => 22,
 			'menu_icon'           => 'dashicons-cart',
 			'show_in_nav_menus'   => false,
-			'publicly_queryable'  => true, // ẩn bài viết ở front-end
+			'publicly_queryable'  => false, // ẩn bài viết ở front-end
 			'exclude_from_search' => true, // loại khỏi kết quả tìm kiếm
 			'has_archive'         => false,
 			'query_var'           => false,
@@ -241,10 +241,14 @@ class Custom_Types {
 
 		remove_menu_page( 'edit-comments.php' ); // ẩn menu Comments
 		
+		//debug_log($menu);
+
 		if ( isset( $menu[5] ) ) {
 			$menu[5][0] = 'Sản phẩm';
 		}
+		
 		//debug_log($submenu);
+		
 		if ( isset( $submenu['edit.php'] ) ) {
 			$submenu['edit.php'][5][0] = 'Xem tất cả';
 			$submenu['edit.php'][10][0] = 'Tạo Sản phẩm mới';

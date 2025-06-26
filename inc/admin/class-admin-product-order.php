@@ -21,8 +21,25 @@ class Admin_Product_Order {
 
 			add_action('wp_ajax_send_purchase', [$this, 'ajax_send_purchase']);
 			add_action('wp_ajax_cancel_purchase', [$this, 'ajax_cancel_purchase']);
+
+			add_filter( 'quick_edit_enabled_for_post_type', [$this, 'quick_edit_enabled_for_post_type'], 10, 2 );
+
+			add_action( 'admin_menu', [$this, 'admin_menu'], 99 );
 		}
 		
+	}
+
+	public function admin_menu() {
+		remove_submenu_page( 'edit.php?post_type=product_order', 'post-new.php?post_type=product_order' );
+	}
+
+	public function quick_edit_enabled_for_post_type($quick_edit, $post_type) {
+
+		if($post_type=='product_order') {
+			$quick_edit = false;
+		}
+
+		return $quick_edit;
 	}
 
 	public function ajax_cancel_purchase() {
@@ -92,33 +109,74 @@ class Admin_Product_Order {
 	}
 
 	public function meta_boxes() {
+
+		remove_meta_box(
+			'submitdiv',
+			'product_order',
+			'side'
+		);
+
 		add_meta_box(
             'order_data'     // Reusing just 'postexcerpt' doesn't work.
-        ,   'Thông tin đơn hàng'    // Title
+        ,   'Thông tin người dùng'    // Title
         ,   array ( $this, 'order_data' ) // Display function
         ,   'product_order'              // Screen, we use all screens with meta boxes.
         ,   'normal'          // Context
         ,   'core'            // Priority
         );
 
-        add_meta_box(
-            'event_data'     // Reusing just 'postexcerpt' doesn't work.
-        ,   'Thông tin sự kiện'    // Title
-        ,   array ( $this, 'event_data' ) // Display function
-        ,   'product_order'              // Screen, we use all screens with meta boxes.
-        ,   'normal'          // Context
-        ,   'core'            // Priority
-        );
+        // add_meta_box(
+        //     'event_data'     // Reusing just 'postexcerpt' doesn't work.
+        // ,   'Thông tin sự kiện'    // Title
+        // ,   array ( $this, 'event_data' ) // Display function
+        // ,   'product_order'              // Screen, we use all screens with meta boxes.
+        // ,   'normal'          // Context
+        // ,   'core'            // Priority
+        // );
 	}
 
 	public function event_data($post) {
 		$event_data = get_post_meta($post->ID, '_event_data', true);
-		debug($event_data);
+		$order_data = get_post_meta($post->ID, '_data', true);
+		
 	}
 
 	public function order_data($post) {
 		$order_data = get_post_meta($post->ID, '_data', true);
-		debug($order_data);
+		$event_data = get_post_meta($post->ID, '_event_data', true);
+		?>
+		<table class="product-order-info">
+			<tr>
+				<th>Số điện thoại</th>
+				<td><?=esc_html($event_data['ph'][0])?></td>
+			</tr>
+			<tr>
+				<th>IP</th>
+				<td><?=esc_html($order_data['ip_address'])?></td>
+			</tr>
+			<tr>
+				<th>Agent</th>
+				<td><?=esc_html($order_data['user_agent'])?></td>
+			</tr>
+			<tr>
+				<th>URL</th>
+				<td><?=esc_html($order_data['url'])?></td>
+			</tr>
+			<tr>
+				<th>URLs</th>
+				<td>
+				<?php
+				if($order_data['referrer']) {
+					$referrer = explode(',', $order_data['referrer']);
+					foreach ($referrer as $key => $value) {
+						echo '<div>'.esc_html($value).'</div>';
+					}
+				}
+				?>
+				</td>
+			</tr>
+		</table>
+		<?php
 	}
 
 	public function enqueue_scripts($hook) {

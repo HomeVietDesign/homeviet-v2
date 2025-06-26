@@ -67,7 +67,7 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
             10
         );
 
-        add_filter('before_conversions_api_event_sent', [__CLASS__, 'before_conversions_api_event_sent']);
+        //add_filter('before_conversions_api_event_sent', [__CLASS__, 'before_conversions_api_event_sent']);
     }
 
     public static function before_conversions_api_event_sent($events) {
@@ -96,8 +96,8 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
 
         $event = ( new Event() )
                 ->setEventName( 'Purchase' )
-                //->setEventTime( $event_data['event_time'] )
-                ->setEventTime( time() )
+                ->setEventTime( $event_data['event_time'] )
+                //->setEventTime( time() )
                 ->setEventId( EventIdGenerator::guidv4() )
             ->setEventSourceUrl(
                 $event_data['event_source_url']
