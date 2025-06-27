@@ -104,6 +104,7 @@ img.aligncenter {
 }
 .modal {
 	--bs-modal-margin: 12px;
+	--bs-modal-zindex: 99999;
 }
 .modal-backdrop {
     --bs-backdrop-opacity: 0.85;
@@ -327,6 +328,9 @@ img.aligncenter {
 }
 .post-masonry .post-thumbnail .entry-thumbnail img {
 	width: 100%;
+}
+.post-masonry .post-thumbnail .entry-thumbnail video {
+	vertical-align: middle;
 }
 
 .post-masonry .post-summary {
@@ -970,6 +974,13 @@ div[id^="modal-fw-shortcode-design-cost-"] .btn-close,
 	transform: translateY(-50%);
 }
 
+.inner .post-thumbnail .top-left-wrap {
+	top: 0;
+	left: 0;
+}
+.inner.featured .post-thumbnail .top-left-wrap {
+	left: 55px;
+}
 @media (min-width: 375px) {
 	.get_designs_form {
 		font-size: 14px;

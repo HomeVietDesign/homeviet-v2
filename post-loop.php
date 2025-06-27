@@ -9,21 +9,23 @@ $video_youtube = fw_get_db_post_option($post->ID, 'video_youtube');
 
 $data_video = ['type' => '', 'content' => ''];
 
-if($video_youtube!='') {
-	$data_video['type'] = 'youtube';
-	$data_video['content'] = '<iframe id="ytplayer" type="text/html" width="1280" height="720"
-src="https://www.youtube.com/embed/'.get_youtube_id($video_youtube).'?autoplay=1&controls=1&fs=0&loop=1&playsinline=1&mute=1&modestbranding=1"
-frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>';
+// if($video_youtube!='') {
+// 	$data_video['type'] = 'youtube';
+// 	$data_video['content'] = '<iframe type="text/html" width="1280" height="720"
+// data-src="https://www.youtube.com/embed/'.get_youtube_id($video_youtube).'?autoplay=0&controls=1&fs=0&loop=1&playsinline=1&mute=1&modestbranding=1"
+// frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>';
 
-} else if($video_url!='') {
+// } else 
+
+if($video_url!='') {
 	$data_video['type'] = 'url';
 
-	$data_video['content'] = '<video playsinline disablePictureInPicture controlsList="nodownload" src="'.esc_url($video_url).'" type="video/mp4" poster="'.esc_url($src).'" controls loop></video>';
+	$data_video['content'] = '<video playsinline disablePictureInPicture controlsList="nodownload" data-src="'.esc_url($video_url).'" type="video/mp4" poster="'.esc_url($src).'" controls loop muted></video>';
 
 } else if(!empty($video_local)) {
 	$data_video['type'] = 'local';
 	$video_metadata = wp_get_attachment_metadata( $video_local['attachment_id'] );
-	$data_video['content'] = '<video width="'.absint($video_metadata['width']).'" height="'.absint($video_metadata['height']).'" playsinline disablePictureInPicture controlsList="nodownload" src="'.esc_url(wp_get_attachment_url($video_local['attachment_id'])).'" type="video/mp4" poster="'.esc_url($src).'" controls loop></video>';
+	$data_video['content'] = '<video width="'.absint($video_metadata['width']).'" height="'.absint($video_metadata['height']).'" playsinline disablePictureInPicture controlsList="nodownload" data-src="'.esc_url(wp_get_attachment_url($video_local['attachment_id'])).'" type="video/mp4" poster="'.esc_url($src).'" controls loop muted></video>';
 
 }
 
@@ -52,32 +54,20 @@ $location = get_the_terms( $post, 'location' );
 if($location) $location = array_reverse($location);
 
 $_images = get_post_meta($post->ID, '_images', true);
+
 ?>
 <div <?php post_class('post-masonry col-md-6'); ?>>
 	<div class="inner <?php echo ($_featured=='yes')? 'featured':''; ?>">
 		<div class="post-thumbnail">
-			<?php if($data_video['type']!='') { ?>
-			<a class="entry-thumbnail open-modal-player" href="#modal-video-player" data-bs-toggle="modal" data-video="<?=esc_attr(json_encode($data_video))?>" data-url="<?php the_permalink(); ?>" title="Xem video">
-				<span class="d-block"><?php the_post_thumbnail('full', ['alt'=>esc_attr(get_the_title())]); ?></span>
+			<div class="top-left-wrap position-absolute p-2">
 				<?php if($data_video['type']!='') { ?>
-				<span class="play-video-button position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"><span class="d-flex justify-content-center align-items-center play-video-icon"><span class="dashicons dashicons-controls-play"></span></span></span>
+				<a class="open-modal-player text-uppercase btn btn-sm btn-danger text-yellow fw-bold" href="#modal-video-player" data-bs-toggle="modal" data-video="<?=esc_attr(json_encode($data_video))?>" data-url="<?php the_permalink(); ?>" title="Xem video">Video</a>
 				<?php } ?>
-			</a>
-			<?php } else {
-				$thumbnail_src = wp_get_attachment_image_src( get_post_thumbnail_id($post), 'full' );
-			?>
+			</div>
 			<div class="entry-thumbnail">
 				<a href="<?php the_permalink(); ?>"><?php the_post_thumbnail( 'full' ); ?></a>
-				<!-- <div>
-					<?php
-					if($_images) {
-						echo wp_get_attachment_image( $_images[0]['attachment_id'], 'full' );
-					}
-					?>
-				</div> -->
 			</div>
-			<?php } ?>
-
+	
 			<?php \HomeViet\Template_Tags::product_cost(); ?>
 			
 			<?php
@@ -149,3 +139,85 @@ $_images = get_post_meta($post->ID, '_images', true);
 	</div>
 </div>
 <?php
+
+if($data_video['type']!='') {
+?>
+<div class="post-masonry col-md-6">
+	<div class="inner <?php echo ($_featured=='yes')? 'featured':''; ?>">
+		<div class="post-thumbnail">
+			<div class="entry-thumbnail">
+				<?php echo $data_video['content']; ?>
+			</div>
+	
+			<?php \HomeViet\Template_Tags::product_cost(); ?>
+			
+			<?php
+			if(has_role('administrator')) {
+				?>
+				<div class="position-absolute start-0 bottom-0 p-1 z-3"><?=esc_html($post->ID)?></div>
+				<?php
+			}
+
+			if(!empty($area)) {
+			?>
+			<div class="position-absolute top-0 end-0 p-2 text-yellow total-area z-3">
+				<span>DT: </span><span class="fw-bold"><?php echo number_format($area, 0, '.',','); ?></span><span>m<sup>2</sup></span>
+			</div>
+			<?php
+			}
+			?>
+
+		</div>
+		<div class="post-summary position-relative">
+			<?php
+			if($allow_order=='yes') {
+				echo '<div class="position-absolute start-0 top-0 m-2">';
+				echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger btn-sm order-product fw-bold text-uppercase text-yellow'], esc_html(fw_get_db_settings_option('product_loop_order_button_text')));	
+				echo '</div>';
+			}
+			?>
+			<?php if($design_price!='' && $display_price=='yes') { ?>
+			<div class="design-price position-absolute top-0 end-0 d-flex p-2 text-yellow align-items-end">
+				<span><b><?php echo esc_html($design_price); ?></b></span>
+			</div>
+			<?php } ?>
+			
+			<h3 class="entry-title fw-bold text-center<?php echo ($design_price!=''||$allow_order=='yes')?' mt':''; ?>">
+				<?php the_title(); ?>
+			</h3>
+
+			<div class="d-flex justify-content-center align-items-center mt-3">
+				<?php if($location && $display_location=='yes') { ?>
+				<div class="location me-3">
+					<span>Địa điểm: </span>
+					<span class="fw-bold"><?php
+					foreach ($location as $key => $loca) {
+						if($key==0) {
+							echo esc_html($loca->name);
+						} else {
+							echo ", ".esc_html($loca->name);
+						}
+					}
+					?>
+					</span>
+				</div>
+				<?php } ?>
+				<a href="<?php the_permalink(); ?>" class="view-detail btn btn-sm btn-primary">Xem chi tiết</a>
+			</div>
+
+			<?php edit_post_link( '<span class="dashicons dashicons-edit"></span>' ); ?>
+			<?php
+			if(''!=$post->post_excerpt) {
+				//debug($post);
+			?>
+			<div class="entry-excerpt">
+				<?php echo wp_format_content($post->post_excerpt); ?>
+			</div>
+			<?php
+			} ?>
+
+		</div>
+	</div>
+</div>
+<?php
+}

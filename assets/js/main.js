@@ -491,12 +491,82 @@ window.addEventListener('DOMContentLoaded', function(){
 			}
 		}).on('shown.bs.modal', function (event) {
 			$(this).css('display', 'flex');
-			if($(this).find('video').length>0) {
-				$(this).find('video').get(0).play();
+			let $video = $(this).find('video');
+			//console.log($video);
+			if($video.length>0) {
+				$video.attr('src',$video.data('src'));
+				$video.get(0).play();
 			}
 		}).on('hidden.bs.modal', function (e) {
 			$('#video-player').html('<div class="ratio ratio-16x9"></div>');
 		});
+
+		const lazy_video_thumbnail = new IntersectionObserver(function(entries, observer){
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					// Element is intersecting, perform action (e.g., lazy load, animate)
+					//console.log('Element entered viewport:', entry.target);
+					let el = $(entry.target);
+						el.attr('src', el.data('src'));
+
+					observer.unobserve(entry.target); // Optional: stop observing once intersected
+				}
+			});
+		}, {
+			root: null, // defaults to the viewport
+			rootMargin: '0px',
+			threshold: 0.1 // Trigger when 10% of the target is visible
+		});
+
+		const toggle_video_thumbnail = new IntersectionObserver(function(entries, observer){
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					//console.log(entry.target);
+					setTimeout(function(){
+						entry.target.play();
+					}, 1000);
+					//entry.target.play();
+				} else {
+					entry.target.pause();
+				}
+			});
+		}, {
+			root: null, // defaults to the viewport
+			rootMargin: '0px',
+			threshold: 0.1 // Trigger when 10% of the target is visible
+		});
+
+		$('.entry-thumbnail video').each(function(){
+			//console.log(this);
+			lazy_video_thumbnail.observe(this);
+			toggle_video_thumbnail.observe(this);
+		});
+
+		const mutationObserver = new MutationObserver(mutationsList => {
+			for (const mutation of mutationsList) {
+				if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+					mutation.addedNodes.forEach(node => {
+						// Check if the added node is an element and matches your dynamic element selector
+						
+						// if (node.nodeType === Node.ELEMENT_NODE && node.matches('.dynamic-element')) {
+						// 	intersectionObserver.observe(node); // Start observing the newly added dynamic element
+						// }
+
+						if (node.nodeType === Node.ELEMENT_NODE && node.matches('.post-masonry')) {
+							//console.log($(node));
+							let el_video = $(node).find('.entry-thumbnail video');
+							if(el_video.length>0) {
+								lazy_video_thumbnail.observe(el_video.get(0));
+								toggle_video_thumbnail.observe(el_video.get(0));
+							}
+						}
+					});
+				}
+			}
+		});
+
+		// Start observing the target node (e.g., document.body) for childList changes
+		mutationObserver.observe(document.body, { childList: true, subtree: true });
 
 	});// jQuery
 	

@@ -32,6 +32,7 @@ $options = array(
 					'post-meta' => '_featured',
 				),
 			),
+
         	'_allow_order' => array(
 				'label' => 'Nút Chọn mẫu?',
 				'desc'  => '',
@@ -50,10 +51,10 @@ $options = array(
 					'post-meta' => '_allow_order',
 				),
 			),
-			'_ref' => array(
-				'type' => 'text',
-				'label' => 'Mã tân cổ',
-			),
+			// '_ref' => array(
+			// 	'type' => 'text',
+			// 	'label' => 'Mã tân cổ',
+			// ),
 		),
     ),
     array(
@@ -209,28 +210,28 @@ $options = array(
 		'title'   => 'VIDEO',
 		'type'    => 'box',
         'options' => array(
-        	'video' => array(
-				'type'  => 'upload',
-				'value' => '',
-				'label' => 'Tải lên Video',
-				'desc' => 'Sẽ ưu tiên dùng Video URL bên dưới trước nếu nó có.',
-				'images_only' => false,
-				'files_ext' => array( 'mp4' ),
-
-			),
+        	// 'video_youtube' => array(
+			// 	'type'  => 'oembed',
+			// 	'value' => '',
+			// 	'label' => 'URL YT Video',
+			// 	'desc' => 'Ưu tiên 1.',
+			// 	'preview' => [
+			// 		'keep_ratio' => true
+			// 	]
+			// ),
 			'video_url' => array(
 				'type'  => 'text',
 				'value' => '',
 				'label' => 'Video URL',
-				'desc' => 'Ưu tiên dùng trước.',
+				'desc' => 'Ưu tiên 2.',
 			),
-			'video_youtube' => array(
-				'type'  => 'oembed',
+			'video' => array(
+				'type'  => 'upload',
 				'value' => '',
-				'label' => 'URL YT Video',
-				'preview' => [
-					'keep_ratio' => true
-				]
+				'label' => 'Tải lên Video',
+				'desc' => 'Sẽ ưu tiên dùng Video URL trước nếu nó có.',
+				'images_only' => false,
+				'files_ext' => array( 'mp4' ),
 			),
         ),
     ),
