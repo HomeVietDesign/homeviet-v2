@@ -178,6 +178,7 @@ class Ajax {
 					
 					$response['code'] = 1;
 					$response['msg'] = '<p><strong>Yêu cầu của Quý khách đã được gửi đi.</strong> Trợ lý của KTS. Trần Sơn sẽ liên hệ tư vấn trong thời gian sớm nhất.</p><p>Xin cảm ơn!</p>';
+
 				} else {
 					$response['code'] = -3;
 					$response['msg'] = 'Yêu cầu chưa được gửi đi! Vui lòng liên hệ với ban quản trị về sự cố này.';
@@ -191,10 +192,9 @@ class Ajax {
 			$response['code'] = -1;
 			$response['msg'] = 'Chưa xác minh! Xin thử lại.';
 		}
-
+		
 		$response = apply_filters( 'order_submit', $response );
 		
-
 		wp_send_json($response);
 		
 		die;

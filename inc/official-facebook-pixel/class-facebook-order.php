@@ -57,6 +57,7 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
      *  - wp_footer: Injects the mail sent listener.
      */
     public static function inject_pixel_code() {
+
         add_filter( 'order_submit', array( __CLASS__, 'trackServerEvent' ) );
 
         add_action( 'purchase', [__CLASS__, 'trackPurchaseEvent'] );
