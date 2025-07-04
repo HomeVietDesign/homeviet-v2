@@ -200,8 +200,8 @@ class Admin_Product_Order {
 
 		$event_data = get_post_meta($post_id, '_event_data', true);
     	$order_data = get_post_meta($post_id, '_data', true);
-    	$referrer = $order_data['url'].(($order_data['referrer']!='')?','.$order_data['referrer']!='':'');
-
+    	$referrer = $order_data['url'].( ($order_data['referrer']!='')?','.$order_data['referrer']:'' );
+    	//debug($order_data);
 		switch ($column) {
 			case 'ID':
 				echo esc_html($post_id);
@@ -220,6 +220,7 @@ class Admin_Product_Order {
 				break;
 
 			case 'source':
+
 				if(strpos($referrer, 'facebook')!==false || strpos($referrer, 'fbclid')!==false) {
 					echo 'Facebook';
 				} elseif (strpos($referrer, 'google')!==false || strpos($referrer, 'gclid')!==false) {

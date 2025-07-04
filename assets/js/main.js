@@ -501,6 +501,7 @@ window.addEventListener('DOMContentLoaded', function(){
 			$('#video-player').html('<div class="ratio ratio-16x9"></div>');
 		});
 
+		/*
 		const lazy_video_thumbnail = new IntersectionObserver(function(entries, observer){
 			entries.forEach(entry => {
 				if (entry.isIntersecting) {
@@ -567,7 +568,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
 		// Start observing the target node (e.g., document.body) for childList changes
 		mutationObserver.observe(document.body, { childList: true, subtree: true });
-
+		*/
 	});// jQuery
 	
 

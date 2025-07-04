@@ -648,10 +648,17 @@ body:not(.single) #video-player video {
 	font-size: 18px;
 	color: #ff0;
 	line-height: 1;
+}
+.total_amount span {
+	font-size: 18px;
+}
+.total_amount span span {
+	font-size: 36px;
 	font-weight: bold;
 }
 .total_amount strong {
 	font-size: 32px;
+	font-weight: bold;
 }
 .sale_off {
 	color: #ff0;

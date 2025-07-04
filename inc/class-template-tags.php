@@ -47,7 +47,7 @@ final class Template_Tags {
 
 			?>
 			<div class="costs-info position-absolute end-0 bottom-0 py-1 px-2">
-				<div class="total_amount text-end"><strong><?php echo esc_html(number_format($_total_amount,2,'.',',')); ?></strong> tỷ</div>
+				<div class="total_amount text-end"><span class="me-2">Đầu tư : <span>~</span></span><strong><?php echo esc_html(number_format($_total_amount,2,'.',',')); ?></strong><b>&nbsp;tỷ</b></div>
 			</div>
 			<?php }
 		}
