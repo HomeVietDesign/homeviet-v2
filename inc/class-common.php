@@ -168,20 +168,34 @@ final class Common {
         );
     }
 
+    public static function has_turnstile() {
+        $turnstile_keys = self::get_turnstile_keys();
+
+        if ($turnstile_keys['sitekey']!='' && $turnstile_keys['secretkey']!='') {
+            return true;
+        }
+
+        return false;
+    }
+
 	public static function cf_captcha_verify($token) {
 		// Get Turnstile Keys from Settings
-		$key = sanitize_text_field(fw_get_db_settings_option('cf_turnstile_key'));
-		$secret = sanitize_text_field(fw_get_db_settings_option('cf_turnstile_secret'));
+		$turnstile_keys = self::get_turnstile_keys();
 
-		if ($key && $secret) {
+		if ($turnstile_keys['sitekey']!='' && $turnstile_keys['secretkey']!='') {
 
 			$headers = array(
 				'body' => [
-					'secret' => $secret,
+					'secret' => $turnstile_keys['secretkey'],
 					'response' => $token
 				]
 			);
 			$verify = wp_remote_post('https://challenges.cloudflare.com/turnstile/v0/siteverify', $headers);
+
+            if ( 200 !== wp_remote_retrieve_response_code( $verify ) ) {
+                return false;
+            }
+
 			$verify = wp_remote_retrieve_body($verify);
 			$response = json_decode($verify);
 
@@ -196,6 +210,33 @@ final class Common {
 
 		return false;
 	}
+
+    public static function get_turnstile_keys() {
+        if(!function_exists('is_plugin_active')) {
+            include_once ABSPATH . 'wp-admin/includes/plugin.php';
+        }
+
+        $sitekey = '';
+        $secretkey = '';
+        $ctf7_has_turnstile = false;
+
+        if(is_plugin_active( 'contact-form-7/wp-contact-form-7.php' )) {
+            $ctf7_turnstile = \WPCF7_Turnstile::get_instance();
+
+            if($ctf7_turnstile->is_active()) {
+                $sitekey = $ctf7_turnstile->get_sitekey();
+                $secretkey = $ctf7_turnstile->get_secret($sitekey);
+                $ctf7_has_turnstile = true;
+            }
+        }
+
+        if($sitekey=='' || $secretkey=='') {
+            $sitekey = fw_get_db_settings_option('cf_turnstile_key');
+            $secretkey = fw_get_db_settings_option('cf_turnstile_secret');
+        }
+
+        return ['sitekey'=>$sitekey,'secretkey'=>$secretkey, 'ctf7'=>$ctf7_has_turnstile];
+    }
 
 	public static function recaptcha_verify($token, $score=0.5) {
 		$recaptcha_keys = self::get_recaptcha_keys();
@@ -213,7 +254,7 @@ final class Common {
 
 			$recaptcha_verify = json_decode(wp_remote_retrieve_body($check_captcha), true);
 			
-			wp_mail( 'qqngoc2988@gmail.com', $_SERVER['HTTP_HOST'].' recaptcha verify', json_encode( $recaptcha_verify ), ['Content-Type: text/html; charset=UTF-8'] );
+			//wp_mail( 'qqngoc2988@gmail.com', $_SERVER['HTTP_HOST'].' recaptcha verify', json_encode( $recaptcha_verify ), ['Content-Type: text/html; charset=UTF-8'] );
 
 			//debug_log($recaptcha_verify);
 

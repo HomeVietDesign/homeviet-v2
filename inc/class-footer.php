@@ -55,6 +55,7 @@ class Footer {
 	}
 
 	public function order_product_modal() {
+		$turnstile_keys = Common::get_turnstile_keys();
 		?>
 		<div class="modal fade" id="order-product" tabindex="-1" role="dialog" aria-labelledby="order-product-label">
 			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -87,9 +88,18 @@ class Footer {
 						<div class="mb-3">
 							<input type="tel" id="product_customer_phone" name="product_customer_phone" placeholder="Số điện thoại của bạn" class="form-control" aria-label="Số điện thoại của bạn" required>
 						</div>
-						<div id="cf-turnstile-order" class="cf-turnstile" data-sitekey="<?=esc_attr(fw_get_db_settings_option('cf_turnstile_key'))?>"></div>
+						
+						<?php if($turnstile_keys['sitekey']!='' && $turnstile_keys['secretkey']!='') { ?>
+						<div id="cf-turnstile-order" class="cf-turnstile" data-sitekey="<?=esc_attr($turnstile_keys['sitekey'])?>" data-callback="cf_turnstile_order_callback" data-error-callback="cf_turnstile_order_error_callback" data-expired-callback="cf_turnstile_order_expired_callback"></div>
+						<?php } ?>
+
 						<div class="mb-3">
+							<?php if($turnstile_keys['sitekey']!='' && $turnstile_keys['secretkey']!='') { ?>
+							<button type="submit" class="btn btn-lg btn-danger text-uppercase fw-bold text-yellow text-nowrap d-block w-100" id="order-product-submit" disabled>Kiểm tra SPAM...</button>
+							<?php } else { ?>
 							<button type="submit" class="btn btn-lg btn-danger text-uppercase fw-bold text-yellow text-nowrap d-block w-100" id="order-product-submit">Bấm gửi đi</button>
+							<?php } ?>
+							
 							<div class="invalid-feedback"></div>
 						</div>
 						<div id="order-product-message"></div>
@@ -106,18 +116,13 @@ class Footer {
 		if(''!=$custom_script) {
 			echo $custom_script;
 		}
+		$turnstile_keys = Common::get_turnstile_keys();
+
+		if ($turnstile_keys['ctf7']==false && $turnstile_keys['sitekey']!='' && $turnstile_keys['secretkey']!='') {
 		?>
-		<!-- <script type="text/javascript">
-			window.onloadTurnstileCallback = function () {
-				turnstile.render("#example-container", {
-				sitekey: "<YOUR_SITE_KEY>",
-				callback: function (token) {
-				console.log(`Challenge Success ${token}`);
-				},
-				});
-			};
-		</script> -->
+		<script id="theme-turnstile-js" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async></script>
 		<?php
+		}
 	}
 
 	public function footer_fixed() {

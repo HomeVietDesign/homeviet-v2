@@ -73,9 +73,9 @@ class Head {
 
 		?>
 		<style type="text/css">
-			.grecaptcha-badge {
+			/*.grecaptcha-badge {
 				right: -999999px!important;
-			}
+			}*/
 
 			/*@media (min-width: 576px) {
 				
@@ -93,15 +93,40 @@ class Head {
 					//console.log(document.getElementById('footer-buttons-fixed').clientHeight);
 				});
 			});
+
+			<?php if(Common::has_turnstile()) { ?>
+
+			function cf_turnstile_order_callback(token) {
+				let $submit_button = jQuery('#order-product-submit');
+				$submit_button.prop('disabled', false);
+				$submit_button.text('Bấm gửi đi');
+			}
+
+			function cf_turnstile_order_error_callback() {
+				let $submit_button = jQuery('#order-product-submit');
+				// alert('Kiểm tra SPAM thất bại!');
+				// window.location.reload();
+				$submit_button.prop('disabled', true);
+			}
+
+			function cf_turnstile_order_expired_callback() {
+				let $submit_button = jQuery('#order-product-submit');
+				// alert('Kiểm tra SPAM hết hạn!');
+				// window.location.reload();
+				$submit_button.prop('disabled', true);
+			}
+
+			document.addEventListener('orderProduct', function(e){
+				turnstile.reset();
+			});
+
+			<?php } ?>
 		</script>
 		<?php
 		$custom_script = fw_get_db_settings_option('head_code', '');
 		if(''!=$custom_script) {
 			echo $custom_script;
 		}
-		?>
-		<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-		<?php
 
 	}
 

@@ -11,7 +11,7 @@ class Assets {
 
 		add_action('wp_enqueue_scripts', [$this, 'enqueue_styles'], 50);
 		add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts'], 50);
-		add_action('wp_enqueue_scripts', [$this, 'recaptcha_script'], 21);
+		//add_action('wp_enqueue_scripts', [$this, 'recaptcha_script'], 21);
 
 	}
 
@@ -76,7 +76,7 @@ class Assets {
 
 	    //wp_enqueue_script('lodash');
 
-		$recaptcha_keys = Common::get_recaptcha_keys();
+		//$recaptcha_keys = Common::get_recaptcha_keys();
 
 		wp_register_script( 'bootstrap', THEME_URI.'/libs/bootstrap/js/bootstrap.bundle.min.js', ['jquery'], '5.1.3', true);
 		//wp_register_script( 'bxslider', THEME_URI.'/libs/bxslider/dist/jquery.bxslider.min.js', ['jquery'], '4.2.17', true);
@@ -116,8 +116,8 @@ class Assets {
 		$data = [
 			'home_url'=>esc_url(home_url()), 
 			'ajax_url'=>esc_url(admin_url('admin-ajax.php')),
-			'sitekey'=>$recaptcha_keys['sitekey'],
-			'cf_sitekey'=>fw_get_db_settings_option('cf_turnstile_key'),
+			//'sitekey'=>$recaptcha_keys['sitekey'],
+			//'cf_sitekey'=>fw_get_db_settings_option('cf_turnstile_key'),
 			'is_user_logged_in' => (is_user_logged_in())?1:0,
 			'preview' => (isset($_GET['preview']))?1:0,
 			'popup_content_timeout' => absint(fw_get_db_settings_option('popup_content_timeout', 120)),

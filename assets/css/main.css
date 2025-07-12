@@ -643,6 +643,9 @@ body:not(.single) #video-player video {
 .costs-info {
 	text-shadow: 2px 2px 3px #001830, -2px 2px 3px #001830, 2px -2px 3px #001830, -2px -2px 3px #001830;
 }
+.costs-info {
+	margin-bottom: -3px;
+}
 .total_amount {
 	font-family: "Times News Roman";
 	font-size: 18px;
@@ -650,7 +653,7 @@ body:not(.single) #video-player video {
 	line-height: 1;
 }
 .total_amount span {
-	font-size: 18px;
+	font-size: 16px;
 }
 .total_amount span span {
 	font-size: 36px;
