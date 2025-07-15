@@ -59,8 +59,6 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
     public static function inject_pixel_code() {
 
         add_filter( 'order_submit', array( __CLASS__, 'trackServerEvent' ) );
-
-        add_action( 'purchase', [__CLASS__, 'trackPurchaseEvent'] );
         
         add_action(
             'wp_footer',
@@ -75,49 +73,6 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
         debug_log($events);
 
         return $events;
-    }
-
-    public static function trackPurchaseEvent($data) {
-        //debug_log($data);
-        
-        $event_data = get_post_meta($data['id'], '_event_data', true);
-        $order_data = get_post_meta($data['id'], '_data', true);
-
-        $user_data = ( new UserData() )
-                    ->setClientIpAddress( $order_data['ip_address'] )
-                    ->setClientUserAgent( $order_data['user_agent'] )
-                    ->setPhones( $event_data['ph'] )
-                    ->setEmails( $event_data['em'] )
-                    ->setFbp( $event_data['fbp'] )
-                    ->setFbc( $event_data['fbc'] );
-
-        $custom_data = (new CustomData())
-                    ->setValue(0.00)
-                    ->setCurrency('VND');
-
-        $event = ( new Event() )
-                ->setEventName( 'Purchase' )
-                ->setEventTime( $event_data['event_time'] )
-                //->setEventTime( time() )
-                ->setEventId( EventIdGenerator::guidv4() )
-            ->setEventSourceUrl(
-                $event_data['event_source_url']
-            )
-                ->setActionSource( 'website' )
-                ->setUserData( $user_data )
-                ->setCustomData( $custom_data );
-        try {
-            FacebookServerSideEvent::send([$event]);
-            wp_update_post([
-                'ID' => $data['id'],
-                'post_status' => 'publish'
-            ]);
-            update_post_meta( $data['id'], '_purchase', 1 );
-
-        } catch( \Exception $e ) {
-            throw $e;
-        }
-
     }
 
     /**

@@ -95,7 +95,7 @@ class Footer {
 
 						<div class="mb-3">
 							<?php if($turnstile_keys['sitekey']!='' && $turnstile_keys['secretkey']!='') { ?>
-							<button type="submit" class="btn btn-lg btn-danger text-uppercase fw-bold text-yellow text-nowrap d-block w-100" id="order-product-submit" disabled>Kiểm tra SPAM...</button>
+							<button type="submit" class="btn btn-lg btn-danger text-uppercase fw-bold text-yellow text-nowrap d-block w-100" id="order-product-submit" disabled>Kiểm tra bảo mật...</button>
 							<?php } else { ?>
 							<button type="submit" class="btn btn-lg btn-danger text-uppercase fw-bold text-yellow text-nowrap d-block w-100" id="order-product-submit">Bấm gửi đi</button>
 							<?php } ?>

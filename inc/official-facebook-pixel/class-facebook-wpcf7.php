@@ -126,7 +126,7 @@ class FacebookWPCF7 extends FacebookWordpressIntegrationBase {
         $order_data = [
             'name' => (!empty($name)) ? trim(implode(' ', $name)):'',
             'url' => $server_event->getEventSourceUrl(),
-            'referrer' => urldecode(base64_decode(isset($_COOKIE['_ref'])?$_COOKIE['_ref']:'')),
+            'referrer' => base64_decode(isset($_COOKIE['_ref'])?$_COOKIE['_ref']:''),
             'user_agent' => $server_event->getUserData()->getClientUserAgent(),
             'ip_address'=>$server_event->getUserData()->getClientIpAddress(),
             'image' => '',

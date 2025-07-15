@@ -56,9 +56,11 @@ class Admin_Product_Order {
 			$purchase = absint(get_post_meta($order->ID, 'purchase', true));
 			
 			if($order && $purchase==0 && $order->post_status=='pending') {
+				$datetime = get_the_date( 'Y-m-d H:i:s', $order );
 				wp_update_post([
 					'ID' => $order->ID,
-					'post_status' => 'publish'
+					'post_status' => 'publish',
+					'edit_date' => $datetime
 				]);
 				update_post_meta( $data['id'], '_purchase', 0 );
 				$response['code'] = 1;
@@ -167,9 +169,9 @@ class Admin_Product_Order {
 				<td>
 				<?php
 				if($order_data['referrer']) {
-					$referrer = explode(',', $order_data['referrer']);
+					$referrer = explode(',', base64_decode($order_data['referrer']));
 					foreach ($referrer as $key => $value) {
-						echo '<div>'.esc_html($value).'</div>';
+						echo '<div>'.esc_html(urldecode($value)).'</div>';
 					}
 				}
 				?>
@@ -200,8 +202,8 @@ class Admin_Product_Order {
 
 		$event_data = get_post_meta($post_id, '_event_data', true);
     	$order_data = get_post_meta($post_id, '_data', true);
-    	$referrer = $order_data['url'].( ($order_data['referrer']!='')?','.$order_data['referrer']:'' );
-    	//debug($order_data);
+    	$referrer = urldecode($order_data['url'].( ($order_data['referrer']!='')?','.$order_data['referrer']:''));
+    	
 		switch ($column) {
 			case 'ID':
 				echo esc_html($post_id);
