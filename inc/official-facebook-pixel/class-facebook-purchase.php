@@ -49,67 +49,39 @@ use FacebookAds\Object\ServerSide\CustomData;
 class FacebookPurchase extends FacebookWordpressIntegrationBase {
     const TRACKING_NAME = 'purchase';
 
-    /**
-     * Add hooks to inject the Contact Form 7 tracking code.
-     *
-     * Adds the following hooks:
-     *  - order_submit: Triggers a server-side event when the form is submitted.
-     *  - wp_footer: Injects the mail sent listener.
-     */
-    public static function inject_pixel_code() {
-
-        add_action( 'purchase', [__CLASS__, 'trackPurchaseEvent'] );
-        
-    }
-
-    public static function trackPurchaseEvent($data) {
+    public static function track($events) {
         //debug_log($data);
-        
-        $event_data = get_post_meta($data['id'], '_event_data', true);
-        $order_data = get_post_meta($data['id'], '_data', true);
 
-        $user_data = ( new UserData() )
-                    ->setClientIpAddress( $order_data['ip_address'] )
-                    ->setClientUserAgent( $order_data['user_agent'] )
-                    ->setPhones( $event_data['ph'] )
-                    ->setEmails( $event_data['em'] )
-                    ->setFbp( $event_data['fbp'] )
-                    ->setFbc( $event_data['fbc'] );
+        if(isset($events['event_data']['fb']) && !empty($events['event_data']['fb'])) {
+            
+            $user_data = ( new UserData() )
+                        ->setClientIpAddress( $events['order_data']['ip_address'] )
+                        ->setClientUserAgent($events['order_data']['user_agent'] )
+                        ->setPhones( $events['event_data']['fb']['ph'] )
+                        ->setEmails( $events['event_data']['fb']['em'] )
+                        ->setFbp( $events['event_data']['fb']['fbp'] )
+                        ->setFbc( $events['event_data']['fb']['fbc'] );
 
-        $custom_data = (new CustomData())
-                    ->setValue(0.00)
-                    ->setCurrency('VND');
+            $custom_data = (new CustomData())
+                        ->setValue(0.00)
+                        ->setCurrency('VND');
 
-        $event = ( new Event() )
-                ->setEventName( 'Purchase' )
-                //->setEventTime( $event_data['event_time'] )
-                ->setEventTime( time() )
-                ->setEventId( EventIdGenerator::guidv4() )
-            ->setEventSourceUrl(
-                $event_data['event_source_url']
-            )
-                ->setActionSource( 'website' )
-                ->setUserData( $user_data )
-                ->setCustomData( $custom_data );
-        try {
+            $event = ( new Event() )
+                    ->setEventName( 'Purchase' )
+                    ->setEventTime( time() )
+                    ->setEventId( EventIdGenerator::guidv4() )
+                    ->setEventSourceUrl(
+                        $events['event_data']['fb']['event_source_url']
+                    )
+                    ->setActionSource( 'website' )
+                    ->setUserData( $user_data )
+                    ->setCustomData( $custom_data );
+
+            //debug_log($event);
+            
             FacebookServerSideEvent::send([$event]);
-            $datetime = get_the_date( 'Y-m-d H:i:s', $data['id'] );
 
-           // debug_log($datetime);
-
-            wp_update_post([
-                'ID' => $data['id'],
-                'post_status' => 'publish',
-                'edit_date' => $datetime
-            ]);
-
-            update_post_meta( $data['id'], '_purchase', 1 );
-
-        } catch( \Exception $e ) {
-            throw $e;
         }
-
     }
 
 }
-FacebookPurchase::inject_pixel_code();

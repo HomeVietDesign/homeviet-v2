@@ -90,7 +90,10 @@ class Ajax {
 				'code' => $code,
 				'id' => $id,
 				'name' => $name,
-				'phone' => $phone
+				'phone' => $phone,
+				'ref' => $ref,
+				'url' => $url,
+				'type' => $type
 			],
 			'fb_pxl_code' => ''
 		];
@@ -101,19 +104,18 @@ class Ajax {
 
 				$attachment_img = wp_get_attachment_url( $attachment );
 
-				$mail_to = [
-					get_bloginfo('admin_email'),
-				];
+				$mail_to = get_bloginfo('admin_email');
+				$mail_headers = array('Content-Type: text/html; charset=UTF-8');
 
 				$admin2_email = \HomeViet\Common::get_admin2_email();
 
 				if(!empty($admin2_email)) {
-					$mail_to = array_merge($mail_to, $admin2_email);
+					foreach ($admin2_email as $key => $value) {
+						$mail_headers[] = 'Cc: '.$value;
+					}
 				}
 
 				//$mail_to = 'qqngochv@gmail.com';
-
-				$mail_headers = array('Content-Type: text/html; charset=UTF-8');
 
 				ob_start();
 
@@ -149,6 +151,8 @@ class Ajax {
 					echo 'Youtube';
 				} elseif (strpos($referrer, 'zalo')!==false) {
 					echo 'Zalo';
+				} elseif (strpos($referrer, 'tiktok')!==false) {
+					echo 'Tiktok';
 				} else {
 					echo '(Không xác định)';
 				}
@@ -173,8 +177,6 @@ class Ajax {
 					
 					$response['data']['title'] = get_the_title($id);
 					$response['data']['image'] = $attachment_img;
-					$response['data']['type'] = $type;
-					$response['data']['ref'] = $ref;
 					
 					$response['code'] = 1;
 					$response['msg'] = '<p><strong>Yêu cầu của Quý khách đã được gửi đi.</strong> Trợ lý của KTS. Trần Sơn sẽ liên hệ tư vấn trong thời gian sớm nhất.</p><p>Xin cảm ơn!</p>';

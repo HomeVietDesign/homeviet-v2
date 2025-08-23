@@ -92,8 +92,6 @@ class FacebookApplyPosition extends FacebookWordpressIntegrationBase {
     	
         $is_internal_user = FacebookPluginUtils::is_internal_user();
         
-        //$is_internal_user = false;
-        
         $submit_failed  = (1 !== $response['code']);
         if ( $is_internal_user || $submit_failed ) {
             return $response;
@@ -109,6 +107,7 @@ class FacebookApplyPosition extends FacebookWordpressIntegrationBase {
         FacebookServerSideEvent::get_instance()->track( $server_event );
 
         $events = FacebookServerSideEvent::get_instance()->get_tracked_events();
+        
         if ( count( $events ) === 0 ) {
             return $response;
         }
@@ -142,9 +141,9 @@ class FacebookApplyPosition extends FacebookWordpressIntegrationBase {
         }
 
         return array(
-            'email'      => '',
-            'first_name' => '',
-            'last_name'  => '',
+            // 'email'      => '',
+            // 'first_name' => '',
+            // 'last_name'  => '',
             'phone'      => $response['data']['phone'],
         );
     }

@@ -64,9 +64,62 @@ class Admin_Post {
 			add_filter( 'manage_edit-post_sortable_columns', [$this, 'custom_column_sortable'] );
 			add_action( 'pre_get_posts', [$this, 'sort_query'] );
 
+			add_action( 'restrict_manage_posts', [$this, 'filter_post_by_taxonomy'] );
+
+			add_filter( 'parse_query', [$this, 'taxonomy_parse_filter'] );
+
 			//add_action( 'admin_footer', [$this, 'test'] );
 		}
 		
+	}
+
+	public function taxonomy_parse_filter( $query ) {
+		//modify the query only if it admin and main query.
+		if( !(is_admin() AND $query->is_main_query()) ){ 
+			return $query;
+		}
+
+		$post_type = isset($_GET['post_type']) ? $_GET['post_type'] : '';
+	
+		if($post_type=='post') {
+			$tax_query = [];
+
+			$pri = isset($_GET['pri']) ? intval($_GET['pri']) : 0;
+			if($pri!=0) {
+				$tax_query['pri'] = ['taxonomy' => 'price'];
+				if($pri>0) {
+					$tax_query['pri']['field'] = 'term_id';
+					$tax_query['pri']['terms'] = $pri;
+				} else {
+					$tax_query['pri']['operator'] = 'NOT EXISTS';
+				}
+
+			}
+			
+			if(!empty($tax_query)) {
+				$query->set('tax_query', $tax_query);
+			}
+		}
+
+		return $query;
+	}
+
+	public function filter_post_by_taxonomy($post_type) {
+		
+		if ($post_type == 'post') {
+			wp_dropdown_categories(array(
+				'show_option_all' => '- Giá thiết kế -',
+				'show_option_none' => '- Chưa có -',
+				'taxonomy'        => 'price',
+				'name'            => 'pri',
+				'orderby'         => 'name',
+				'selected'        => isset($_GET['pri']) ? intval($_GET['pri']) : 0,
+				'show_count'      => true,
+				'hide_empty'      => true,
+				'value_field'	  => 'term_id'
+			));
+
+		};
 	}
 
 	public function test() {
@@ -952,17 +1005,7 @@ class Admin_Post {
 				break;
 
 			case 'ID':
-				$prefix = '';
-				switch (strtolower($_SERVER['HTTP_HOST'])) {
-					case 'transonarchi.com':
-						$prefix = 'HD';
-						break;
-					
-					case 'ktstranson.com':
-						$prefix = 'TC';
-						break;
-				}
-				echo esc_html($prefix.$post_id);
+				echo esc_html($post_id);
 				break;
 			case 'RID':
 				echo esc_html(fw_get_db_post_option($post_id, '_ref'));
@@ -1006,7 +1049,7 @@ class Admin_Post {
 		}
 
 		// $columns['format'] = 'Loại nội dung';
-		// $columns['ID'] = 'ID';
+		$columns['ID'] = 'ID';
 		// $columns['RID'] = 'RID';
 		$columns['feature'] = 'Đặc tính';
 		$columns['dimensions'] = 'Kích thước';

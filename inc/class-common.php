@@ -206,7 +206,9 @@ final class Common {
 			if($response->success) {
 				return true;
 			}
-		}
+		} else {
+            return true;
+        }
 
 		return false;
 	}

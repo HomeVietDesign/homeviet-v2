@@ -9,12 +9,13 @@ class Theme {
 	
 		include_once THEME_DIR.'/inc/global-functions.php';
 		include_once THEME_DIR.'/inc/unyson/class-unyson.php';
+		require_once THEME_DIR.'/inc/simplehtmldom/simple_html_dom.php';
 		include_once THEME_DIR.'/inc/admin/class-admin.php';
 
 		include_once THEME_DIR.'/inc/class-custom-types.php';
 		include_once THEME_DIR.'/inc/class-background-process.php';
 		include_once THEME_DIR.'/inc/class-api.php';
-		include_once THEME_DIR.'/inc/class-customer.php';
+		//include_once THEME_DIR.'/inc/class-customer.php';
 		include_once THEME_DIR.'/inc/class-order.php';
 
 		if(class_exists('\\FileBird\\Plugin')) {
@@ -33,7 +34,13 @@ class Theme {
 			include_once THEME_DIR.'/inc/wp-statistics/class-wp-statistics.php';
 		}
 
+		if(class_exists('TiktokForBusiness')) {
+			include_once THEME_DIR.'/inc/tiktok-for-business/class-tiktok-for-business.php';
+		}
+
 		//include_once THEME_DIR.'/inc/class-authentication.php';
+		
+		include_once THEME_DIR.'/inc/class-ads.php';
 		
 		if(unyson_exists()) {
 

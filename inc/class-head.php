@@ -84,13 +84,19 @@ class Head {
 		<script type="text/javascript">
 			window.addEventListener('DOMContentLoaded', function(){
 				const root = document.querySelector(':root');
-				root.style.setProperty('--footer-buttons-fixed--height', document.getElementById('footer-buttons-fixed').clientHeight+'px');
-				root.style.setProperty('--site-header--height', document.getElementById('site-header').clientHeight+'px');
-				//console.log(document.getElementById('footer-buttons-fixed').clientHeight);
+				let footer_buttons_fixed_height = 0, site_header_height = 0;
+				let footer_buttons_fixed = document.getElementById('footer-buttons-fixed');
+				let site_header = document.getElementById('site-header');
+
+				if(footer_buttons_fixed) footer_buttons_fixed_height = footer_buttons_fixed.clientHeight;
+				if(site_header) site_header_height = site_header.clientHeight;
+
+				root.style.setProperty('--footer-buttons-fixed--height', footer_buttons_fixed_height+'px');
+				root.style.setProperty('--site-header--height', site_header_height+'px');
+
 				window.addEventListener('resize', function(){
-					root.style.setProperty('--footer-buttons-fixed--height', document.getElementById('footer-buttons-fixed').clientHeight+'px');
-					root.style.setProperty('--site-header--height', document.getElementById('site-header').clientHeight+'px');
-					//console.log(document.getElementById('footer-buttons-fixed').clientHeight);
+					root.style.setProperty('--footer-buttons-fixed--height', footer_buttons_fixed_height+'px');
+					root.style.setProperty('--site-header--height', site_header_height+'px');
 				});
 			});
 

@@ -10,10 +10,12 @@ class Select_Post_Export {
 	private function __construct() {
         if(is_admin()) {
             add_action( 'admin_init', [$this, 'admin_init'] );
-            add_action( 'wp_ajax_post_image_import', [$this, 'ajax_post_image_import'] );
+            //add_action( 'wp_ajax_post_image_import', [$this, 'ajax_post_image_import'] );
             add_filter( 'export_skip_postmeta', [$this, 'export_skip_postmeta'], 10, 2 );
 
-            add_action( 'admin_notices', [$this, 'imported_images_notice'] );
+            //add_action( 'admin_notices', [$this, 'imported_images_notice'] );
+
+            add_action( 'wp_ajax_post_export', [$this, 'ajax_post_export'] );
         }
     }
 
@@ -40,23 +42,29 @@ class Select_Post_Export {
         */
         $meta_keys = [
             '_thumbnail_id',
-            '_allow_save',
+            '_featured',
             '_allow_order',
+            '_images',
             '_functions',
-            '_location',
             '_breadth',
             '_length',
-            '_area',
-            '_total_amount',
-            '_design_cost',
-            '_show_general_design_cost',
+            '_area_1',
+            '_floors',
+            '_price',
+            '_use_general_price',
+            '_total_factor',
             '_footer_content',
-            '_featured',
-            //'_get_premium',
-            '_parts',
-            '_images',
-            '_sale_off',
-            '_show_general_sale_off',
+
+            // '_location',
+            // '_area',
+            // '_total_amount',
+            // '_design_cost',
+            // '_show_general_design_cost',
+            // '_get_premium',
+            // '_parts',
+            // '_sale_off',
+            // '_show_general_sale_off',
+
             // attachment
             '_wp_attached_file',
             '_wp_attachment_metadata',
@@ -234,26 +242,23 @@ class Select_Post_Export {
     public function post_row_actions($actions, $post) {
         // Check for your post type.
         if ( $post->post_type == "post" || $post->post_type == "page" || $post->post_type == "seo_post" || $post->post_type == "content_builder" ) {
-            $is_handle_import = get_post_meta($post->ID, '_handle_import', true);
 
             // You can check if the current user has some custom rights.
-            if ( current_user_can( 'edit_post', $post->ID ) && $is_handle_import==1 ) {
+            if ( current_user_can( 'edit_post', $post->ID ) ) {
 
                 // $trash = $actions['trash'];
                 // unset($actions['trash']);
 
-                $redirect = base64url_encode(fw_current_url());
-
                 //debug_log($redirect);
 
                 // Include a nonce in this link
-                $import_link = wp_nonce_url( admin_url( 'admin-ajax.php?action=post_image_import&post=' . $post->ID.'&re='.$redirect ), 'image_import_'.$post->ID );
+                $export_link = wp_nonce_url( admin_url( 'admin-ajax.php?action=post_export&post=' . $post->ID ), 'post_export_'.$post->ID );
 
                 // Add the new Copy quick link.
                 $actions = array_merge( $actions, array(
-                    'image_import' => sprintf( '<a href="%1$s">%2$s</a>',
-                    esc_url( $import_link ), 
-                    'Nhập hình ảnh'
+                    'post_export' => sprintf( '<a href="%1$s" target="_blank">%2$s</a>',
+                    esc_url( $export_link ), 
+                    'Export'
                     ) 
                 ) );
 
@@ -569,6 +574,71 @@ class Select_Post_Export {
         }
 
         return $related_ids;
+    }
+
+    public function ajax_post_export() {
+        $post_id = isset($_GET['post']) ? absint($_GET['post']) : 0;
+        
+        if($post_id==0) exit;
+
+        check_ajax_referer('post_export_'.$post_id, '_wpnonce', true);
+
+        $post_ids = [$post_id];
+
+        global $wpdb;
+        // Array to hold all additional IDs (attachments and thumbnails).
+        $additional_ids = array();
+
+        // Create a copy of the post IDs array to avoid modifying the original array.
+        $processing_ids = $post_ids;
+
+        while ( $next_posts = array_splice( $processing_ids, 0, 20 ) ) {
+            $posts_in     = array_map( 'absint', $next_posts );
+            $placeholders = array_fill( 0, count( $posts_in ), '%d' );
+
+            // Create a string for the placeholders.
+            $in_placeholder = implode( ',', $placeholders );
+
+            // Prepare the SQL statement for attachment ids.
+            $attachment_ids = $wpdb->get_col(
+                $wpdb->prepare(
+                    "
+                SELECT ID
+                FROM $wpdb->posts
+                WHERE post_parent IN ($in_placeholder) AND post_type = 'attachment'
+                    ",
+                    $posts_in
+                )
+            );
+
+            $thumbnails_ids = $wpdb->get_col(
+                $wpdb->prepare(
+                    "
+                SELECT meta_value
+                FROM $wpdb->postmeta
+                WHERE $wpdb->postmeta.post_id IN ($in_placeholder)
+                AND $wpdb->postmeta.meta_key = '_thumbnail_id'
+                    ",
+                    $posts_in
+                )
+            );
+
+            $additional_ids = array_merge( $additional_ids, $attachment_ids, $thumbnails_ids );
+        }
+
+        // Merge the additional IDs back with the original post IDs after processing all posts
+        $_post_ids = array_unique( array_merge( $post_ids, $additional_ids ) );
+        $export_ids = [];
+
+        foreach ($post_ids as $post_id) {
+            $export_ids = array_merge($export_ids, $this->related_export_ids($post_id));
+        }
+
+        $_post_ids = array_unique( array_merge( $_post_ids, $export_ids ) );
+
+        $this->do_export($_post_ids);
+
+        exit();
     }
 
 	public function handle_bulk_post_action($redirect_url, $action, $post_ids) {

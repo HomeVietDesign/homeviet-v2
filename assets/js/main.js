@@ -5,6 +5,22 @@ window.addEventListener('DOMContentLoaded', function(){
 
 	jQuery(function($){
 
+		$(document).on('click', 'a.popup', function(e){
+			e.preventDefault();
+
+			let $a = $(this),
+				i=getParam('popup'),
+				$modal = $('#modal-popup-content'),
+				src = add_query_url('popup', (i==null)?1:parseInt(i)+1, $a.attr('href'));
+			
+			$modal.find('.modal-body').html('<iframe src="'+src+'" style="border:0;">');
+
+			$modal.modal('show');
+
+			$('#modal-video-player').modal('hide');
+
+			return false;
+		});
 
 		function check_input_phone_number(p) {
 			const patt = /^(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}$/;
@@ -382,6 +398,8 @@ window.addEventListener('DOMContentLoaded', function(){
 						phone_number = "+84" + phone.slice(1, phone.length);
 					} else if(phone.startsWith('+84')) {
 						phone_number = phone;
+					} else if(phone.startsWith('84')) {
+						phone_number = "+"+phone;
 					} else {
 						phone_number = "+84" + phone;  
 					}
@@ -474,7 +492,7 @@ window.addEventListener('DOMContentLoaded', function(){
 				url = $button.data('url');
 			$('#video-player').html(video.content);
 			if(url!='') {
-				$('#video-link').html('<a href="'+url+'" class="btn btn-sm btn-danger">Xem chi tiết</a>');
+				$('#video-link').html('<a href="'+url+'" class="btn btn-sm btn-danger popup">Xem chi tiết</a>');
 			}
 			if(video.type=='youtube') {
 				let h,w;

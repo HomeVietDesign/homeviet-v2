@@ -223,7 +223,7 @@ $options = array(
 				'type'  => 'text',
 				'value' => '',
 				'label' => 'Video URL',
-				'desc' => 'Ưu tiên 2.',
+				'desc' => 'Ưu tiên.',
 			),
 			'video' => array(
 				'type'  => 'upload',

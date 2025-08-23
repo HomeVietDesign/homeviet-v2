@@ -120,58 +120,45 @@ class Admin_Product_Order {
 
 		add_meta_box(
             'order_data'     // Reusing just 'postexcerpt' doesn't work.
-        ,   'Thông tin người dùng'    // Title
+        ,   'Thông tin'    // Title
         ,   array ( $this, 'order_data' ) // Display function
         ,   'product_order'              // Screen, we use all screens with meta boxes.
         ,   'normal'          // Context
         ,   'core'            // Priority
         );
 
-        // add_meta_box(
-        //     'event_data'     // Reusing just 'postexcerpt' doesn't work.
-        // ,   'Thông tin sự kiện'    // Title
-        // ,   array ( $this, 'event_data' ) // Display function
-        // ,   'product_order'              // Screen, we use all screens with meta boxes.
-        // ,   'normal'          // Context
-        // ,   'core'            // Priority
-        // );
-	}
-
-	public function event_data($post) {
-		$event_data = get_post_meta($post->ID, '_event_data', true);
-		$order_data = get_post_meta($post->ID, '_data', true);
-		
 	}
 
 	public function order_data($post) {
-		$order_data = get_post_meta($post->ID, '_data', true);
-		$event_data = get_post_meta($post->ID, '_event_data', true);
+		$events = get_post_meta($post->ID, '_events', true);
+		//debug($events);
 		?>
 		<table class="product-order-info">
 			<tr>
 				<th>Số điện thoại</th>
-				<td><?=esc_html($event_data['ph'][0])?></td>
+				<td><?=esc_html($events['order_data']['phone'])?></td>
 			</tr>
 			<tr>
 				<th>IP</th>
-				<td><?=esc_html($order_data['ip_address'])?></td>
+				<td><?=esc_html($events['order_data']['ip_address'])?></td>
 			</tr>
 			<tr>
 				<th>Agent</th>
-				<td><?=esc_html($order_data['user_agent'])?></td>
+				<td><?=esc_html($events['order_data']['user_agent'])?></td>
 			</tr>
 			<tr>
 				<th>URL</th>
-				<td><?=esc_html($order_data['url'])?></td>
+				<td><?=esc_html($events['order_data']['url'])?></td>
 			</tr>
 			<tr>
 				<th>URLs</th>
 				<td>
 				<?php
-				if($order_data['referrer']) {
-					$referrer = explode(',', base64_decode($order_data['referrer']));
+				//debug($order_data);
+				if($events['order_data']['referrer']) {
+					$referrer = explode(',', $events['order_data']['referrer']);
 					foreach ($referrer as $key => $value) {
-						echo '<div>'.esc_html(urldecode($value)).'</div>';
+						echo '<p>'.esc_html(urldecode($value)).'</p>';
 					}
 				}
 				?>
@@ -200,24 +187,25 @@ class Admin_Product_Order {
 		$quick_edit_nonce = wp_create_nonce('quick_edit_'.$post_id);
 		$post = get_post($post_id);
 
-		$event_data = get_post_meta($post_id, '_event_data', true);
-    	$order_data = get_post_meta($post_id, '_data', true);
-    	$referrer = urldecode($order_data['url'].( ($order_data['referrer']!='')?','.$order_data['referrer']:''));
+    	$events = get_post_meta($post_id, '_events', true);
+
+    	$referrer = isset($events['order_data']['url'])?$events['order_data']['url']:'';
+    	$referrer .= (isset($events['order_data']['referrer']) && ''!=$events['order_data']['referrer'])?$events['order_data']['referrer']:'';
+    	$referrer = ($referrer!='')?urldecode($referrer):'';
     	
+
 		switch ($column) {
 			case 'ID':
 				echo esc_html($post_id);
 				break;
 
 			case 'image':
-				echo esc_html($post_id);
+				//echo esc_html($post_id);
 				break;
 
 			case 'phone':
-				if(!empty($event_data['ph'])) {
-					foreach ($event_data['ph'] as $key => $value) {
-						?><div><?=esc_html(phone_8420($value))?></div><?php
-					}
+				if(isset($events['order_data']['phone'])) {
+					?><div><?=esc_html(phone_8420($events['order_data']['phone']))?></div><?php
 				}
 				break;
 
@@ -231,20 +219,22 @@ class Admin_Product_Order {
 					echo 'Youtube';
 				} elseif (strpos($referrer, 'zalo')!==false) {
 					echo 'Zalo';
+				} elseif (strpos($referrer, 'tiktok')!==false) {
+					echo 'Tiktok';
 				} else {
 					echo '(Không xác định)';
 				}
 				break;
 
 			case 'ads':
-				if( preg_match("/(?:.*)utm_content=([^,&]+)(?:.*)/", $referrer, $matches) ) {
+				if($referrer!='' && preg_match("/(?:.*)utm_content=([^,&]+)(?:.*)/", $referrer, $matches) ) {
 					echo esc_html(str_replace('+', ' ', $matches[1]));
 				}
 				break;
 
 			case 'product':
-				if($order_data['id']) {
-					echo '<a href="'.esc_url(get_permalink( $order_data['id'] )).'" target="_blank">'.esc_html(get_the_title($order_data['id'])).'</a>';
+				if(isset($events['order_data']['id'])) {
+					echo '<a href="'.esc_url(get_permalink( $events['order_data']['id'] )).'" target="_blank">'.esc_html(get_the_title($events['order_data']['id'])).'</a>';
 				} else {
 					echo 'Gửi số tư vấn';
 				}

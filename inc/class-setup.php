@@ -9,6 +9,7 @@ class Setup {
 		add_action( 'after_setup_theme', [$this, 'after_setup_theme'] );
 		add_filter( 'use_widgets_block_editor', '__return_false' );
 		add_filter( 'use_block_editor_for_post_type', '__return_false', 10 );
+		add_filter( 'big_image_size_threshold', '__return_false' );
 
 		add_filter( 'image_size_names_choose', [$this, 'image_sizes_choose'] );
 
@@ -89,7 +90,7 @@ class Setup {
 	
 	public function after_setup_theme() {
 		global $popup;
-		$popup = isset($_REQUEST['popup']) ? true : false;
+		$popup = isset($_REQUEST['popup']) ? absint($_REQUEST['popup']) : 0;
 
 		if($popup):
 			show_admin_bar( false );
@@ -163,21 +164,40 @@ class Setup {
 
 		add_action( 'pre_get_posts', [$this, 'query_post_type_for_search'] );
 
-		$admin_role = get_role( 'administrator' );
+		// global $wpdb;
+		// $table = $wpdb->prefix . "fb_event_logs";
+		// $charset_collate = $wpdb->get_charset_collate();
 
-		$admin_role->add_cap('edit_order');
-		$admin_role->add_cap('read_order');
-		$admin_role->add_cap('delete_order');
-		$admin_role->add_cap('edit_orders');
-		$admin_role->add_cap('edit_others_orders');
-		$admin_role->add_cap('delete_orders');
-		$admin_role->add_cap('publish_orders');
-		$admin_role->add_cap('read_private_orders');
-		$admin_role->add_cap('delete_private_orders');
-		$admin_role->add_cap('delete_published_orders');
-		$admin_role->add_cap('delete_others_orders');
-		$admin_role->add_cap('edit_private_orders');
-		$admin_role->add_cap('edit_published_orders');
+	    // // Tạo bảng nếu chưa có
+	    // $wpdb->query("CREATE TABLE IF NOT EXISTS $table (
+	    //     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	    //     uid VARCHAR(255),
+	    //     ip VARCHAR(50),
+	    //     ua TEXT,
+	    //     event_name VARCHAR(100),
+	    //     duration INT,
+	    //     event_date DATE,
+	    //     fbc VARCHAR(255),
+	    //     fbp VARCHAR(255),
+	    //     url VARCHAR(255),
+	    //     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	    // ) {$charset_collate}");
+
+		// $admin_role = get_role( 'administrator' );
+
+		// $admin_role->add_cap('edit_order');
+		// $admin_role->add_cap('read_order');
+		// $admin_role->add_cap('delete_order');
+		// $admin_role->add_cap('edit_orders');
+		// $admin_role->add_cap('edit_others_orders');
+		// $admin_role->add_cap('delete_orders');
+		// $admin_role->add_cap('publish_orders');
+		// $admin_role->add_cap('read_private_orders');
+		// $admin_role->add_cap('delete_private_orders');
+		// $admin_role->add_cap('delete_published_orders');
+		// $admin_role->add_cap('delete_others_orders');
+		// $admin_role->add_cap('edit_private_orders');
+		// $admin_role->add_cap('edit_published_orders');
 
 
 		// $admin_role->remove_cap('edit_order');

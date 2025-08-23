@@ -19,7 +19,7 @@ class WPCF7 {
 
 		add_action( 'wpcf7_before_send_mail', [$this, 'wpcf7_before_send_mail'] );
 		
-		add_action( 'wpcf7_mail_sent', [$this, 'wpcf7_mail_sent'] );
+		//add_action( 'wpcf7_mail_sent', [$this, 'wpcf7_mail_sent'] );
 
 		add_filter( 'wpcf7_posted_data_tel*', [$this, 'wpcf7_convert_phone_number'], 10, 3 );
 
@@ -63,6 +63,8 @@ class WPCF7 {
 			echo 'Google';
 		} elseif (strpos($referrer, 'zalo')!==false) {
 			echo 'Zalo';
+		} elseif (strpos($referrer, 'tiktok')!==false) {
+			echo 'Tiktok';
 		} else {
 			echo '(Không xác định)';
 		}

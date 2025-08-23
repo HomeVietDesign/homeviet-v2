@@ -49,95 +49,37 @@ use FacebookAds\Object\ServerSide\CustomData;
 class FacebookOrder extends FacebookWordpressIntegrationBase {
     const TRACKING_NAME = 'product-order';
 
-    /**
-     * Add hooks to inject the Contact Form 7 tracking code.
-     *
-     * Adds the following hooks:
-     *  - order_submit: Triggers a server-side event when the form is submitted.
-     *  - wp_footer: Injects the mail sent listener.
-     */
-    public static function inject_pixel_code() {
-
-        add_filter( 'order_submit', array( __CLASS__, 'trackServerEvent' ) );
+    public static function track( $order_data ) {
         
-        add_action(
-            'wp_footer',
-            array( __CLASS__, 'injectOrderProductListener' ),
-            10
-        );
+        $return = [
+            'event_data' => [],
+            'fb_pxl_code' => '',
+        ];
 
-        //add_filter('before_conversions_api_event_sent', [__CLASS__, 'before_conversions_api_event_sent']);
-    }
-
-    public static function before_conversions_api_event_sent($events) {
-        debug_log($events);
-
-        return $events;
-    }
-
-    /**
-     * Injects a JavaScript listener for the 'orderProduct' event,
-     * which is triggered when a form is submitted.
-     *
-     * The listener executes the Pixel code sent in the response
-     * via the 'fb_pxl_code' key.
-     *
-     * @return void
-     */
-    public static function injectOrderProductListener() {
-        ob_start();
-    ?>
-    <!-- Meta Pixel Event Code -->
-    <script type='text/javascript'>
-        document.addEventListener( 'orderProduct', function( event ) {
-	        if( "fb_pxl_code" in event.detail){
-                if(event.detail.fb_pxl_code!='') {
-	               eval(event.detail.fb_pxl_code);
-                }
-	        }
-        }, false );
-    </script>
-    <!-- End Meta Pixel Event Code -->
-        <?php
-        $listener_code = ob_get_clean();
-        echo $listener_code; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-    }
-
-    public static function trackServerEvent( $response ) {
-        $is_internal_user = FacebookPluginUtils::is_internal_user();
+        // $is_internal_user = FacebookPluginUtils::is_internal_user();
         
-        //$is_internal_user = false;
-        
-        $submit_failed    = (1 !== $response['code']);
-        if ( $is_internal_user || $submit_failed ) {
-            return $response;
-        }
+        // if ( $is_internal_user ) {
+        //     return $return;
+        // }
 
         $server_event = ServerEventFactory::safe_create_event(
-            //'Gửi số',
             'AddToCart',
-            array( __CLASS__, 'readFormData' ),
-            array( $response ),
+            array( __CLASS__, 'read_form_data' ),
+            array( $order_data ),
             self::TRACKING_NAME,
             true
         );
+
+       // debug_log($server_event);
+
         FacebookServerSideEvent::get_instance()->track( $server_event );
 
         $events = FacebookServerSideEvent::get_instance()->get_tracked_events();
         if ( count( $events ) === 0 ) {
-            return $response;
+            return $return;
         }
 
-        $order_data = [
-            'name' => $response['data']['name'],
-            'url' => $server_event->getEventSourceUrl(),
-            'referrer' => base64_decode($response['data']['ref']),
-            'user_agent' => $server_event->getUserData()->getClientUserAgent(),
-            'ip_address'=>$server_event->getUserData()->getClientIpAddress(),
-            'image' => $response['data']['image'],
-            'type' => $response['data']['type'],
-            'id' => $response['data']['id'],
-        ];
+        //debug_log($events);
 
         $event_data = [
             'event_name'=>$server_event->getEventName(),
@@ -147,12 +89,10 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
             'fbc'=>$server_event->getUserData()->getFbc(),
             'fbp'=>$server_event->getUserData()->getFbp(),
             'em'=>$server_event->getUserData()->getEmails(),
-            'ph'=>$server_event->getUserData()->getPhones()
+            'ph'=>$server_event->getUserData()->getPhones(),
         ];
 
-        if(function_exists('as_enqueue_async_action')) {
-            as_enqueue_async_action('add_product_order', [['order_data'=>$order_data, 'event_data'=>$event_data]], 'order');
-        }
+        $return['event_data'] = $event_data;
 
         $event_id  = $events[0]->getEventId();
         $fbq_calls = PixelRenderer::render(
@@ -161,35 +101,26 @@ class FacebookOrder extends FacebookWordpressIntegrationBase {
             false
         );
         $code      = sprintf(
-            "
-    if( typeof window.pixelLastGeneratedOrderEvent === 'undefined'
-    || window.pixelLastGeneratedOrderEvent != '%s' ){
-    window.pixelLastGeneratedOrderEvent = '%s';
-    %s
-    }
-        ",
+            "if( typeof window.pixelLastGeneratedOrderEvent === 'undefined'
+                || window.pixelLastGeneratedOrderEvent != '%s' ){
+                window.pixelLastGeneratedOrderEvent = '%s';
+                %s
+            }
+            ",
             $event_id,
             $event_id,
             $fbq_calls
         );
 
-        $response['fb_pxl_code'] = $code;
+        $return['fb_pxl_code'] = $code;
 
-        return $response;
+        return $return;
     }
 
-    public static function readFormData( $response ) {
-        if ( empty( $response['data'] ) ) {
-            return array();
-        }
-
+    public static function read_form_data( $order_data ) {
         return array(
-            // 'email'      => '',
-            // 'first_name' => '',
-            // 'last_name'  => '',
-            'phone'      => $response['data']['phone'],
+            'phone'      => $order_data['phone']
         );
     }
 
 }
-FacebookOrder::inject_pixel_code();

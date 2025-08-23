@@ -54,7 +54,8 @@ class Footer {
 		<?php
 	}
 
-	public function order_product_modal() {
+	public function modals() {
+		global $popup;
 		$turnstile_keys = Common::get_turnstile_keys();
 		?>
 		<div class="modal fade" id="order-product" tabindex="-1" role="dialog" aria-labelledby="order-product-label">
@@ -105,6 +106,34 @@ class Footer {
 						<div id="order-product-message"></div>
 						<div id="order-product-preview" class="position-relative"></div>
 					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- modal-video-player -->
+		<div class="modal" id="modal-video-player" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content rounded-0">
+					<div class="modal-body p-0">
+						<button type="button" class="btn-close p-0 position-absolute text-red" data-bs-dismiss="modal" aria-label="Đóng lại"><span class="dashicons dashicons-no-alt"></span></button>
+						<div id="video-player">
+							<div class="ratio ratio-16x9"></div>
+						</div>
+						<div id="video-link" class="text-center p-2 position-absolute w-100 start-0"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- modal-popup-content -->
+		<?php
+		$close_button_left = $popup*30;
+		?>
+		<div class="modal" id="modal-popup-content" tabindex="-1">
+			<div class="modal-dialog m-0">
+				<div class="modal-content rounded-0 border-0">
+					<button type="button" class="p-0 position-absolute close-button text-red z-3" data-bs-dismiss="modal" aria-label="Đóng lại" style="left:<?=$close_button_left?>px;"><span class="dashicons dashicons-no-alt"></span></button>
+					<div class="modal-body p-0"></div>
 				</div>
 			</div>
 		</div>
@@ -207,7 +236,7 @@ class Footer {
 			</div>
 		</div>
 
-		<!-- modal -->
+		<!-- modals -->
 		<?php
 		if($popup_content!='' && !is_singular( 'contractor_page' )) {
 			?>
@@ -241,24 +270,10 @@ class Footer {
 			<?php
 		}
 
-		?>
-		<div class="modal" id="modal-video-player" tabindex="-1">
-			<div class="modal-dialog">
-				<div class="modal-content rounded-0">
-					<div class="modal-body p-0">
-						<button type="button" class="btn-close p-0 position-absolute text-red" data-bs-dismiss="modal" aria-label="Đóng lại"><span class="dashicons dashicons-no-alt"></span></button>
-						<div id="video-player">
-							<div class="ratio ratio-16x9"></div>
-						</div>
-						<div id="video-link" class="text-center p-2 position-absolute w-100 start-0"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<?php
 	}
 
 	public static function display_widgets() {
+		ob_start();
 		?>
 		<div class="site-footer-inner container-xl">
 			<div class="row">
@@ -280,6 +295,23 @@ class Footer {
 			</div>
 		</div>
 		<?php
+		$footer_widgets = ob_get_clean();
+
+		$html = str_get_html($footer_widgets);
+
+		// Phân tích domain từ URL (loại bỏ schema, path)
+		$host = parse_url(home_url(), PHP_URL_HOST);
+
+		// Regex: bắt domain và loại trừ /wp-admin
+		$regex = '/^https?:\/\/(?:www\.)?' . preg_quote($host, '/') . '(?!\/wp-admin).*$/i';
+
+		foreach($html->find('a') as $element) {
+			if(preg_match($regex, $element->href)) {
+				$element->setAttribute('class', trim($element->class . ' popup'));
+			}
+		}
+
+		echo (string)$html;
 	}
 
 	public function display_footer_html() {
@@ -287,9 +319,9 @@ class Footer {
 		if( !$popup ) {
 			add_action('wp_footer', [$this, 'site_footer'], 10);
 			add_action('wp_footer', [$this, 'footer_fixed'], 20);
-			add_action('wp_footer', [$this, 'order_product_modal'], 20);
 			//add_action('wp_footer', [$this, 'logout_post_password'], 15);
 		}
+		add_action('wp_footer', [$this, 'modals'], 20);
 	}
 
 	public static function instance() {

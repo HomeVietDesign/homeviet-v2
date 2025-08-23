@@ -9,13 +9,14 @@ class Body {
 		add_action('wp_body_open', [$this, 'site_body_open'], 30);
 		add_action('wp_footer', [$this, 'site_body_close'], 5);
 
-		//add_filter('body_class', [$this, 'body_class']);
+		add_filter('body_class', [$this, 'body_class']);
 	}
 
 	public function body_class($classes) {
-
-		if ( get_query_var( 'savedlist' ) == true ) {
-			$classes[] = 'page-template-savedlist';
+		global $popup;
+		if ( $popup ) {
+			$classes[] = 'has-popup';
+			$classes[] = 'popup-'.$popup;
 		}
 
 		return $classes;

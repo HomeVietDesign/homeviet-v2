@@ -35,19 +35,18 @@ class FW_Shortcode_Apply_Position extends FW_Shortcode
 		if( \HomeViet\Common::cf_captcha_verify($token) ) {
 
 			if(''!=$name && ''!=$phone) {
-				$mail_to = [
-					get_bloginfo('admin_email'),
-				];
+				$mail_to = get_bloginfo('admin_email');
+				$mail_headers = array('Content-Type: text/html; charset=UTF-8');
 
 				$admin2_email = \HomeViet\Common::get_admin2_email();
 
 				if(!empty($admin2_email)) {
-					$mail_to = array_merge($mail_to, $admin2_email);
+					foreach ($admin2_email as $key => $value) {
+						$mail_headers[] = 'Cc: '.$value;
+					}
 				}
 
 				//$mail_to = 'qqngoc2988@gmail.com';
-
-				$mail_headers = array('Content-Type: text/html; charset=UTF-8');
 
 				$subject = '['.$name.'] Ứng tuyển';
 				

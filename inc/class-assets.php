@@ -146,27 +146,27 @@ class Assets {
 				return false;
 			}
 
-			function setCookie(cname, cvalue, exdays) {
-				const d = new Date();
-				d.setTime(d.getTime() + (exdays*24*60*60*1000));
-				let expires = "expires="+ d.toUTCString();
-				document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+			function setTodayCookie(name, value) {
+				// Lấy thời điểm hiện tại
+				const now = new Date();
+
+				// Tạo mốc hết hạn cuối ngày (23:59:59.999)
+				const expire = new Date();
+				expire.setHours(23, 59, 59, 999);
+
+				// Ghi cookie
+				document.cookie = name + "=" + value + ";expires=" + expire.toUTCString() + ";path=/";
 			}
 
-			function getCookie(cname) {
-				let name = cname + "=";
-				let decodedCookie = decodeURIComponent(document.cookie);
-				let ca = decodedCookie.split(';');
-				for(let i = 0; i <ca.length; i++) {
-					let c = ca[i];
-					while (c.charAt(0) == ' ') {
-						c = c.substring(1);
-					}
-					if (c.indexOf(name) == 0) {
-						return c.substring(name.length, c.length);
-					}
-				}
-				return "";
+			function setCookie(name, value, days) {
+				let d = new Date();
+				d.setTime(d.getTime() + (days*24*60*60*1000));
+				document.cookie = name + "=" + value + ";expires=" + d.toUTCString() + ";path=/";
+			}
+
+			function getCookie(name) {
+				let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+				return match ? match[2] : "";
 			}
 
 			function deleteCookie(name) {
@@ -221,6 +221,11 @@ class Assets {
 				}
 			}
 
+			function getParam(name) {
+				let params = new URLSearchParams(window.location.search);
+				return params.get(name);
+			}
+			
 			let ref = getCookie('_ref');
 			if(ref=='') {
 				ref = window.btoa((document.referrer=='')?window.location.href:document.referrer);
