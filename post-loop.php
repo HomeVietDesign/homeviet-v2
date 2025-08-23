@@ -95,15 +95,35 @@ $_images = get_post_meta($post->ID, '_images', true);
 
 		</div>
 		<div class="post-summary position-relative">
-			<div class="px-2 d-flex">
-				<?php
-				if($allow_order=='yes') {
-					echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger btn-sm order-product fw-bold text-uppercase text-yellow'], esc_html(fw_get_db_settings_option('product_loop_order_button_text')));	
-				}
-				?>
-				<?php if($data_video['type']!='') { ?>
-				<a class="open-modal-player text-uppercase btn btn-sm btn-danger text-yellow fw-bold ms-1" href="#modal-video-player" data-bs-toggle="modal" data-video="<?=esc_attr(json_encode($data_video))?>" data-url="<?php the_permalink(); ?>" title="Xem video">Video</a>
-				<?php } ?>
+			<div class="px-2 d-flex justify-content-between">
+				<div class="left">
+					<?php
+					if($allow_order=='yes') {
+						echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger btn-sm order-product fw-bold text-uppercase text-yellow'], esc_html(fw_get_db_settings_option('product_loop_order_button_text')));	
+					}
+					?>
+					<?php if($data_video['type']!='') { ?>
+					<button type="button" class="open-modal-player text-uppercase btn btn-sm btn-danger text-yellow fw-bold ms-1" data-bs-target="#modal-video-player" data-bs-toggle="modal" data-video="<?=esc_attr(json_encode($data_video))?>" data-url="<?php the_permalink(); ?>" title="Xem video">Video</button>
+					<?php } ?>
+				</div>
+				<div class="right pswp-gallery">
+					<?php
+					if(!empty($_images)) {
+						foreach ($_images as $key => $value) {
+							$src_full = wp_get_attachment_image_src( $value['attachment_id'], 'full' );
+							if($key==0) {
+								?>
+								<a class="text-uppercase btn btn-sm btn-danger text-yellow fw-bold ms-1" href="<?=esc_url($src_full[0])?>" data-pswp-width="<?=$src_full[1]?>" data-pswp-height="<?=$src_full[2]?>" title="Các hình ảnh">Xem ảnh</a>
+								<?php
+							} else {
+								?>
+								<a class="d-none" href="<?=esc_url($src_full[0])?>" data-pswp-width="<?=$src_full[1]?>" data-pswp-height="<?=$src_full[2]?>"></a>
+								<?php
+							}
+						}
+					}
+					?>
+				</div>
 			</div>
 			<?php if($design_price!='' && $display_price=='yes') { ?>
 			<!-- <div class="design-price position-absolute top-0 end-0 d-flex p-2 text-yellow align-items-end"> -->

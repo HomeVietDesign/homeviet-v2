@@ -5,6 +5,13 @@ window.addEventListener('DOMContentLoaded', function(){
 
 	jQuery(function($){
 
+		var lightbox = new PhotoSwipeLightbox({
+			gallery: '.pswp-gallery',
+			children: 'a',
+			pswpModule: PhotoSwipe 
+		});
+		lightbox.init();
+
 		$(document).on('click', 'a.popup', function(e){
 			e.preventDefault();
 

@@ -35,12 +35,14 @@ class Assets {
 		//wp_register_style( 'bxslider', THEME_URI.'/libs/bxslider/dist/jquery.bxslider.min.css', [], '2.4.17' );
 		wp_register_style( 'owlcarousel', THEME_URI.'/libs/owlcarousel/assets/owl.carousel.min.css', [], '2.3.4' );
 		wp_register_style( 'select2', THEME_URI.'/libs/select2/dist/css/select2.min.css', [], '4.0.13' );
+		wp_register_style( 'photoswipe', THEME_URI.'/libs/PhotoSwipe/photoswipe.css', [], '5.4.3' );
 
 		$deps = [
 			'bootstrap',
 			'dashicons',
 			'select2',
 			'owlcarousel',
+			'photoswipe',
 			//'bxslider'
 		];
 
@@ -83,6 +85,8 @@ class Assets {
 		wp_register_script( 'owlcarousel', THEME_URI.'/libs/owlcarousel/owl.carousel.min.js', ['jquery'], '2.3.4', true);
 		wp_register_script( 'select2', THEME_URI.'/libs/select2/dist/js/select2.full.min.js', ['jquery'], '4.0.13', true);
 		wp_register_script( 'isotope', THEME_URI.'/libs/isotope/isotope.pkgd.min.js', ['jquery'], '3.0.6', true);
+		wp_register_script( 'photoswipe', THEME_URI.'/libs/PhotoSwipe/photoswipe.umd.min.js', ['jquery'], '5.4.3', true);
+		wp_register_script( 'photoswipe-lightbox', THEME_URI.'/libs/PhotoSwipe/photoswipe-lightbox.umd.min.js', ['photoswipe'], '5.4.3', true);
 
 		$deps = [
 			'jquery',
@@ -91,6 +95,7 @@ class Assets {
 			'isotope',
 			'select2',
 			'owlcarousel',
+			'photoswipe-lightbox',
 			//'bxslider',
 			//'lodash',
 		];
