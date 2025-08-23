@@ -116,11 +116,11 @@ $options = array(
 			],
 
 			'cf_turnstile_key' => array(
-				'label' => __( 'Recaptcha key' ),
+				'label' => __( 'CF Turnstile Key' ),
 				'type'  => 'text',
 			),
 			'cf_turnstile_secret' => array(
-				'label' => __( 'Recaptcha secret' ),
+				'label' => __( 'CF Turnstile Secret' ),
 				'type'  => 'text',
 			),
 

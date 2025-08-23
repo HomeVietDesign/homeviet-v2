@@ -1,6 +1,10 @@
 <?php
+function hash_sha256($value) {
+    return hash('sha256', strtolower(trim($value)));
+}
+
 function phone_8420($phone_no) {
-	return preg_replace('/^84/', '0', $phone_no);
+	return preg_replace('/^\+?84/', '0', $phone_no);
 }
 
 function phone_0284($phone_no) {
@@ -78,6 +82,27 @@ function unparse_url($parsed_url) {
 
 	return "$scheme$user$pass$host$port$path$query$fragment";
 
+}
+
+function get_user_agent() {
+	if ( isset( $_SERVER['HTTP_USER_AGENT'] ) ) {
+		return sanitize_text_field( wp_unslash( $_SERVER['HTTP_USER_AGENT'] ) );
+	}
+	return '';
+}
+
+function get_user_ip_address() {
+	foreach ( array( 'HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR' ) as $key ) {
+		if ( array_key_exists( $key, $_SERVER ) ) {
+			foreach ( explode( ',', sanitize_text_field( $_SERVER[ $key ] ) ) as $ip ) {
+				$ip = trim( $ip );
+				if ( false !== filter_var( $ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE ) ) {
+					return $ip;
+				}
+			}
+		}
+	}
+	return '';
 }
 
 function get_youtube_id($url) {

@@ -32,6 +32,7 @@ $options = array(
 					'post-meta' => '_featured',
 				),
 			),
+
         	'_allow_order' => array(
 				'label' => 'Nút Chọn mẫu?',
 				'desc'  => '',
@@ -50,10 +51,10 @@ $options = array(
 					'post-meta' => '_allow_order',
 				),
 			),
-			'_ref' => array(
-				'type' => 'text',
-				'label' => 'Mã tân cổ',
-			),
+			// '_ref' => array(
+			// 	'type' => 'text',
+			// 	'label' => 'Mã tân cổ',
+			// ),
 		),
     ),
     array(
@@ -142,35 +143,17 @@ $options = array(
 		'title'   => 'Giá trị công trình',
 		'type'    => 'box',
         'options' => array(
-        	'_design_price' => array(
-				'type' => 'numeric',
-				'integer' => true,
-				'negative' => false,
-				'size' => 'full',
-				'label' => 'Giá thiết kế',
-				'desc'  => 'Đơn vị k/m2',
-				'fw-storage' => array(
-					'type' => 'post-meta',
-					'post-meta' => '_design_price'
-				)
-			),
-			'_use_general_design_price' => array(
-				'label' => 'Dùng giá thiết kế chung?',
-				'desc'  => '',
-				'value'  => 'yes',
-				'type'  => 'switch',
-				'left-choice' => array(
-			        'value' => 'no',
-			        'label' => 'Không',
-			    ),
-			    'right-choice' => array(
-			        'value' => 'yes',
-			        'label' => 'Đúng',
-			    ),
-			    'fw-storage' => array(
-					'type' => 'post-meta',
-					'post-meta' => '_use_general_design_price'
-				)
+        	'display_value' => array(
+				'type'  => 'radio',
+				'value' => 'no',
+				'label' => 'Hiển thị tổng đầu tư',
+				'choices' => array( // Note: Avoid bool or int keys http://bit.ly/1cQgVzk
+					'no' => 'Áp dụng cài đặt chung',
+					'show' => 'Hiển thị',
+					'hide' => 'Ẩn đi',
+				),
+				// Display choices inline instead of list
+				'inline' => false,
 			),
 			'_price' => array(
 				'type' => 'numeric',
@@ -218,7 +201,8 @@ $options = array(
 				'type' => 'html',
 				'label' => 'Công thức tính',
 				'html' => 'Tổng đầu tư = Diện tích 1 sàn x Số tầng cao x Đơn giá x Hệ số tổng'
-			)
+			),
+
         ),
     ),
 	array(
@@ -226,28 +210,28 @@ $options = array(
 		'title'   => 'VIDEO',
 		'type'    => 'box',
         'options' => array(
-        	'video' => array(
-				'type'  => 'upload',
-				'value' => '',
-				'label' => 'Tải lên Video',
-				'desc' => 'Sẽ ưu tiên dùng Video URL bên dưới trước nếu nó có.',
-				'images_only' => false,
-				'files_ext' => array( 'mp4' ),
-
-			),
+        	// 'video_youtube' => array(
+			// 	'type'  => 'oembed',
+			// 	'value' => '',
+			// 	'label' => 'URL YT Video',
+			// 	'desc' => 'Ưu tiên 1.',
+			// 	'preview' => [
+			// 		'keep_ratio' => true
+			// 	]
+			// ),
 			'video_url' => array(
 				'type'  => 'text',
 				'value' => '',
 				'label' => 'Video URL',
-				'desc' => 'Ưu tiên dùng trước.',
+				'desc' => 'Ưu tiên.',
 			),
-			'video_youtube' => array(
-				'type'  => 'oembed',
+			'video' => array(
+				'type'  => 'upload',
 				'value' => '',
-				'label' => 'URL YT Video',
-				'preview' => [
-					'keep_ratio' => true
-				]
+				'label' => 'Tải lên Video',
+				'desc' => 'Sẽ ưu tiên dùng Video URL trước nếu nó có.',
+				'images_only' => false,
+				'files_ext' => array( 'mp4' ),
 			),
         ),
     ),

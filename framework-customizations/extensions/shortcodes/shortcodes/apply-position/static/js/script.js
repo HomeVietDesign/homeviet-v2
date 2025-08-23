@@ -26,6 +26,8 @@ window.addEventListener('DOMContentLoaded', function(){
 					phone_number = "+84" + phone.slice(1, phone.length);
 				} else if(phone.startsWith('+84')) {
 					phone_number = phone;
+				} else if(phone.startsWith('84')) {
+					phone_number = "+"+phone;
 				} else {
 					phone_number = "+84" + phone;  
 				}

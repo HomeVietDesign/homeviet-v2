@@ -7,48 +7,27 @@ class Background_Process {
 
 	private function __construct() {
 
-		add_action('count_order_sent', [$this, 'count_order_sent']);
-		add_action('add_customer_order', [$this, 'add_customer_order']);
+		//add_action('count_order_sent', [$this, 'count_order_sent']);
+		add_action('add_product_order', [$this, 'add_product_order']);
 
 	}
 
-	public function add_customer_order($data) {
-		// kiểm tra sự tồn tại của khách hàng thông qua số điện thoại
-		// nếu đã tồn tại thì cập nhật tên
-		// nếu chưa tồn tại thì thêm mới
+	public function add_product_order($events) {
+		$order_id = wp_insert_post([
+            'post_type' => 'product_order',
+            'post_title' => $events['order_data']['name'],
+            'post_name' => 'order-'.current_time( 'U' ),
+            'post_status' => 'pending',
+            'post_author' => 0
+        ]);
 
-		$customer = new Customer($data['phone'], $data['name']);
-		$customer->save();
+        if( !($order_id instanceof \WP_Error) && $order_id>0 ) {
+            update_post_meta($order_id, '_events', $events);
+            //update_post_meta($order_id, '_event_data', $data['event_data']);
+        }
 
-		if($customer->get_id()) {
-			$order = new Order();
-			$order->set_customer_id($customer->get_id());
-
-			$utm_source = '';
-			$utm_medium = '';
-
-			$ref = base64_decode($data['ref']);
-
-			$order->set_utm_source($utm_source);
-			$order->set_utm_medium($utm_medium);
-			$order->set_url($data['url']);
-			$order->set_referrer($ref);
-			$order->set_user_agent($data['user_agent']);
-			$order->save();
-
-			if($order->get_id()) {
-				$id = (int) $data['id'];
-				$order->insert_item([
-					'name'=>$data['title'],
-					'image'=>$data['image'],
-					'type'=>$data['type'],
-					'id'=>$id
-				]);
-			}
-		}
+        
 	}
-
-
 
 	public function count_order_sent($id) {
 		// debug_log(__METHOD__);

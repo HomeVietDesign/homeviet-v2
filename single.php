@@ -16,6 +16,10 @@ while (have_posts()) {
 		//$_area = get_post_meta($post->ID, '_area', true);
 		$_functions = get_post_meta($post->ID, '_functions', true);
 
+		$design_price = '';
+		$prices = get_the_terms( $post, 'price' );
+		if($prices) $design_price = $prices[0]->description;
+
 		$_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
 		$_floors = floatval(get_post_meta($post->ID, '_floors', true));
 		$area = $_area_1*$_floors;
@@ -58,12 +62,12 @@ while (have_posts()) {
 
 		}
 
-		$get_premium = get_post_meta($post->ID, '_get_premium', true);
 		$allow_order = get_post_meta($post->ID, '_allow_order', true);
 
 		$product_order_button_text = get_option('product_order_button_text', '');
-		$product_order_premium_button_text = get_option('product_order_premium_button_text', '');
 
+		$display_price = fw_get_db_settings_option('display_price', 'yes');
+		$display_location = fw_get_db_settings_option('display_location', 'yes');
 		?>
 		<div id="product-top-info" class="container-xl">
 			<h1 id="entry-heading" class="text-center h3 py-3 m-0"><?php the_title(); ?></h1>
@@ -77,6 +81,12 @@ while (have_posts()) {
 								?>
 								<div class="single-gallery">
 									<div class="position-relative">
+										<?php if($design_price!='' && $display_price=='yes'): ?>
+										<div class="design-price hidden d-flex text-yellow align-items-end position-absolute top-0 end-0 z-3 py-1 px-2">
+											<!-- <span class="d-block me-1">Phong cách:</span> -->
+											<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
+										</div>
+										<?php endif; ?>
 										<div class="slider owl-carousel owl-theme<?php
 										if($data_video['type']!='') {
 											echo ' has-video';
@@ -93,7 +103,7 @@ while (have_posts()) {
 										}
 										?>
 										</div>
-										<?php \HomeViet\Template_Tags::product_cost(); ?>
+										<?php \HomeViet\Template_Tags::product_cost('single'); ?>
 									</div>
 									<div class="navigation-thumbs owl-carousel owl-theme">
 									<?php
@@ -117,6 +127,12 @@ while (have_posts()) {
 								</div>
 								<?php
 								} else {
+									if($design_price!='' && $display_price=='yes'): ?>
+										<div class="d-flex text-yellow align-items-end position-absolute top-0 end-0 z-3">
+											<span class="d-block me-1">Phong cách:</span>
+											<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
+										</div>
+										<?php endif;
 									if($data_video['type']!='') {
 										echo $data_video['content'];
 									} else {
@@ -127,7 +143,6 @@ while (have_posts()) {
 								} ?>
 			
 							</div>
-							
 						</div>
 					</div>
 				</div>
@@ -147,6 +162,17 @@ while (have_posts()) {
 								<?php if($_area_1) { ?>
 								<div class="mb-2 d-flex justify-content-between"><span>Diện tích sàn tầng 1:</span><span class="flex-grow-1 border-bottom border-dark">&nbsp;</span><span><?=esc_html($_area_1)?>/<?=esc_html(number_format($area, 0, '.',','))?>m<sup>2</sup></span></div>
 								<?php } ?>
+								<?php if($location && $display_location=='yes') { ?>
+								<div class="mb-2 d-flex justify-content-between"><span>Địa điểm:</span><span class="flex-grow-1 border-bottom border-dark">&nbsp;</span><span class="fw-bold"><?php
+								foreach ($location as $key => $loca) {
+									if($key==0) {
+										echo esc_html($loca->name);
+									} else {
+										echo ", ".esc_html($loca->name);
+									}
+								}
+								?></span></div>
+								<?php } ?>
 							</div>
 							<?php } ?>
 					
@@ -156,10 +182,7 @@ while (have_posts()) {
 									if($allow_order=='yes' && $product_order_button_text) {
 										echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger order-product d-block my-3 fw-bold'], esc_html($product_order_button_text));	
 									}
-									
-									if($get_premium=='yes' && $product_order_premium_button_text!='') {
-										echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'premium', 'class'=>'btn btn-danger order-premium-product d-block my-3 fw-bolder'], $product_order_premium_button_text);	
-									}
+					
 								}
 								$popup_content = fw_get_db_settings_option('popup_content', '');
 								$popup_content_button_text = fw_get_db_settings_option('popup_content_button_text', '');
@@ -190,10 +213,8 @@ while (have_posts()) {
 
 		</div>
 		<?php
-	}
-	the_content();
-
-	if(!post_password_required( $post )) {
+		the_content();
+		
 		$_footer_content = get_post_meta($post->ID, '_footer_content', 'yes');
 		//if($has_land_info || $_footer_content=='yes') {
 		if($_footer_content=='yes') {

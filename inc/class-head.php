@@ -8,7 +8,7 @@ class Head {
 	private function __construct() {
 		//add_action('wp_head', [$this, 'youtube_api_scripts'], 10);
 		add_action('wp_head', [$this, 'head_scripts'], 50);
-		add_action('wp_head', [$this, 'noindex'], 10);
+		//add_action('wp_head', [$this, 'noindex'], 10);
 		//add_action('wp_head', [$this, 'product_open_graph'], 10);
 	}
 
@@ -73,9 +73,9 @@ class Head {
 
 		?>
 		<style type="text/css">
-			.grecaptcha-badge {
+			/*.grecaptcha-badge {
 				right: -999999px!important;
-			}
+			}*/
 
 			/*@media (min-width: 576px) {
 				
@@ -84,24 +84,55 @@ class Head {
 		<script type="text/javascript">
 			window.addEventListener('DOMContentLoaded', function(){
 				const root = document.querySelector(':root');
-				root.style.setProperty('--footer-buttons-fixed--height', document.getElementById('footer-buttons-fixed').clientHeight+'px');
-				root.style.setProperty('--site-header--height', document.getElementById('site-header').clientHeight+'px');
-				//console.log(document.getElementById('footer-buttons-fixed').clientHeight);
+				let footer_buttons_fixed_height = 0, site_header_height = 0;
+				let footer_buttons_fixed = document.getElementById('footer-buttons-fixed');
+				let site_header = document.getElementById('site-header');
+
+				if(footer_buttons_fixed) footer_buttons_fixed_height = footer_buttons_fixed.clientHeight;
+				if(site_header) site_header_height = site_header.clientHeight;
+
+				root.style.setProperty('--footer-buttons-fixed--height', footer_buttons_fixed_height+'px');
+				root.style.setProperty('--site-header--height', site_header_height+'px');
+
 				window.addEventListener('resize', function(){
-					root.style.setProperty('--footer-buttons-fixed--height', document.getElementById('footer-buttons-fixed').clientHeight+'px');
-					root.style.setProperty('--site-header--height', document.getElementById('site-header').clientHeight+'px');
-					//console.log(document.getElementById('footer-buttons-fixed').clientHeight);
+					root.style.setProperty('--footer-buttons-fixed--height', footer_buttons_fixed_height+'px');
+					root.style.setProperty('--site-header--height', site_header_height+'px');
 				});
 			});
+
+			<?php if(Common::has_turnstile()) { ?>
+
+			function cf_turnstile_order_callback(token) {
+				let $submit_button = jQuery('#order-product-submit');
+				$submit_button.prop('disabled', false);
+				$submit_button.text('Bấm gửi đi');
+			}
+
+			function cf_turnstile_order_error_callback() {
+				let $submit_button = jQuery('#order-product-submit');
+				// alert('Kiểm tra SPAM thất bại!');
+				// window.location.reload();
+				$submit_button.prop('disabled', true);
+			}
+
+			function cf_turnstile_order_expired_callback() {
+				let $submit_button = jQuery('#order-product-submit');
+				// alert('Kiểm tra SPAM hết hạn!');
+				// window.location.reload();
+				$submit_button.prop('disabled', true);
+			}
+
+			document.addEventListener('orderProduct', function(e){
+				turnstile.reset();
+			});
+
+			<?php } ?>
 		</script>
 		<?php
 		$custom_script = fw_get_db_settings_option('head_code', '');
 		if(''!=$custom_script) {
 			echo $custom_script;
 		}
-		?>
-		<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" defer></script>
-		<?php
 
 	}
 

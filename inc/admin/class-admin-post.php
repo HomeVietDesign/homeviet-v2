@@ -51,8 +51,10 @@ class Admin_Post {
 
 			add_action( 'wp_ajax_change_breadth', [$this, 'ajax_change_breadth'] );
 			add_action( 'wp_ajax_change_length', [$this, 'ajax_change_length'] );
-			add_action( 'wp_ajax_change_design_price', [$this, 'ajax_change_design_price'] );
-			add_action( 'wp_ajax_change_use_general_design_price', [$this, 'ajax_change_use_general_design_price'] );
+			add_action( 'wp_ajax_change_area_1', [$this, 'ajax_change_area_1'] );
+			add_action( 'wp_ajax_change_floors', [$this, 'ajax_change_floors'] );
+
+			add_action( 'wp_ajax_change_display_design_price', [$this, 'ajax_change_display_design_price'] );
 			add_action( 'wp_ajax_change_use_general_price', [$this, 'ajax_change_use_general_price'] );
 			add_action( 'wp_ajax_change_price', [$this, 'ajax_change_price'] );
 			add_action( 'wp_ajax_change_total_factor', [$this, 'ajax_change_total_factor'] );
@@ -62,9 +64,62 @@ class Admin_Post {
 			add_filter( 'manage_edit-post_sortable_columns', [$this, 'custom_column_sortable'] );
 			add_action( 'pre_get_posts', [$this, 'sort_query'] );
 
+			add_action( 'restrict_manage_posts', [$this, 'filter_post_by_taxonomy'] );
+
+			add_filter( 'parse_query', [$this, 'taxonomy_parse_filter'] );
+
 			//add_action( 'admin_footer', [$this, 'test'] );
 		}
 		
+	}
+
+	public function taxonomy_parse_filter( $query ) {
+		//modify the query only if it admin and main query.
+		if( !(is_admin() AND $query->is_main_query()) ){ 
+			return $query;
+		}
+
+		$post_type = isset($_GET['post_type']) ? $_GET['post_type'] : '';
+	
+		if($post_type=='post') {
+			$tax_query = [];
+
+			$pri = isset($_GET['pri']) ? intval($_GET['pri']) : 0;
+			if($pri!=0) {
+				$tax_query['pri'] = ['taxonomy' => 'price'];
+				if($pri>0) {
+					$tax_query['pri']['field'] = 'term_id';
+					$tax_query['pri']['terms'] = $pri;
+				} else {
+					$tax_query['pri']['operator'] = 'NOT EXISTS';
+				}
+
+			}
+			
+			if(!empty($tax_query)) {
+				$query->set('tax_query', $tax_query);
+			}
+		}
+
+		return $query;
+	}
+
+	public function filter_post_by_taxonomy($post_type) {
+		
+		if ($post_type == 'post') {
+			wp_dropdown_categories(array(
+				'show_option_all' => '- Giá thiết kế -',
+				'show_option_none' => '- Chưa có -',
+				'taxonomy'        => 'price',
+				'name'            => 'pri',
+				'orderby'         => 'name',
+				'selected'        => isset($_GET['pri']) ? intval($_GET['pri']) : 0,
+				'show_count'      => true,
+				'hide_empty'      => true,
+				'value_field'	  => 'term_id'
+			));
+
+		};
 	}
 
 	public function test() {
@@ -157,19 +212,19 @@ class Admin_Post {
 		wp_send_json($response);
 	}
 
-	public function ajax_change_use_general_design_price() {
+	public function ajax_change_display_design_price() {
 		$post_id = isset($_POST['id']) ? absint($_POST['id']) : 0;
-		$use_general_design_price = isset($_POST['use_general_design_price']) ? sanitize_key($_POST['use_general_design_price']) : '';
+		$display_design_price = isset($_POST['display_design_price']) ? sanitize_key($_POST['display_design_price']) : '';
 
-		if($use_general_design_price !== 'yes') $use_general_design_price = 'no';
+		if($display_design_price !== 'yes') $display_design_price = 'no';
 
 		if( check_ajax_referer('quick_edit_'.$post_id, 'nonce', false) && current_user_can('edit_post', $post_id) ) {
-			update_post_meta($post_id, '_use_general_design_price', $use_general_design_price);
+			fw_set_db_post_option($post_id, 'display_design_price', $display_design_price);
 		}
 
 		$response = false;
-		$use_general_design_price = get_post_meta($post_id, '_use_general_design_price', true);
-		if($use_general_design_price == 'yes') $response = true;
+		$display_design_price = fw_get_db_post_option($post_id, 'display_design_price', 'yes');
+		if($display_design_price == 'yes') $response = true;
 
 		wp_send_json($response);
 	}
@@ -202,15 +257,33 @@ class Admin_Post {
 
 	}
 
-	public function ajax_change_design_price() {
+	public function ajax_change_floors() {
 		$post_id = isset($_POST['id']) ? absint($_POST['id']) : 0;
-		$design_price = isset($_POST['design_price']) ? sanitize_text_field($_POST['design_price']) : '';
+		$floors = isset($_POST['floors']) ? sanitize_text_field($_POST['floors']) : '';
+
+		if($floors!='') $floors = floatval($floors);
 
 		if( check_ajax_referer('quick_edit_'.$post_id, 'nonce', false) && current_user_can('edit_post', $post_id) ) {
-			update_post_meta($post_id, '_design_price', $design_price);
+			update_post_meta($post_id, '_floors', $floors);
 		}
 
-		$response = get_post_meta($post_id, '_design_price', true);
+		$response = get_post_meta($post_id, '_floors', true);
+		
+		wp_send_json($response);
+
+	}
+
+	public function ajax_change_area_1() {
+		$post_id = isset($_POST['id']) ? absint($_POST['id']) : 0;
+		$area_1 = isset($_POST['area_1']) ? sanitize_text_field($_POST['area_1']) : '';
+
+		if($area_1!='') $area_1 = floatval($area_1);
+
+		if( check_ajax_referer('quick_edit_'.$post_id, 'nonce', false) && current_user_can('edit_post', $post_id) ) {
+			update_post_meta($post_id, '_area_1', $area_1);
+		}
+
+		$response = get_post_meta($post_id, '_area_1', true);
 		
 		wp_send_json($response);
 
@@ -334,12 +407,12 @@ class Admin_Post {
 		return $disable;
 	}
 
-	public function post_content_editor($post) {
-		wp_editor( self::unescape($post->post_content), 'content', [
-			'tinymce' => true,
-			'textarea_rows' => 15,
-		] );
-	}
+	// public function post_content_editor($post) {
+	// 	wp_editor( self::unescape($post->post_content), 'content', [
+	// 		'tinymce' => true,
+	// 		'textarea_rows' => 15,
+	// 	] );
+	// }
 
 	public function switch_boxes() {
 
@@ -700,13 +773,13 @@ class Admin_Post {
 						});
 					});
 
-					$('.change_use_general_design_price').on('click', function(e){
-						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), use_general_design_price = (_this.prop('checked'))?'yes':'no';
+					$('.change_display_design_price').on('click', function(e){
+						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), display_design_price = (_this.prop('checked'))?'yes':'no';
 						$.ajax({
 							url: ajaxurl,
 							type: 'post',
 							dataType: 'json',
-							data: {id: id, nonce: nonce, action:'change_use_general_design_price', use_general_design_price: use_general_design_price},
+							data: {id: id, nonce: nonce, action:'change_display_design_price', display_design_price: display_design_price},
 							beforeSend: function() {
 								_this.prop('disabled', true);
 							},
@@ -743,6 +816,46 @@ class Admin_Post {
 						});
 					});
 
+					$('.quick-edit-field._floors').on('change', function(e){
+						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), floors = _this.val();
+						$.ajax({
+							url: ajaxurl,
+							type: 'post',
+							dataType: 'json',
+							data: {id: id, nonce: nonce, action:'change_floors', floors: floors},
+							beforeSend: function() {
+								_this.prop('disabled', true);
+							},
+							success: function(response) {
+								//console.log(response);
+								_this.val(response);
+							},
+							complete: function() {
+								_this.prop('disabled', false);
+							}
+						});
+					});
+
+					$('.quick-edit-field._area_1').on('change', function(e){
+						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), area_1 = _this.val();
+						$.ajax({
+							url: ajaxurl,
+							type: 'post',
+							dataType: 'json',
+							data: {id: id, nonce: nonce, action:'change_area_1', area_1: area_1},
+							beforeSend: function() {
+								_this.prop('disabled', true);
+							},
+							success: function(response) {
+								//console.log(response);
+								_this.val(response);
+							},
+							complete: function() {
+								_this.prop('disabled', false);
+							}
+						});
+					});
+
 					$('.quick-edit-field._length').on('change', function(e){
 						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), length = _this.val();
 						$.ajax({
@@ -763,26 +876,6 @@ class Admin_Post {
 						});
 					});
 
-					$('.quick-edit-field._design_price').on('change', function(e){
-						console.log(e);
-						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), design_price = _this.val();
-						$.ajax({
-							url: ajaxurl,
-							type: 'post',
-							dataType: 'json',
-							data: {id: id, nonce: nonce, action:'change_design_price', design_price: design_price},
-							beforeSend: function() {
-								_this.prop('disabled', true);
-							},
-							success: function(response) {
-								//console.log(response);
-								_this.val(response);
-							},
-							complete: function() {
-								_this.prop('disabled', false);
-							}
-						});
-					});
 
 					$('.quick-edit-field._price').on('change', function(e){
 						let _this = $(this), id = _this.data('id'), nonce = _this.data('nonce'), price = _this.val();
@@ -842,19 +935,20 @@ class Admin_Post {
 			
 			case 'tasks':
 				$footer_content = get_post_meta($post_id, '_footer_content', 'no');
-				$use_general_design_price = get_post_meta($post_id, '_use_general_design_price', 'no');
 				$use_general_price = get_post_meta($post_id, '_use_general_price', 'no');
+				$display_design_price = fw_get_db_post_option($post_id, 'display_design_price', 'yes');
 				?>
 				
 				<p>
 					<label><input type="checkbox" class="change_footer_content" <?php checked( $footer_content, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Hiện nội dung dưới cuối?</label>
 				</p>
-				<p>
-					<label><input type="checkbox" class="change_use_general_design_price" <?php checked( $use_general_design_price, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Dùng giá TK chung?</label>
-				</p>
+				
 				<p>
 					<label><input type="checkbox" class="change_use_general_price" <?php checked( $use_general_price, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Dùng giá ĐT chung?</label>
 				</p>
+				<!-- <p>
+					<label><input type="checkbox" class="change_display_design_price" <?php checked( $display_design_price, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Hiện giá thiết kế?</label>
+				</p> -->
 				<?php
 				break;
 
@@ -871,28 +965,34 @@ class Admin_Post {
 				<p>
 					<label><input type="checkbox" class="change_allow_order" <?php checked( $allow_order, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Chọn mẫu?</label>
 				</p>
-				<p>
+				<!-- <p>
 					<label><input type="checkbox" class="change_up_nha88" <?php checked( $up_nha88, 'yes', true); ?> data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>"> Up Nha88?</label>
-				</p>
+				</p> -->
 				<?php
 				break;
 			
 			case 'dimensions':
-				$_breadth = get_post_meta($post_id, '_breadth', true);
-				$_length = get_post_meta($post_id, '_length', true);
+				$_breadth = floatval(get_post_meta($post_id, '_breadth', true));
+				$_length = floatval(get_post_meta($post_id, '_length', true));
+				$_area_1 = floatval(get_post_meta($post_id, '_area_1', true));
+				$_floors = floatval(get_post_meta($post_id, '_floors', true));
 
+				if($_breadth==0) $_breadth = '';
+				if($_length==0) $_length = '';
+				if($_area_1==0) $_area_1 = '';
+				if($_floors==0) $_floors = '';
 				?>
 				<label><span>Mặt tiền:</span><input type="text" class="quick-edit-field _breadth" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_breadth)?>"><span>m</span></label>
 				<label><span>Chiều sâu:</span><input type="text" class="quick-edit-field _length" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_length)?>"><span>m</span></label>
+				<label><span>DT 1 sàn:</span><input type="text" class="quick-edit-field _area_1" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_area_1)?>"><span>m2</span></label>
+				<label><span>Số tầng:</span><input type="text" class="quick-edit-field _floors" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_floors)?>"></label>
 				<?php
 				break;
 			case 'costs':
-				$_design_price = get_post_meta($post_id, '_design_price', true);
 				$_price = get_post_meta($post_id, '_price', true);
 				$_total_factor = get_post_meta($post_id, '_total_factor', true);
 
 				?>
-				<label><span>Giá thiết kế:</span><input type="text" class="quick-edit-field _design_price" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_design_price)?>"><span>k/m2</span></label>
 				<label><span>Giá đầu tư:</span><input type="text" class="quick-edit-field _price" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_price)?>"><span>k/m2</span></label>
 				<label><span>Hệ số đầu tư:</span><input type="text" class="quick-edit-field _total_factor" data-id="<?=$post_id?>" data-nonce="<?=esc_attr($quick_edit_nonce)?>" value="<?=esc_attr($_total_factor)?>"><span></span></label>
 				<?php
@@ -905,17 +1005,7 @@ class Admin_Post {
 				break;
 
 			case 'ID':
-				$prefix = '';
-				switch (strtolower($_SERVER['HTTP_HOST'])) {
-					case 'transonarchi.com':
-						$prefix = 'HD';
-						break;
-					
-					case 'ktstranson.com':
-						$prefix = 'TC';
-						break;
-				}
-				echo esc_html($prefix.$post_id);
+				echo esc_html($post_id);
 				break;
 			case 'RID':
 				echo esc_html(fw_get_db_post_option($post_id, '_ref'));
@@ -958,20 +1048,20 @@ class Admin_Post {
 			unset($columns['tags']);
 		}
 
-		$columns['format'] = 'Loại nội dung';
+		// $columns['format'] = 'Loại nội dung';
 		$columns['ID'] = 'ID';
-		$columns['RID'] = 'RID';
+		// $columns['RID'] = 'RID';
 		$columns['feature'] = 'Đặc tính';
-		$columns['tasks'] = 'Tác vụ';
 		$columns['dimensions'] = 'Kích thước';
 		$columns['costs'] = 'Chi phí';
+		$columns['tasks'] = 'Tác vụ';
 
-		if(class_exists('WP_Statistics')) {
-			$columns['views'] = 'Lượt xem';
-		}
+		// if(class_exists('WP_Statistics')) {
+		// 	$columns['views'] = 'Lượt xem';
+		// }
 
-		$columns['order_count'] = 'Lượt gửi sđt';
-		//$columns['slider'] = 'Slider';
+		// $columns['order_count'] = 'Lượt gửi sđt';
+		// $columns['slider'] = 'Slider';
 		
 		return $columns;
 

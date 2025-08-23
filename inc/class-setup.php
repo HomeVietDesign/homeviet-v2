@@ -9,22 +9,15 @@ class Setup {
 		add_action( 'after_setup_theme', [$this, 'after_setup_theme'] );
 		add_filter( 'use_widgets_block_editor', '__return_false' );
 		add_filter( 'use_block_editor_for_post_type', '__return_false', 10 );
+		add_filter( 'big_image_size_threshold', '__return_false' );
 
 		add_filter( 'image_size_names_choose', [$this, 'image_sizes_choose'] );
 
 		add_filter( 'edit_post_link', [$this, 'edit_post_link_target'] );
 
-		add_action( 'init', [$this, 'add_rewrite_rule'] );
-		add_filter( 'query_vars', [$this, 'add_query_vars'] );
-		add_filter( 'template_include', [$this, 'template_include'], 9999, 1 );
-
 		add_filter( 'posts_search', [$this, 'seo_post_search_by_title'], 10, 2 );
 
 		add_filter( 'mime_types', [$this, 'fix_rar_mime_type'] );
-
-		add_action( 'wp_loaded', [$this, 'wp_loaded'], 10 );
-		add_action( 'admin_init', [$this, 'ajax_set_global_view'], 10 );
-		add_action( 'template_redirect', [$this, 'set_global_view'], 5 );
 
 		if(has_role('administrator')) {
 			//add_action( 'template_redirect', [$this, 'redirect_first_province'], 0 );
@@ -73,21 +66,6 @@ class Setup {
 		return $search;
 	}
 
-	public function template_include($template) {
-		if ( get_query_var( 'contractor_search_page' ) == false || get_query_var( 'contractor_search_page' ) == '' ) {
-			return $template;
-		}
-		return THEME_DIR . '/contractor-search-page.php';
-	}
-
-	public function add_query_vars($query_vars) {
-		$query_vars[] = 'contractor_search_page';
-    	return $query_vars;
-	}
-
-	public function add_rewrite_rule() {
-	    add_rewrite_rule( '^contractor-search$', 'index.php?contractor_search_page=1', 'top' );
-	}
 
 	public function edit_post_link_target($link) {
 
@@ -109,104 +87,10 @@ class Setup {
 
 		return array_merge( $size_names, $new_sizes );
 	}
-
-	public function set_global_view() {
-		global $view;
-		$view_id = isset($_REQUEST['view'])?absint($_REQUEST['view']):((is_singular()||is_page())?get_the_ID():0);
-		if($view_id) {
-			$view = get_post($view_id);
-		}
-	}
-
-	public function ajax_set_global_view() {
-		if(defined('DOING_AJAX') && DOING_AJAX) {
-			global $view;
-			
-			$view_id = isset($_REQUEST['view'])?absint($_REQUEST['view']):0;
-			if($view_id) {
-				$view = get_post($view_id);
-			}
-		}
-	}
-
-	public function wp_loaded() {
-		global $current_password, $current_password_province, $current_province;
-
-		$current_password = null;
-		if(isset($_COOKIE[ 'wp-postpass_' . COOKIEHASH ])) {
-			$passwords = get_terms( ['taxonomy'=>'passwords', 'hide_empty'=>false] );
-			//debug_log($passwords);
-			if(is_array($passwords) && !empty($passwords)) {
-			    require_once ABSPATH . WPINC . '/class-phpass.php';
-			    $hasher = new \PasswordHash( 8, true );
-			    $hash = wp_unslash( $_COOKIE[ 'wp-postpass_' . COOKIEHASH ] );
-			    if ( str_starts_with( $hash, '$P$B' ) ) {
-			        foreach ($passwords as $key => $value) {
-			            if($hasher->CheckPassword( $value->name, $hash )) {
-			                $current_password = $value;
-			                break;
-			            }
-			        }
-			    }
-			}
-		}
-		
-		$province = isset($_REQUEST['province'])?absint($_REQUEST['province']):0;
-		$current_province = get_term_by( 'term_id', $province, 'province' );
-
-		$view_province = false;
-
-		if($current_password) {
-			$password_province = get_term_meta( $current_password->term_id, 'province', true );
-			if($password_province) {
-				$current_password_province = get_term_by( 'term_id', $password_province[0], 'province' );
-				if($current_password_province instanceof \WP_Term) {
-					$default_province = (int) get_option( 'default_term_province', 0 );
-					if($current_password_province->term_id==$default_province) $view_province = true;
-				} else {
-					$current_password_province = null;
-				}
-			}
-		}
-		
-		if(has_role('administrator') || $view_province) {
-			add_filter('post_type_link', [$this, 'contractor_page_link'], 10, 2);
-		}
-
-		// elseif($current_password) {
-		// 	$province = get_term_meta( $current_password->term_id, 'province', true );
-
-		// 	if($province) $current_province = get_term_by('term_id', $province[0], 'province');
-
-		// }
-
-	}
-
-	public function contractor_page_link($post_link, $post) {
-		if($post->post_type=='contractor_page') {
-			global $current_province;
-			if($current_province) {
-				$post_link = add_query_arg('province', $current_province->term_id, $post_link);
-			}
-
-		}
-
-		return $post_link;
-	}
-
-	public function redirect_first_province() {
-		if(is_singular( 'contractor_page' )) {
-			global $current_province, $default_province;
-			if(!$current_province && $default_province) {
-				wp_safe_redirect( get_permalink() );
-				exit;
-			}
-		}
-	}
 	
 	public function after_setup_theme() {
 		global $popup;
-		$popup = isset($_REQUEST['popup']) ? true : false;
+		$popup = isset($_REQUEST['popup']) ? absint($_REQUEST['popup']) : 0;
 
 		if($popup):
 			show_admin_bar( false );
@@ -279,6 +163,56 @@ class Setup {
 		add_filter('get_the_archive_title_prefix', '__return_empty_string');
 
 		add_action( 'pre_get_posts', [$this, 'query_post_type_for_search'] );
+
+		// global $wpdb;
+		// $table = $wpdb->prefix . "fb_event_logs";
+		// $charset_collate = $wpdb->get_charset_collate();
+
+	    // // Tạo bảng nếu chưa có
+	    // $wpdb->query("CREATE TABLE IF NOT EXISTS $table (
+	    //     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	    //     uid VARCHAR(255),
+	    //     ip VARCHAR(50),
+	    //     ua TEXT,
+	    //     event_name VARCHAR(100),
+	    //     duration INT,
+	    //     event_date DATE,
+	    //     fbc VARCHAR(255),
+	    //     fbp VARCHAR(255),
+	    //     url VARCHAR(255),
+	    //     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	    // ) {$charset_collate}");
+
+		// $admin_role = get_role( 'administrator' );
+
+		// $admin_role->add_cap('edit_order');
+		// $admin_role->add_cap('read_order');
+		// $admin_role->add_cap('delete_order');
+		// $admin_role->add_cap('edit_orders');
+		// $admin_role->add_cap('edit_others_orders');
+		// $admin_role->add_cap('delete_orders');
+		// $admin_role->add_cap('publish_orders');
+		// $admin_role->add_cap('read_private_orders');
+		// $admin_role->add_cap('delete_private_orders');
+		// $admin_role->add_cap('delete_published_orders');
+		// $admin_role->add_cap('delete_others_orders');
+		// $admin_role->add_cap('edit_private_orders');
+		// $admin_role->add_cap('edit_published_orders');
+
+
+		// $admin_role->remove_cap('edit_order');
+		// $admin_role->remove_cap('read_order');
+		// $admin_role->remove_cap('delete_order');
+		// $admin_role->remove_cap('edit_orders');
+		// $admin_role->remove_cap('edit_others_orders');
+		// $admin_role->remove_cap('delete_orders');
+		// $admin_role->remove_cap('publish_orders');
+		// $admin_role->remove_cap('read_private_orders');
+		// $admin_role->remove_cap('delete_private_orders');
+		// $admin_role->remove_cap('delete_published_orders');
+		// $admin_role->remove_cap('delete_others_orders');
+		// $admin_role->remove_cap('edit_private_orders');
+		// $admin_role->remove_cap('edit_published_orders');
 	}
 
 	public function query_post_type_for_search( $query ) {

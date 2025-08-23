@@ -54,7 +54,9 @@ class Footer {
 		<?php
 	}
 
-	public function order_product_modal() {
+	public function modals() {
+		global $popup;
+		$turnstile_keys = Common::get_turnstile_keys();
 		?>
 		<div class="modal fade" id="order-product" tabindex="-1" role="dialog" aria-labelledby="order-product-label">
 			<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -87,16 +89,51 @@ class Footer {
 						<div class="mb-3">
 							<input type="tel" id="product_customer_phone" name="product_customer_phone" placeholder="Số điện thoại của bạn" class="form-control" aria-label="Số điện thoại của bạn" required>
 						</div>
-						<div class="d-none">
-							<div id="cf-turnstile-order" class="cf-turnstile" data-sitekey="<?=esc_attr(fw_get_db_settings_option('cf_turnstile_key'))?>"></div>
-						</div>
+						
+						<?php if($turnstile_keys['sitekey']!='' && $turnstile_keys['secretkey']!='') { ?>
+						<div id="cf-turnstile-order" class="cf-turnstile" data-sitekey="<?=esc_attr($turnstile_keys['sitekey'])?>" data-callback="cf_turnstile_order_callback" data-error-callback="cf_turnstile_order_error_callback" data-expired-callback="cf_turnstile_order_expired_callback"></div>
+						<?php } ?>
+
 						<div class="mb-3">
-							<button type="submit" class="btn btn-lg btn-danger text-uppercase fw-bold text-yellow text-nowrap d-block w-100" id="order-product-submit" disabled>Bấm gửi đi</button>
+							<?php if($turnstile_keys['sitekey']!='' && $turnstile_keys['secretkey']!='') { ?>
+							<button type="submit" class="btn btn-lg btn-danger text-uppercase fw-bold text-yellow text-nowrap d-block w-100" id="order-product-submit" disabled>Kiểm tra bảo mật...</button>
+							<?php } else { ?>
+							<button type="submit" class="btn btn-lg btn-danger text-uppercase fw-bold text-yellow text-nowrap d-block w-100" id="order-product-submit">Bấm gửi đi</button>
+							<?php } ?>
+							
 							<div class="invalid-feedback"></div>
 						</div>
 						<div id="order-product-message"></div>
 						<div id="order-product-preview" class="position-relative"></div>
 					</form>
+				</div>
+			</div>
+		</div>
+
+		<!-- modal-video-player -->
+		<div class="modal" id="modal-video-player" tabindex="-1">
+			<div class="modal-dialog">
+				<div class="modal-content rounded-0">
+					<div class="modal-body p-0">
+						<button type="button" class="btn-close p-0 position-absolute text-red" data-bs-dismiss="modal" aria-label="Đóng lại"><span class="dashicons dashicons-no-alt"></span></button>
+						<div id="video-player">
+							<div class="ratio ratio-16x9"></div>
+						</div>
+						<div id="video-link" class="text-center p-2 position-absolute w-100 start-0"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- modal-popup-content -->
+		<?php
+		$close_button_left = $popup*30;
+		?>
+		<div class="modal" id="modal-popup-content" tabindex="-1">
+			<div class="modal-dialog m-0">
+				<div class="modal-content rounded-0 border-0">
+					<button type="button" class="p-0 position-absolute close-button text-red z-3" data-bs-dismiss="modal" aria-label="Đóng lại" style="left:<?=$close_button_left?>px;"><span class="dashicons dashicons-no-alt"></span></button>
+					<div class="modal-body p-0"></div>
 				</div>
 			</div>
 		</div>
@@ -108,18 +145,13 @@ class Footer {
 		if(''!=$custom_script) {
 			echo $custom_script;
 		}
+		$turnstile_keys = Common::get_turnstile_keys();
+
+		if ($turnstile_keys['ctf7']==false && $turnstile_keys['sitekey']!='' && $turnstile_keys['secretkey']!='') {
 		?>
-		<!-- <script type="text/javascript">
-			window.onloadTurnstileCallback = function () {
-				turnstile.render("#example-container", {
-				sitekey: "<YOUR_SITE_KEY>",
-				callback: function (token) {
-				console.log(`Challenge Success ${token}`);
-				},
-				});
-			};
-		</script> -->
+		<script id="theme-turnstile-js" src="https://challenges.cloudflare.com/turnstile/v0/api.js" async></script>
 		<?php
+		}
 	}
 
 	public function footer_fixed() {
@@ -148,25 +180,16 @@ class Footer {
 							$attachment = get_post_thumbnail_id($post);
 						}
 
-						$get_premium = get_post_meta($post->ID, '_get_premium', true);
 						$allow_order = get_post_meta($post->ID, '_allow_order', true);
-
 						$product_order_button_text = get_option('product_order_button_text', '');
-						$product_order_premium_button_text = get_option('product_order_premium_button_text', '');
 
 						if($attachment) {
 							?>
 							<div class="actions-fixed hide">
-								
 								<?php
-								
 								if($allow_order=='yes' && $product_order_button_text!='') {
 									echo '<div class="my-1">'.wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger d-block order-product'], esc_html($product_order_button_text)).'</div>';
 								}
-								if($get_premium=='yes' && $product_order_premium_button_text!='') {
-									echo '<div class="my-1">'.wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'premium', 'class'=>'btn btn-danger d-block order-premium-product'], $product_order_premium_button_text).'</div>';	
-								}
-								
 								?>
 								
 							</div>
@@ -185,16 +208,8 @@ class Footer {
 					<?php
 					}
 				}
-				
-				if($popup_content!='' && $popup_content_button_text != '') {
-				?>
-				<!-- <div class="my-1">
-					<button type="button" class="btn-popup-open btn-popup-content-open btn btn-danger d-block w-100 fw-bold" style="color:#ff0;" data-bs-toggle="modal" data-bs-target="#modal-popup"><?=esc_html($popup_content_button_text)?></button>
-				</div> -->
-				<?php
-				}
 
-				if($hotline!='' || $zalo!='' || ($popup_content!='' && $popup_content_button_text != '')) {
+				if($zalo!='' || ($popup_content!='' && $popup_content_button_text != '')) {
 					?>
 					<div class="hotline d-flex align-items-center mt-1 justify-content-end">
 						<?php if($popup_content!='' && $popup_content_button_text != '' && !is_singular( 'contractor_page' )) { ?>
@@ -204,17 +219,24 @@ class Footer {
 						<a class="zalo-button btn btn-danger d-block ms-2 btn-lg fw-bold text-yellow <?php //echo (!$has_contractor_actions)?'flex-grow-1':''; ?>flex-grow-1" href="https://zalo.me/<?=esc_attr($zalo)?>"><?=esc_html($zalo_label)?></a>
 						<?php } ?>
 						<?php if($hotline!='') { ?>
-						<a class="alo-phone-img-circle d-block ms-2" href="tel:<?php echo esc_attr($hotline); ?>" title="<?php echo esc_attr($hotline_label); ?>"></a>
+						<!-- <a class="alo-phone-img-circle d-block ms-2" href="tel:<?php echo esc_attr($hotline); ?>" title="<?php echo esc_attr($hotline_label); ?>"></a> -->
 						<?php } ?>
 					</div>
 					<?php
 				}
 				
+				if($hotline!='' && $hotline_label!='') {
+					?>
+					<div class="hotline w-100 mt-1">
+						<a class="d-block btn btn-primary btn-lg fw-bold" href="tel:<?php echo esc_attr($hotline); ?>"><?php echo esc_html($hotline_label); ?></a>
+					</div>
+					<?php
+				}
 				?>
 			</div>
 		</div>
 
-		<!-- modal -->
+		<!-- modals -->
 		<?php
 		if($popup_content!='' && !is_singular( 'contractor_page' )) {
 			?>
@@ -248,24 +270,10 @@ class Footer {
 			<?php
 		}
 
-		?>
-		<div class="modal" id="modal-video-player" tabindex="-1">
-			<div class="modal-dialog">
-				<div class="modal-content rounded-0">
-					<div class="modal-body p-0">
-						<button type="button" class="btn-close p-0 position-absolute text-red" data-bs-dismiss="modal" aria-label="Đóng lại"><span class="dashicons dashicons-no-alt"></span></button>
-						<div id="video-player">
-							<div class="ratio ratio-16x9"></div>
-						</div>
-						<div id="video-link" class="text-center p-2 position-absolute w-100 start-0"></div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<?php
 	}
 
 	public static function display_widgets() {
+		ob_start();
 		?>
 		<div class="site-footer-inner container-xl">
 			<div class="row">
@@ -287,6 +295,23 @@ class Footer {
 			</div>
 		</div>
 		<?php
+		$footer_widgets = ob_get_clean();
+
+		$html = str_get_html($footer_widgets);
+
+		// Phân tích domain từ URL (loại bỏ schema, path)
+		$host = parse_url(home_url(), PHP_URL_HOST);
+
+		// Regex: bắt domain và loại trừ /wp-admin
+		$regex = '/^https?:\/\/(?:www\.)?' . preg_quote($host, '/') . '(?!\/wp-admin).*$/i';
+
+		foreach($html->find('a') as $element) {
+			if(preg_match($regex, $element->href)) {
+				$element->setAttribute('class', trim($element->class . ' popup'));
+			}
+		}
+
+		echo (string)$html;
 	}
 
 	public function display_footer_html() {
@@ -294,9 +319,9 @@ class Footer {
 		if( !$popup ) {
 			add_action('wp_footer', [$this, 'site_footer'], 10);
 			add_action('wp_footer', [$this, 'footer_fixed'], 20);
-			add_action('wp_footer', [$this, 'order_product_modal'], 20);
-			add_action('wp_footer', [$this, 'logout_post_password'], 15);
+			//add_action('wp_footer', [$this, 'logout_post_password'], 15);
 		}
+		add_action('wp_footer', [$this, 'modals'], 20);
 	}
 
 	public static function instance() {

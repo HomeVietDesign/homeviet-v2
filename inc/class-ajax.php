@@ -18,9 +18,6 @@ class Ajax {
 		add_action('wp_ajax_url_delete_cache', [$this, 'ajax_url_delete_cache']);
 		add_action('wp_ajax_nopriv_url_delete_cache', [$this, 'ajax_url_delete_cache']);
 
-		add_action('wp_ajax_contractor_search', [$this, 'ajax_contractor_search']);
-		add_action('wp_ajax_nopriv_contractor_search', [$this, 'ajax_contractor_search']);
-
 		// add_action('wp_ajax_statistic', [$this, 'ajax_statistic']);
 		// add_action('wp_ajax_nopriv_statistic', [$this, 'ajax_statistic']);
 	}
@@ -28,33 +25,6 @@ class Ajax {
 	public function ajax_statistic() {
 		debug_log($_REQUEST);
 		die;
-	}
-
-	public function ajax_contractor_search() {
-		global $current_password;
-		?>
-		<div class="text-center text-uppercase fw-bold fs-2 text-yellow py-3 bg-black mb-3">Kết quả tìm kiếm</div>
-		<div class="contractor-search-response py-3 container-xxl">
-		<?php
-		if(has_role('administrator') || $current_password) {
-			$kw = isset($_REQUEST['kw'])?sanitize_text_field($_REQUEST['kw']):'';
-			if($kw) {
-				$search_result = wp_do_shortcode('contractors', ['number'=>12]);
-				if($search_result) {
-					echo $search_result;
-				} else {
-					echo '<div class="py-4 text-center">Không có kết quả nào được tìm thấy.</div>';
-				}
-			} else {
-				echo '<div class="py-4 text-center">Nhập từ khóa để tra cứu.</div>';
-			}
-		} else {
-			echo '<div class="py-4 text-center">Forbidden.</div>';
-		}
-		?>
-		</div>
-		<?php
-		exit;
 	}
 
 	public function ajax_url_delete_cache() {
@@ -120,7 +90,10 @@ class Ajax {
 				'code' => $code,
 				'id' => $id,
 				'name' => $name,
-				'phone' => $phone
+				'phone' => $phone,
+				'ref' => $ref,
+				'url' => $url,
+				'type' => $type
 			],
 			'fb_pxl_code' => ''
 		];
@@ -131,19 +104,18 @@ class Ajax {
 
 				$attachment_img = wp_get_attachment_url( $attachment );
 
-				$mail_to = [
-					get_bloginfo('admin_email'),
-				];
+				$mail_to = get_bloginfo('admin_email');
+				$mail_headers = array('Content-Type: text/html; charset=UTF-8');
 
 				$admin2_email = \HomeViet\Common::get_admin2_email();
 
 				if(!empty($admin2_email)) {
-					$mail_to = array_merge($mail_to, $admin2_email);
+					foreach ($admin2_email as $key => $value) {
+						$mail_headers[] = 'Cc: '.$value;
+					}
 				}
 
 				//$mail_to = 'qqngochv@gmail.com';
-
-				$mail_headers = array('Content-Type: text/html; charset=UTF-8');
 
 				ob_start();
 
@@ -175,8 +147,12 @@ class Ajax {
 					echo 'Facebook';
 				} elseif (strpos($referrer, 'google')!==false || strpos($referrer, 'gclid')!==false) {
 					echo 'Google';
+				} elseif (strpos($referrer, 'youtube')!==false) {
+					echo 'Youtube';
 				} elseif (strpos($referrer, 'zalo')!==false) {
 					echo 'Zalo';
+				} elseif (strpos($referrer, 'tiktok')!==false) {
+					echo 'Tiktok';
 				} else {
 					echo '(Không xác định)';
 				}
@@ -192,8 +168,6 @@ class Ajax {
 				<p>Thiết bị: <?=esc_html($_SERVER['HTTP_USER_AGENT'])?></p>
 				<?php
 				$body = ob_get_clean();
-
-				//$response['msg'] = $body;
 				
 				$send = wp_mail( $mail_to, $subject, $body, $mail_headers );
 				
@@ -201,13 +175,12 @@ class Ajax {
 
 				if($send) {
 					
-					if(function_exists('as_enqueue_async_action')) {
-						as_enqueue_async_action('count_order_sent', [$id], 'order');
-						as_enqueue_async_action('add_customer_order', [['id'=>$id, 'title'=>get_the_title($id), 'image'=>$attachment_img, 'phone'=>$phone, 'name'=>$name, 'type'=>$type, 'url'=>$url, 'ref'=>$ref, 'user_agent'=>$_SERVER['HTTP_USER_AGENT']]], 'order');
-					}
+					$response['data']['title'] = get_the_title($id);
+					$response['data']['image'] = $attachment_img;
 					
 					$response['code'] = 1;
 					$response['msg'] = '<p><strong>Yêu cầu của Quý khách đã được gửi đi.</strong> Trợ lý của KTS. Trần Sơn sẽ liên hệ tư vấn trong thời gian sớm nhất.</p><p>Xin cảm ơn!</p>';
+
 				} else {
 					$response['code'] = -3;
 					$response['msg'] = 'Yêu cầu chưa được gửi đi! Vui lòng liên hệ với ban quản trị về sự cố này.';
@@ -221,10 +194,9 @@ class Ajax {
 			$response['code'] = -1;
 			$response['msg'] = 'Chưa xác minh! Xin thử lại.';
 		}
-
+		
 		$response = apply_filters( 'order_submit', $response );
 		
-
 		wp_send_json($response);
 		
 		die;

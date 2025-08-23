@@ -21,9 +21,26 @@ $text_shadow = (!empty($atts['text_shadow_h']) && !empty($atts['text_shadow_v'])
 $html_id = uniqid('fw-text-');
 
 $text_block_style = ($text_color || $text_shadow) ? 'style="'.esc_attr($text_color.$text_shadow).'"' : '';
+
+$content = wp_format_content( $atts['text'] );
+$dom_content = str_get_html($content);
+
+// Phân tích domain từ URL (loại bỏ schema, path)
+$host = parse_url(home_url(), PHP_URL_HOST);
+
+// Regex: bắt domain và loại trừ /wp-admin
+$regex = '/^https?:\/\/(?:www\.)?' . preg_quote($host, '/') . '(?!\/wp-admin).*$/i';
+
+foreach($dom_content->find('a') as $element) {
+	if(preg_match($regex, $element->href)) {
+		$element->setAttribute('class', trim($element->class . ' popup'));
+	}
+}
+
+$content = (string)$dom_content;
 ?>
 <div id="<?=$html_id?>" class="fw-text-block-wrap" <?=$text_block_style?>>
-<?php echo wp_format_content( $atts['text'] ); ?>
+<?php echo $content; ?>
 </div>
 <?php if($text_link_color!='') {
 ?>

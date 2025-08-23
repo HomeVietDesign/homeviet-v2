@@ -5,6 +5,22 @@ window.addEventListener('DOMContentLoaded', function(){
 
 	jQuery(function($){
 
+		$(document).on('click', 'a.popup', function(e){
+			e.preventDefault();
+
+			let $a = $(this),
+				i=getParam('popup'),
+				$modal = $('#modal-popup-content'),
+				src = add_query_url('popup', (i==null)?1:parseInt(i)+1, $a.attr('href'));
+			
+			$modal.find('.modal-body').html('<iframe src="'+src+'" style="border:0;">');
+
+			$modal.modal('show');
+
+			$('#modal-video-player').modal('hide');
+
+			return false;
+		});
 
 		function check_input_phone_number(p) {
 			const patt = /^(\+?\d{1,3}[-.\s]?)?(\(?\d{3}\)?[-.\s]?)?\d{3}[-.\s]?\d{4}$/;
@@ -37,99 +53,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
 			return valid;
 		}
-
-		
-		$(document).on('keyup', 'input.wpcf7-form-control', function(e){
-			let $form = $(this).closest('form'),
-				$submit_button = $form.find('[type="submit"]');
-
-			if(check_validity($form)) {
-				$submit_button.prop('disabled', false);
-			} else {
-				$submit_button.prop('disabled', true);
-			}
-
-		});
-
-		$(document).on('submit', '.wpcf7', function( event ) {
-			$(this).find('[type="submit"]').prop('disabled', true);
-		});
-		
-
-		let debounced_contractor_search = debounce((event) => {
-			let kw = $('#contractor-search-input').val().trim(),
-				province = parseInt($('#contractor-search-province').val()),
-				view = parseInt($('#contractor-search-view').val()),
-				$result_wrap_el = $('#contractor-search-result-wrap'),
-				$result_el = $result_wrap_el.find('.contractor-search-result'),
-				$loading = $result_wrap_el.find('.loading');
-
-			$loading.removeClass('invisible');
-			$result_el.addClass('invisible');
-
-			if(kw.length>2) {
-				$loading.html('Đang tìm kiếm...');
-				$.ajax({
-					url: theme.ajax_url+'?action=contractor_search',
-					method:'POST',
-					data:{kw: kw, view: view, province: province},
-					//dataType:'json',
-					beforeSend:function(){
-						
-					},
-					success:function(response){
-						//console.log(response);
-						$result_el.html(response);
-						$result_el.removeClass('invisible');
-						$loading.addClass('invisible');
-
-						$result_el.find(".change-province").select2({
-							data: theme.provinces,
-							width: '100%',
-							allowClear: true,
-							dropdownAutoWidth: true,
-							dropdownCssClass: 'change-province-dropdown',
-							placeholder: 'Chọn tỉnh'
-						});
-					},
-					complete: function() {
-						
-					}
-				});
-			} else if(kw.length>1) {
-
-				$loading.html('Nhập từ khóa từ 3 ký tự trở lên');
-			} else {
-				$result_el.html('');
-				$loading.addClass('invisible');
-			}
-		}, 800); // Wait 800ms after the last keypress
-
-		$(document).on('input', '#contractor-search-input', function(event) {
-			debounced_contractor_search(event);
-		});
-		
-		$('.logout-post-password').on('click', function(e){
-			e.preventDefault();
-			let $this = $(this),
-				url = $this.data('url');
-
-			$.ajax({
-				url:theme.ajax_url+'?action=url_delete_cache',
-				method:'GET',
-				data:{url:url},
-				beforeSend:function(){
-					$this.prop('disabled', true);
-				},
-				success:function(){
-					deleteCookie('wp-postpass_'+$this.data('hash'));
-					$this.remove();
-					location.href = url;
-				}
-			});
-			
-		});
-
+	
 		function set_vh_size() {
 			let vh = $(window).innerHeight();
 			if($('#site-header').length>0) {
@@ -185,7 +109,6 @@ window.addEventListener('DOMContentLoaded', function(){
 
 			}
 		}
-		
 
 		if($('body').hasClass('single')) {
 
@@ -208,7 +131,10 @@ window.addEventListener('DOMContentLoaded', function(){
 			if(sync1.hasClass('has-video')) {
 				args.autoplay = false;
 			}
-			var slides = sync1.owlCarousel(args).on('changed.owl.carousel', syncPosition);
+			var slides = sync1.owlCarousel(args).on('changed.owl.carousel', syncPosition).on('loaded.owl.lazy', function(e){
+				let owl = $(this);
+				owl.parent().find('.design-price, .costs-info').removeClass('hidden');
+			});
 
 			function syncPosition(el) {
 				$owl_slider = $(this).data('owl.carousel');
@@ -290,52 +216,6 @@ window.addEventListener('DOMContentLoaded', function(){
 			
 		}
 		
-		/*
-		let popped = getCookie('popped');
-		if($('#modal-popup-image').length>0 && theme.preview!='1' && !popped) {
-			
-			const popup = new bootstrap.Modal('#modal-popup-image');
-			
-			setTimeout(function(){
-				popup.show();
-				setCookie('popped', 1, 1);
-			}, 1000*parseInt(theme.popup_timeout));
-			
-		}
-		
-		// xử lý link nhảy cóc
-		function goToAncho(ancho_name) {
-			let ancho = $('[name="'+ancho_name+'"]'), header_height = $('#site-header').height();
-			if(ancho.length>0) {
-				$('html, body').scrollTop((ancho.offset().top-header_height));
-				setTimeout(function(){
-					$('html, body').scrollTop((ancho.offset().top-header_height));
-				}, 1000);
-			}
-		}
-
-		let hash;
-		hash = window.location.hash.replace('#','');
-		if(hash!='' && $('[name="'+hash+'"]').length>0) {
-			goToAncho(hash);
-		}
-
-		var main = $( '#query-monitor-main' );
-		var menu_item = $( '#wp-admin-bar-query-monitor' );
-
-		$('a[href^="#"]').on('click', function(e){
-			e.preventDefault();
-			hash = $(this).attr('href').replace('#','');
-			if ( menu_item && main && hash.match(/^qm-/) ) {
-				main.toggleClass('qm-show');
-			} else {
-				goToAncho(hash);
-			}
-			return false;
-			
-		});
-		*/
-		
 		$('a[href$="#"]').on('click', function(e){
 			e.preventDefault();
 			return false;
@@ -361,25 +241,30 @@ window.addEventListener('DOMContentLoaded', function(){
 		});
 
 		let pmsr = $('.posts-masonry,.list-media');
-		pmsr.imagesLoaded(function(){
-			//setTimeout(function(){
-				pmsr.isotope();
-				pmsr.isotope('layout');
-			//}, 1000);
+		pmsr.imagesLoaded(function(e){
+			pmsr.isotope();
+			pmsr.isotope('layout');
 		});
+
+		// $('.entry-thumbnail.slider').bxSlider({
+		// 	auto: false,
+		// 	stopAutoOnClick:true,
+		// 	hideControlOnEnd:true,
+		// 	pager:false
+		// });
 		
 		$('.posts-masonry-loadmore-button').on('click', function(e){
 			let $this = $(this),
-					$container = $this.closest('.posts-masonry-section'),
-					$msr = $container.find('.posts-masonry'),
-					cat = parseInt($this.data('cat')),
-					location = parseInt($this.data('location')),
-					catexc = $this.data('catexc'),
-					pages = parseInt($this.data('pages')),
-					page = parseInt($this.data('page'))+1,
-					per = parseInt($this.data('per')),
-					exclude = parseInt($this.data('exclude')),
-					btn_text = $this.text();
+				$container = $this.closest('.posts-masonry-section'),
+				$msr = $container.find('.posts-masonry'),
+				cat = parseInt($this.data('cat')),
+				location = parseInt($this.data('location')),
+				catexc = $this.data('catexc'),
+				pages = parseInt($this.data('pages')),
+				page = parseInt($this.data('page'))+1,
+				per = parseInt($this.data('per')),
+				exclude = parseInt($this.data('exclude')),
+				btn_text = $this.text();
 				//console.log(catexc);
 			$.ajax({
 				url:theme.ajax_url+'?action=posts_masonry_loadmore',
@@ -394,6 +279,14 @@ window.addEventListener('DOMContentLoaded', function(){
 				success:function(response){
 					let $item = $.parseHTML(response);
 					$msr.append($item).isotope('appended', $item);
+
+					// $msr.find('.entry-thumbnail.slider').bxSlider({
+					// 	auto: false,
+					// 	stopAutoOnClick:true,
+					// 	hideControlOnEnd:true,
+					// 	pager:false
+					// });
+
 					$msr.imagesLoaded(function(){
 						$msr.isotope();
 						$msr.isotope('layout');
@@ -454,7 +347,7 @@ window.addEventListener('DOMContentLoaded', function(){
 			$('#order-product-message').html('');
 			$('#order-product-preview').html('');
 			$('#submit-order').text('Đồng ý');
-			$('#submit-order').prop('disabled',false);
+	
 		});
 
 		// chọn mẫu submit
@@ -505,6 +398,8 @@ window.addEventListener('DOMContentLoaded', function(){
 						phone_number = "+84" + phone.slice(1, phone.length);
 					} else if(phone.startsWith('+84')) {
 						phone_number = phone;
+					} else if(phone.startsWith('84')) {
+						phone_number = "+"+phone;
 					} else {
 						phone_number = "+84" + phone;  
 					}
@@ -538,7 +433,6 @@ window.addEventListener('DOMContentLoaded', function(){
 						dataType: 'json',
 						beforeSend: function(xhr) {
 							submit_button.text('Đang gửi..');
-							//submit_button.prop('disabled',true);
 						},
 						success: function(response) {
 							//console.log(response);
@@ -559,21 +453,21 @@ window.addEventListener('DOMContentLoaded', function(){
 
 							} else {
 								submit_button.text('Đồng ý');
-								submit_button.prop('disabled', false);
 								$('#order-product-message').html('<p class="text-danger">'+response.msg+'</p>');
 							}
 							
 						},
 						error: function() {
 							submit_button.text('Đồng ý');
-							submit_button.prop('disabled', false);
 							$('#order-product-message').html('<p class="text-danger">Có lỗi khi gửi! Vui lòng tải lại trang rồi thử lại. Hoặc liên hệ với ban quản trị về sự cố này.</p>');
 						},
 						complete: function() {
-							
+							submit_button.prop('disabled', false);
 						}
 					});
 
+				} else {
+					submit_button.prop('disabled', false);
 				}
 			}
 		}
@@ -586,36 +480,10 @@ window.addEventListener('DOMContentLoaded', function(){
 
 		$('#frm-order-product').on('submit', function(e){
 			e.preventDefault();
-
 			submit_order_product(e);
-
 			return false;
 
 		}); // submit order
-
-		$('#frm-order-product').find('input.form-control').on('keyup', function(e){
-			let valid = true;
-			$('#frm-order-product').find('input.form-control').each(function(index, el) {
-				switch(el.type) {
-					case 'text':
-						if(el.validity.valueMissing || el.validity.tooLong) {
-							valid = false;
-						}
-						break;
-					case 'tel':
-						if(!check_input_phone_number(el.value)) {
-							valid = false;
-						}
-						break;
-				}
-			});
-			
-			if(valid) {
-				$('#order-product-submit').prop('disabled', false);
-			} else {
-				$('#order-product-submit').prop('disabled', true);
-			}
-		});
 
 		$('#modal-video-player').on('show.bs.modal', function (event) {
 			let $modal = $(this),
@@ -624,7 +492,7 @@ window.addEventListener('DOMContentLoaded', function(){
 				url = $button.data('url');
 			$('#video-player').html(video.content);
 			if(url!='') {
-				$('#video-link').html('<a href="'+url+'" class="btn btn-sm btn-danger">Xem chi tiết</a>');
+				$('#video-link').html('<a href="'+url+'" class="btn btn-sm btn-danger popup">Xem chi tiết</a>');
 			}
 			if(video.type=='youtube') {
 				let h,w;
@@ -641,88 +509,84 @@ window.addEventListener('DOMContentLoaded', function(){
 			}
 		}).on('shown.bs.modal', function (event) {
 			$(this).css('display', 'flex');
-			if($(this).find('video').length>0) {
-				$(this).find('video').get(0).play();
+			let $video = $(this).find('video');
+			//console.log($video);
+			if($video.length>0) {
+				$video.attr('src',$video.data('src'));
+				$video.get(0).play();
 			}
 		}).on('hidden.bs.modal', function (e) {
 			$('#video-player').html('<div class="ratio ratio-16x9"></div>');
 		});
 
-		function matchKWS(params, data) {
-			// If there are no search terms, return all of the data
-			if ($.trim(params.term) === '') {
-				return null;
-			}
+		/*
+		const lazy_video_thumbnail = new IntersectionObserver(function(entries, observer){
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					// Element is intersecting, perform action (e.g., lazy load, animate)
+					//console.log('Element entered viewport:', entry.target);
+					let el = $(entry.target);
+						el.attr('src', el.data('src'));
 
-			// Do not display the item if there is no 'text' property
-			if (typeof data.text === 'undefined') {
-				return null;
-			}
+					observer.unobserve(entry.target); // Optional: stop observing once intersected
+				}
+			});
+		}, {
+			root: null, // defaults to the viewport
+			rootMargin: '0px',
+			threshold: 0.1 // Trigger when 10% of the target is visible
+		});
 
-			// `params.term` should be the term that is used for searching
-			// `data.text` is the text that is displayed for the data object
-			if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
-				var modifiedData = $.extend({}, data, true);
+		const toggle_video_thumbnail = new IntersectionObserver(function(entries, observer){
+			entries.forEach(entry => {
+				if (entry.isIntersecting) {
+					//console.log(entry.target);
+					setTimeout(function(){
+						entry.target.play();
+					}, 1000);
+					//entry.target.play();
+				} else {
+					entry.target.pause();
+				}
+			});
+		}, {
+			root: null, // defaults to the viewport
+			rootMargin: '0px',
+			threshold: 0.1 // Trigger when 10% of the target is visible
+		});
 
-				// You can return modified objects from here
-				// This includes matching the `children` how you want in nested data sets
-				return modifiedData;
-			}
+		$('.entry-thumbnail video').each(function(){
+			//console.log(this);
+			lazy_video_thumbnail.observe(this);
+			toggle_video_thumbnail.observe(this);
+		});
 
-			// Return `null` if the term should not be displayed
-			return null;
-		}
-		
-		$('#keyword-search').select2({
-			// matcher: matchKWS,
-			// data: theme.kws,
-			ajax: {
-				url: theme.ajax_url,
-				dataType: 'json',
-				data: function (params) {
-					var query = {
-						search: params.term,
-						action: 'get_seo_post'
-					}
-					return query;
-				},
-				delay: 500,
-				cache: true
-			},
-			dropdownParent: $('#modal-keyword-search .modal-body'),
-			allowClear: false,
-			placeholder: 'Tìm công trình theo tỉnh',
-			dropdownCssClass: 'kws-dropdown',
-			language: {
-				inputTooLong: function(n) {
-					return "Vui lòng xóa bớt ký tự";
-				},
-				inputTooShort: function(n) {
-					return "Vui lòng nhập thêm ký tự";
-				},
-				loadingMore: function() {
-					return "Đang lấy thêm kết quả…";
-				},
-				maximumSelected: function(n) {
-					return "Chỉ có thể chọn giới hạn lựa chọn";
-				},
-				noResults: function() {
-					return "Không tìm thấy kết quả";
-				},
-				searching: function() {
-					return "Đang tìm…";
-				},
-				removeAllItems: function() {
-					return "Xóa tất cả các mục";
+		const mutationObserver = new MutationObserver(mutationsList => {
+			for (const mutation of mutationsList) {
+				if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+					mutation.addedNodes.forEach(node => {
+						// Check if the added node is an element and matches your dynamic element selector
+						
+						// if (node.nodeType === Node.ELEMENT_NODE && node.matches('.dynamic-element')) {
+						// 	intersectionObserver.observe(node); // Start observing the newly added dynamic element
+						// }
+
+						if (node.nodeType === Node.ELEMENT_NODE && node.matches('.post-masonry')) {
+							//console.log($(node));
+							let el_video = $(node).find('.entry-thumbnail video');
+							if(el_video.length>0) {
+								lazy_video_thumbnail.observe(el_video.get(0));
+								toggle_video_thumbnail.observe(el_video.get(0));
+							}
+						}
+					});
 				}
 			}
 		});
-		
-		$('#keyword-search').on('change', function(e) {
-			location.href = $(this).val();
-		});
 
-
+		// Start observing the target node (e.g., document.body) for childList changes
+		mutationObserver.observe(document.body, { childList: true, subtree: true });
+		*/
 	});// jQuery
 	
 

@@ -44,89 +44,41 @@ class FacebookWPCF7 extends FacebookWordpressIntegrationBase {
     const PLUGIN_FILE   = 'contact-form-7/wp-contact-form-7.php';
     const TRACKING_NAME = 'contact-form-7';
 
-    /**
-     * Add hooks to inject the Contact Form 7 tracking code.
-     *
-     * Adds the following hooks:
-     *  - wpcf7_submit: Triggers a server-side event when the form is submitted.
-     *  - wp_footer: Injects the mail sent listener.
-     */
-    public static function inject_pixel_code() {
-        add_action(
-            'wpcf7_submit',
-            array( __CLASS__, 'trackServerEvent' ),
-            10,
-            2
-        );
-        add_action(
-            'wp_footer',
-            array( __CLASS__, 'injectMailSentListener' ),
-            10,
-            2
-        );
-    }
-
-    /**
-     * Injects a JavaScript listener for the 'wpcf7mailsent' event,
-     * which is triggered when a form is submitted.
-     *
-     * The listener executes the Pixel code sent in the response
-     * via the 'fb_pxl_code' key.
-     *
-     * @return void
-     */
-    public static function injectMailSentListener() {
-        ob_start();
-    ?>
-    <!-- Meta Pixel Event Code -->
-    <script type='text/javascript'>
-        document.addEventListener( 'wpcf7mailsent', function( event ) {
-        if( "fb_pxl_code" in event.detail.apiResponse){
-            eval(event.detail.apiResponse.fb_pxl_code);
-        }
-        }, false );
-    </script>
-    <!-- End Meta Pixel Event Code -->
-        <?php
-        $listener_code = ob_get_clean();
-        echo $listener_code; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-    }
-
-    /**
-     * Triggers a server-side event when a form is submitted.
-     *
-     * If the user is an internal user or the form submission failed,
-     * the event is not tracked.
-     *
-     * @param array $form The form object.
-     * @param array $result The form submission result.
-     *
-     * @return array The submission result.
-     */
-    public static function trackServerEvent( $form, $result ) {
-        $is_internal_user = FacebookPluginUtils::is_internal_user();
-        $submit_failed    = ('mail_sent' !== $result['status']);
-        if ( $is_internal_user || $submit_failed ) {
-            return $result;
-        }
+    public static function track( $order_data ) {
+        
+        $return = [
+            'event_data' => [],
+            'fb_pxl_code' => '',
+        ];
 
         $server_event = ServerEventFactory::safe_create_event(
-            'Gửi số',
+            'AddToCart',
             array( __CLASS__, 'readFormData' ),
-            array( $form ),
+            array( $order_data ),
             self::TRACKING_NAME,
             true
         );
+
+        //debug_log($server_event);
+
         FacebookServerSideEvent::get_instance()->track( $server_event );
 
-        add_action(
-            'wpcf7_feedback_response',
-            array( __CLASS__, 'injectLeadEvent' ),
-            20,
-            2
-        );
+        $event_data = [
+            'event_name'=>$server_event->getEventName(),
+            'event_time'=>$server_event->getEventTime(),
+            'event_source_url'=>$server_event->getEventSourceUrl(),
+            'event_id'=>$server_event->getEventId(),
+            'fbc'=>$server_event->getUserData()->getFbc(),
+            'fbp'=>$server_event->getUserData()->getFbp(),
+            'em'=>$server_event->getUserData()->getEmails(),
+            'ph'=>$server_event->getUserData()->getPhones()
+        ];
 
-        return $result;
+        $return['event_data'] = $event_data;
+
+        add_action( 'wpcf7_feedback_response', [__CLASS__, 'inject_lead_event'], 20, 2 );
+
+        return $return;
     }
 
     /**
@@ -142,15 +94,13 @@ class FacebookWPCF7 extends FacebookWordpressIntegrationBase {
      *
      * @return array The modified Contact Form 7 response.
      */
-    public static function injectLeadEvent( $response, $result ) {
-        if ( FacebookPluginUtils::is_internal_user() ) {
-            return $response;
-        }
-
-            $events = FacebookServerSideEvent::get_instance()->get_tracked_events();
+    public static function inject_lead_event( $response, $result ) {
+        
+        $events = FacebookServerSideEvent::get_instance()->get_tracked_events();
         if ( count( $events ) === 0 ) {
             return $response;
         }
+
         $event_id  = $events[0]->getEventId();
         $fbq_calls = PixelRenderer::render(
             $events,
@@ -159,12 +109,12 @@ class FacebookWPCF7 extends FacebookWordpressIntegrationBase {
         );
         $code      = sprintf(
             "
-    if( typeof window.pixelLastGeneratedLeadEvent === 'undefined'
-    || window.pixelLastGeneratedLeadEvent != '%s' ){
-    window.pixelLastGeneratedLeadEvent = '%s';
-    %s
-    }
-        ",
+            if( typeof window.pixelLastGeneratedLeadEvent === 'undefined'
+            || window.pixelLastGeneratedLeadEvent != '%s' ){
+             window.pixelLastGeneratedLeadEvent = '%s';
+            %s
+            }
+            ",
             $event_id,
             $event_id,
             $fbq_calls
@@ -182,92 +132,10 @@ class FacebookWPCF7 extends FacebookWordpressIntegrationBase {
      * @return array The form data in the format expected
      * by the `FacebookServerSideEvent` class.
      */
-    public static function readFormData( $form ) {
-        if ( empty( $form ) ) {
-            return array();
-        }
-
-        $form_tags = $form->scan_form_tags();
-        $name      = self::getName( $form_tags );
-
+    public static function readFormData( $order_data ) {
         return array(
-            'email'      => self::getEmail( $form_tags ),
-            'first_name' => $name[0],
-            'last_name'  => $name[1],
-            'phone'      => self::getPhone( $form_tags ),
+            'phone'      => isset( $order_data['phone'] )?$order_data['phone']:'',
         );
     }
 
-    /**
-     * Retrieves the email address from the form submission.
-     *
-     * @param array $form_tags The form tags.
-     *
-     * @return string|null The email address, or null if no email tag found.
-     */
-    private static function getEmail( $form_tags ) {
-        if ( empty( $form_tags ) ) {
-            return null;
-        }
-
-        foreach ( $form_tags as $tag ) {
-            if ( 'email' === $tag->basetype && isset( $_POST[ $tag->name ] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-                return sanitize_text_field( wp_unslash( $_POST[ $tag->name ] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Retrieves the first and last name from the form submission.
-     *
-     * @param array $form_tags The form tags.
-     *
-     * @return array|null An array containing the first and
-     * last name, or null if no name tag found.
-     */
-    private static function getName( $form_tags ) {
-        if ( empty( $form_tags ) ) {
-            return null;
-        }
-
-        foreach ( $form_tags as $tag ) {
-            if ( 'text' === $tag->basetype
-            && strpos( strtolower( $tag->name ), 'name' ) !== false ) {
-                return ServerEventFactory::split_name(
-                    sanitize_text_field(
-                        wp_unslash( $_POST[ $tag->name ] ?? null ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
-                    )
-                );
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Retrieves the phone number from the form submission.
-     *
-     * @param array $form_tags The form tags.
-     *
-     * @return string|null The phone number, or null if no phone tag found.
-     */
-    private static function getPhone( $form_tags ) {
-        if ( empty( $form_tags ) ) {
-            return null;
-        }
-
-        foreach ( $form_tags as $tag ) {
-            if ( 'tel' === $tag->basetype ) {
-                return isset( $_POST[ $tag->name ] ) ? // phpcs:ignore WordPress.Security.NonceVerification.Missing
-                '+'.phone_0284(sanitize_phone_number(
-                    wp_unslash( $_POST[ $tag->name ] )) // phpcs:ignore WordPress.Security.NonceVerification.Missing
-                ) : null;
-            }
-        }
-
-        return null;
-    }
 }
-FacebookWPCF7::inject_pixel_code();

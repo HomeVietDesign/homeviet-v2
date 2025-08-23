@@ -5,43 +5,55 @@ final class Template_Tags {
 
 	public static function product_cost() {
 		global $post;
+
+		$general_display_value = fw_get_db_settings_option('display_value', 'yes');
+		$_display_value = fw_get_db_post_option($post->ID, 'display_value', 'no');
+
+		$display_value = false;
+
+		if($_display_value=='no') {
+			if($general_display_value=='yes') {
+				$display_value = true;
+			}
+		} elseif ($_display_value=='show') {
+			$display_value = true;
+		}
+
+		// debug_log($general_display_value);
+		// debug_log($_display_value);
+		//debug_log($display_value);
 		
-		$_design_price = absint(get_post_meta($post->ID, '_design_price', true)); //giá thiết kế riêng
-		$general_design_price = absint(get_option('product_design_price')); //giá thiết kế chung
-		$_use_general_design_price = get_post_meta($post->ID, '_use_general_design_price', true); //dùng giá thiết kế chung?
-		$design_price = ($_use_general_design_price=='yes') ? $general_design_price : $_design_price; //giá thiết kế cuối cùng
-		
-		$_price = absint(get_post_meta($post->ID, '_price', true)); //giá đầu tư
-		$general_price = absint(get_option('product_price'));
-		$_use_general_price = get_post_meta($post->ID, '_use_general_price', true);
-		$price = ($_use_general_price=='yes') ? $general_price : $_price;
+		if($display_value) {
+			$_price = absint(get_post_meta($post->ID, '_price', true)); //giá đầu tư
+			$general_price = absint(get_option('product_price'));
+			$_use_general_price = get_post_meta($post->ID, '_use_general_price', true);
+			$price = ($_use_general_price=='yes') ? $general_price : $_price;
 
-		$_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
-		$_floors = floatval(get_post_meta($post->ID, '_floors', true));
-		$area = $_area_1*$_floors;
+			$_area_1 = floatval(get_post_meta($post->ID, '_area_1', true));
+			$_floors = floatval(get_post_meta($post->ID, '_floors', true));
+			$area = $_area_1*$_floors;
 
-		$_total_factor = floatval(get_post_meta($post->ID, '_total_factor', true));
-		if($_total_factor==0) $_total_factor=1;
+			$_total_factor = floatval(get_post_meta($post->ID, '_total_factor', true));
+			if($_total_factor==0) $_total_factor=1;
 
-		$_total_amount = $price * $area * $_total_factor / 1000000; // tỷ
+			// debug($price);
+			// debug($_area_1);
+			// debug($_floors);
+			// debug($_total_factor);
 
-		if($_total_amount>0 || '' != $design_price):
+			$_total_amount = $price * $area * $_total_factor / 1000000; // tỷ
 
-		?>
-		<div class="costs-info position-absolute end-0 bottom-0 py-1 px-2">
-			<?php if($_total_amount>0): ?>
-			<div class="total_amount text-end"><strong><?php echo esc_html(number_format($_total_amount,2,'.',',')); ?></strong> tỷ</div>
-			<?php endif; ?>
+			if($_total_amount>0) {
 
-			<?php if($design_price>0 && is_single() && $_show_general_design_price=='yes'): ?>
-			<div class="product-design-fee d-flex text-yellow align-items-end">
-				<span class="d-block me-1">Phí thiết kế:</span>
-				<span class="d-block fs-5 fw-bold lh-sm"><?=$design_price?></span>
-				<span class="d-block">k/m2</span>
+			?>
+			<div class="costs-info position-absolute end-0 bottom-0 px-2">
+				<div class="total_amount text-end">
+					<!-- <span class="me-2">Đầu tư khoảng: </span> -->
+					<strong><?php echo esc_html(number_format($_total_amount,2,'.',',')); ?></strong><b>&nbsp;tỷ</b>
+				</div>
 			</div>
-			<?php endif; ?>
-		</div>
-		<?php endif;
+			<?php }
+		}
 	}
 	
 	public static function pagination($query) {

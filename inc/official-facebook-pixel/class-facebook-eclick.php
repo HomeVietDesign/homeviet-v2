@@ -72,7 +72,8 @@ class FacebookEClick extends FacebookWordpressIntegrationBase {
 					method:'POST',
 					async:false,
 					dataType: 'json',
-					data: {ename: 'Nhắn zalo'},
+					//data: {ename: 'Purchase'},
+                    data: {ename: 'Nhắn zalo'},
 					beforeSend:function(){
 					},
 					success:function(response){
@@ -87,7 +88,8 @@ class FacebookEClick extends FacebookWordpressIntegrationBase {
 					method:'POST',
 					async:false,
 					dataType: 'json',
-					data: {ename: 'Gọi điện'},
+					//data: {ename: 'Purchase'},
+                    data: {ename: 'Gọi điện'},
 					beforeSend:function(){
 					},
 					success:function(response){

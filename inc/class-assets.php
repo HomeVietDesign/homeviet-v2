@@ -11,7 +11,7 @@ class Assets {
 
 		add_action('wp_enqueue_scripts', [$this, 'enqueue_styles'], 50);
 		add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts'], 50);
-		add_action('wp_enqueue_scripts', [$this, 'recaptcha_script'], 21);
+		//add_action('wp_enqueue_scripts', [$this, 'recaptcha_script'], 21);
 
 	}
 
@@ -29,18 +29,20 @@ class Assets {
 	public static function enqueue_styles() {
 
 		wp_dequeue_style( 'font-awesome' );
-
-		//wp_register_style( 'google-fonts', 'https://fonts.googleapis.com/css2?family=Arizonia&family=Fahkwang:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Great+Vibes&family=Inter:wght@400;500;600;700&family=Marmelad&family=Mea+Culpa&family=Water+Brush&display=swap' );
 		
 		wp_register_style( 'bootstrap', THEME_URI.'/libs/bootstrap/css/bootstrap.min.css', [], '5.1.3' );
 
+		//wp_register_style( 'bxslider', THEME_URI.'/libs/bxslider/dist/jquery.bxslider.min.css', [], '2.4.17' );
 		wp_register_style( 'owlcarousel', THEME_URI.'/libs/owlcarousel/assets/owl.carousel.min.css', [], '2.3.4' );
 		wp_register_style( 'select2', THEME_URI.'/libs/select2/dist/css/select2.min.css', [], '4.0.13' );
 
-		$deps = ['bootstrap','dashicons','select2'];
-		if(is_single()) {
-			$deps[] = 'owlcarousel';
-		}
+		$deps = [
+			'bootstrap',
+			'dashicons',
+			'select2',
+			'owlcarousel',
+			//'bxslider'
+		];
 
 		wp_enqueue_style( 'TranSon', THEME_URI.'/assets/css/main.css', $deps, date('YmdHis', filemtime(THEME_DIR . '/assets/css/main.css')) );
 	}
@@ -74,10 +76,10 @@ class Assets {
 
 	    //wp_enqueue_script('lodash');
 
-		$recaptcha_keys = Common::get_recaptcha_keys();
+		//$recaptcha_keys = Common::get_recaptcha_keys();
 
 		wp_register_script( 'bootstrap', THEME_URI.'/libs/bootstrap/js/bootstrap.bundle.min.js', ['jquery'], '5.1.3', true);
-
+		//wp_register_script( 'bxslider', THEME_URI.'/libs/bxslider/dist/jquery.bxslider.min.js', ['jquery'], '4.2.17', true);
 		wp_register_script( 'owlcarousel', THEME_URI.'/libs/owlcarousel/owl.carousel.min.js', ['jquery'], '2.3.4', true);
 		wp_register_script( 'select2', THEME_URI.'/libs/select2/dist/js/select2.full.min.js', ['jquery'], '4.0.13', true);
 		wp_register_script( 'isotope', THEME_URI.'/libs/isotope/isotope.pkgd.min.js', ['jquery'], '3.0.6', true);
@@ -88,12 +90,11 @@ class Assets {
 			'imagesloaded',
 			'isotope',
 			'select2',
+			'owlcarousel',
+			//'bxslider',
 			//'lodash',
 		];
-		if(is_single()) {
-			$deps[] = 'owlcarousel';
-		}
-	
+		
 		wp_enqueue_script( 'TranSon', THEME_URI.'/assets/js/main.js', $deps, date('YmdHis', filemtime(THEME_DIR . '/assets/js/main.js')), true);
 
 		// $kws = fw_get_db_settings_option('product_keywords');
@@ -112,33 +113,15 @@ class Assets {
 
 		//$thank_you_page = fw_get_db_settings_option('thank_you_page', '');
 
-		$provinces = get_terms([
-			'taxonomy' => 'province',
-			'fields' => 'id=>name',
-			'hide_empty' => false,
-		]);
-
-		$a_provinces = [];
-
-		if($provinces) {
-			foreach ($provinces as $id => $name) {
-				$a_provinces[] = [
-					'id' => $id,
-					'text' => $name
-				];
-			}
-		}
-
 		$data = [
 			'home_url'=>esc_url(home_url()), 
 			'ajax_url'=>esc_url(admin_url('admin-ajax.php')),
-			'sitekey'=>$recaptcha_keys['sitekey'],
-			'cf_sitekey'=>fw_get_db_settings_option('cf_turnstile_key'),
+			//'sitekey'=>$recaptcha_keys['sitekey'],
+			//'cf_sitekey'=>fw_get_db_settings_option('cf_turnstile_key'),
 			'is_user_logged_in' => (is_user_logged_in())?1:0,
 			'preview' => (isset($_GET['preview']))?1:0,
 			'popup_content_timeout' => absint(fw_get_db_settings_option('popup_content_timeout', 120)),
 			'nonce' => wp_create_nonce( 'global' ),
-			'provinces' => $a_provinces
 
 		];
 
@@ -151,41 +134,6 @@ class Assets {
 		ob_start();
 		?>
 		<script type="text/javascript">
-			/*
-			function remove_savedlist() {
-				setCookie('savedlist', '', -1);
-			}
-
-			function remove_from_savedlist(id) {
-				id = ''+id;
-				let savedlist = get_savedlist();
-				const index = savedlist.indexOf(id);
-				if(index!==-1) {
-					savedlist.splice(index, 1);
-				}
-				setCookie('savedlist', savedlist, 14);
-			}
-
-			function add_to_savedlist(id) {
-				let savedlist = get_savedlist();
-				id = ''+id;
-				if(savedlist.indexOf(id)===-1) {
-					savedlist.push(id);
-				}
-				setCookie('savedlist', savedlist, 14);
-			}
-
-			function get_savedlist() {
-				let savedlist = getCookie('savedlist');
-				if(savedlist!='') {
-					savedlist = savedlist.split(',');
-					//if(typeof savedlist == 'string') savedlist = [savedlist];
-				} else {
-					savedlist = [];
-				}
-				return savedlist;
-			}
-			*/
 			const isValidUrl = urlString=> {
 				let httpRegex = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
 				return httpRegex.test(urlString);
@@ -198,27 +146,27 @@ class Assets {
 				return false;
 			}
 
-			function setCookie(cname, cvalue, exdays) {
-				const d = new Date();
-				d.setTime(d.getTime() + (exdays*24*60*60*1000));
-				let expires = "expires="+ d.toUTCString();
-				document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+			function setTodayCookie(name, value) {
+				// Lấy thời điểm hiện tại
+				const now = new Date();
+
+				// Tạo mốc hết hạn cuối ngày (23:59:59.999)
+				const expire = new Date();
+				expire.setHours(23, 59, 59, 999);
+
+				// Ghi cookie
+				document.cookie = name + "=" + value + ";expires=" + expire.toUTCString() + ";path=/";
 			}
 
-			function getCookie(cname) {
-				let name = cname + "=";
-				let decodedCookie = decodeURIComponent(document.cookie);
-				let ca = decodedCookie.split(';');
-				for(let i = 0; i <ca.length; i++) {
-					let c = ca[i];
-					while (c.charAt(0) == ' ') {
-						c = c.substring(1);
-					}
-					if (c.indexOf(name) == 0) {
-						return c.substring(name.length, c.length);
-					}
-				}
-				return "";
+			function setCookie(name, value, days) {
+				let d = new Date();
+				d.setTime(d.getTime() + (days*24*60*60*1000));
+				document.cookie = name + "=" + value + ";expires=" + d.toUTCString() + ";path=/";
+			}
+
+			function getCookie(name) {
+				let match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+				return match ? match[2] : "";
 			}
 
 			function deleteCookie(name) {
@@ -273,6 +221,11 @@ class Assets {
 				}
 			}
 
+			function getParam(name) {
+				let params = new URLSearchParams(window.location.search);
+				return params.get(name);
+			}
+			
 			let ref = getCookie('_ref');
 			if(ref=='') {
 				ref = window.btoa((document.referrer=='')?window.location.href:document.referrer);

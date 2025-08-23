@@ -9,6 +9,50 @@ $options = array(
 		'type' => 'tab',
 		'title' => 'Sản phẩm',
 		'options' => array(
+			'display_value' => array(
+				'label' => 'Hiển thị tổng đầu tư?',
+				'desc'  => '',
+				'value'  => 'yes',
+				'type'  => 'switch',
+				'left-choice' => array(
+			        'value' => 'no',
+			        'label' => 'Không',
+			    ),
+			    'right-choice' => array(
+			        'value' => 'yes',
+			        'label' => 'Có',
+			    ),
+			),
+
+			'display_price' => array(
+				'label' => 'Hiển thị giá thiết kế?',
+				'desc'  => '',
+				'value'  => 'yes',
+				'type'  => 'switch',
+				'left-choice' => array(
+			        'value' => 'no',
+			        'label' => 'Không',
+			    ),
+			    'right-choice' => array(
+			        'value' => 'yes',
+			        'label' => 'Có',
+			    ),
+			),
+			'display_location' => array(
+				'label' => 'Hiển thị địa điểm?',
+				'desc'  => '',
+				'value'  => 'yes',
+				'type'  => 'switch',
+				'left-choice' => array(
+			        'value' => 'no',
+			        'label' => 'Không',
+			    ),
+			    'right-choice' => array(
+			        'value' => 'yes',
+			        'label' => 'Có',
+			    ),
+			),
+
 			'product_info_heading1' => array(
 				'label' => 'Tiêu đề thông tin mô tả sản phẩm 1',
 				'desc'  => '',
@@ -41,19 +85,6 @@ $options = array(
 				),
 			],
 
-			'product_design_price' => array(
-				'label' => 'Giá thiết kế chung',
-				'desc'  => 'Đơn vị k/m2',
-				'type'  => 'numeric',
-				'integer' => true,
-				'negative' => false,
-				'size' => 'full',
-				'value' => '',
-				'fw-storage' => array(
-					'type' => 'wp-option',
-					'wp-option' => 'product_design_price',
-				),
-			),
 			'product_price' => array(
 				'label' => 'Giá đầu tư chung',
 				'desc'  => 'Đơn vị k/m2',
@@ -78,16 +109,7 @@ $options = array(
 					'wp-option' => 'product_order_button_text',
 				),
 			),
-			'product_order_premium_button_text' => array(
-				'label' => 'Nhãn nút chọn mẫu VIP ở chi tiết',
-				'desc'  => '',
-				'type'  => 'text',
-				'value' => '',
-				'fw-storage' => array(
-					'type' => 'wp-option',
-					'wp-option' => 'product_order_premium_button_text',
-				),
-			),
+			
 			'product_loop_order_button_text' => array(
 				'label' => 'Nhãn nút chọn mẫu ở danh sách',
 				'desc'  => '',
@@ -104,16 +126,7 @@ $options = array(
 					'wp-option' => 'product_order_popup_title',
 				),
 			),
-			'product_order_premium_popup_title' => array(
-				'label' => 'Tiêu đề form chọn mẫu VIP',
-				'desc'  => '',
-				'type'  => 'text',
-				'value' => '',
-				'fw-storage' => array(
-					'type' => 'wp-option',
-					'wp-option' => 'product_order_premium_popup_title',
-				),
-			),
+			
 			'product_order_popup_desc' => array(
 				'label' => 'Nội dung miêu tả form chọn mẫu',
 				'desc'  => '',
@@ -126,6 +139,7 @@ $options = array(
 					'wp-option' => 'product_order_popup_desc',
 				),
 			),
+
 			/*
 			'product_links' => array(
 				'type' => 'addable-popup',

@@ -8,18 +8,15 @@ $options = array(
     'type' => 'tab',
 		'title' => __('Cài đặt facebook'),
 		'options' => array(
-			'fbapp_id' => array(
-				'label' => __( 'Facebook app id' ),
+			'fb_pixel' => array(
+				'label' => 'Pixel ID',
 				'type'  => 'text',
 			),
-			'fbapp_secret' => array(
-				'label' => __( 'Facebook app secret' ),
-				'type'  => 'password',
-			),
-			'fbapp_auth_uri' => array(
-				'label' => __( 'Facebook Authorized redirect URIs' ),
+			'fb_pixel_at' => array(
+				'label' => 'Access Token của Conversion API',
 				'type'  => 'text',
 			),
+			
 		),
 	),
 );

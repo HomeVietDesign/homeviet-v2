@@ -6,28 +6,21 @@ class Admin {
 	private static $instance = null;
 
 	private function __construct() {
-
-		require_once THEME_DIR.'/inc/simplehtmldom/simple_html_dom.php';
 		require_once THEME_DIR.'/inc/admin/class-select-post-export.php';
 		require_once THEME_DIR.'/inc/admin/class-admin-post.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-contractor.php';
+		require_once THEME_DIR.'/inc/admin/class-admin-price.php';
 		require_once THEME_DIR.'/inc/admin/class-admin-media.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-passwords.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-province.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-contractor_page.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-contractor_cat.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-contractor_rating.php';
-		require_once THEME_DIR.'/inc/admin/class-admin-contractor_class.php';
+		require_once THEME_DIR.'/inc/admin/class-admin-product-order.php';
 		//require_once THEME_DIR.'/inc/admin/class-admin-update-posts.php';
 
 		if(is_admin()) {
-			if( ! class_exists( 'WP_List_Table' ) ) {
-				require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
-			}
+			// if( ! class_exists( 'WP_List_Table' ) ) {
+			// 	require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+			// }
 
-			require_once THEME_DIR.'/inc/admin/class-orders-help-tabs.php';
-			require_once THEME_DIR.'/inc/admin/class-orders-list-table.php';
-			require_once THEME_DIR.'/inc/admin/class-admin-order.php';
+			// require_once THEME_DIR.'/inc/admin/class-orders-help-tabs.php';
+			// require_once THEME_DIR.'/inc/admin/class-orders-list-table.php';
+			// require_once THEME_DIR.'/inc/admin/class-admin-order.php';
 
 			add_action( 'manage_posts_custom_column', [ $this, 'custom_columns_value' ], 2, 2 );
 			add_action( 'manage_pages_custom_column', [ $this, 'custom_columns_value' ], 2, 2 );
@@ -36,8 +29,18 @@ class Admin {
 
 			add_action( 'admin_print_styles-edit.php', array($this,'admin_edit_styles') );
 			add_action( 'admin_print_scripts', [$this,'admin_print_head_scripts'] );
+
+			add_filter( 'quick_edit_show_taxonomy', [$this, 'hide_tags_from_quick_edit'], 10, 3 );
 		}
 
+	}
+
+	public function hide_tags_from_quick_edit($show_in_quick_edit, $taxonomy_name, $post_type) {
+		if( in_array($taxonomy_name, ['location', 'post_tag']) && $post_type=='post') {
+			$show_in_quick_edit = false;
+		}
+
+		return $show_in_quick_edit;
 	}
 
 	public function admin_print_head_scripts() {
