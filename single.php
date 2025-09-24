@@ -46,9 +46,20 @@ while (have_posts()) {
 
 		if($video_youtube!='') {
 			$data_video['type'] = 'youtube';
-			$data_video['content'] = '<div class="ratio ratio-16x9"><iframe id="ytplayer" class="ytplayer" type="text/html" width="1280" height="720"
-		src="https://www.youtube.com/embed/'.get_youtube_id($video_youtube).'?autoplay=1&controls=1&fs=0&loop=1&playsinline=1&mute=1&modestbranding=1"
-		frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe></div>';
+
+			ob_start();
+			?>
+			<div class="ratio ratio-16x9">
+				<div id="single-product-video-wrap">
+					<iframe id="single-product-video" data-no-lazy="1" type="text/html" width="1280" height="720" src="https://www.youtube.com/embed/<?=get_youtube_id($video_youtube)?>?autoplay=1&controls=0&enablejsapi=1&fs=0&loop=1&playsinline=1&mute=1&modestbranding=1" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>
+					<div class="play">
+						<svg height="48" version="1.1" viewBox="0 0 68 48" width="68"><path class="ytp-large-play-button-bg" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#f03"></path><path d="M 45,24 27,14 27,34" fill="#fff"></path></svg>
+					</div>
+					<div class="pause"></div>
+				</div>
+			</div>
+			<?php
+			$data_video['content'] = ob_get_clean();
 
 		} else if($video_url!='') {
 			$data_video['type'] = 'url';
@@ -65,6 +76,7 @@ while (have_posts()) {
 		$allow_order = get_post_meta($post->ID, '_allow_order', true);
 
 		$product_order_button_text = get_option('product_order_button_text', '');
+		//$product_order_premium_button_text = get_option('product_order_premium_button_text', '');
 
 		$display_price = fw_get_db_settings_option('display_price', 'yes');
 		$display_location = fw_get_db_settings_option('display_location', 'yes');
@@ -179,17 +191,25 @@ while (have_posts()) {
 							<div id="product-actions" class="mb-3">
 								<?php
 								if($attachment) {
-									if($allow_order=='yes' && $product_order_button_text) {
-										echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger order-product d-block my-3 fw-bold'], esc_html($product_order_button_text));	
+									if($allow_order=='yes') {
+										if($product_order_button_text) {
+											echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger order-product d-block my-3 fw-bold'], esc_html($product_order_button_text));	
+										}
+
+										// if($product_order_premium_button_text) {
+										// 	echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'premium', 'class'=>'btn btn-danger order-product order-product-premium d-block my-3 fw-bold'], esc_html($product_order_premium_button_text));	
+										// }
 									}
 					
 								}
-								$popup_content = fw_get_db_settings_option('popup_content', '');
-								$popup_content_button_text = fw_get_db_settings_option('popup_content_button_text', '');
-								if($popup_content!='' && $popup_content_button_text != '' && false) {
-								?>
-								<button type="button" class="btn-popup-open btn-popup-content-open btn btn-danger d-block w-100 fw-bold" style="color:#ff0;" data-bs-toggle="modal" data-bs-target="#modal-popup"><?=esc_html($popup_content_button_text)?></button>
-								<?php
+
+								$product_links = fw_get_db_settings_option('product_links', []);
+								if(!empty($product_links)) {
+									foreach ($product_links as $key => $value) {
+										?>
+										<a href="<?php echo esc_url($value['url']); ?>" class="btn btn-danger fw-bold text-yellow me-1 popup d-block product-link"><?=esc_html($value['name'])?></a>
+										<?php
+									}
 								}
 								?>
 							</div>

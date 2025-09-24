@@ -99,6 +99,18 @@ $options = array(
 				),
 			),
 			
+			'product_loop_order_button_text' => array(
+				'label' => 'Nhãn nút chọn mẫu ở danh sách',
+				'desc'  => '',
+				'type'  => 'text',
+				'value' => 'CHỌN MẪU',
+			),
+			// 'product_loop_order_premium_button_text' => array(
+			// 	'label' => 'Nhãn nút mặt bằng ở danh sách',
+			// 	'desc'  => '',
+			// 	'type'  => 'text',
+			// 	'value' => 'MẶT BẰNG',
+			// ),
 			'product_order_button_text' => array(
 				'label' => 'Nhãn nút chọn mẫu ở chi tiết',
 				'desc'  => '',
@@ -109,13 +121,16 @@ $options = array(
 					'wp-option' => 'product_order_button_text',
 				),
 			),
-			
-			'product_loop_order_button_text' => array(
-				'label' => 'Nhãn nút chọn mẫu ở danh sách',
-				'desc'  => '',
-				'type'  => 'text',
-				'value' => 'CHỌN MẪU',
-			),
+			// 'product_order_premium_button_text' => array(
+			// 	'label' => 'Nhãn nút mặt bằng ở chi tiết',
+			// 	'desc'  => '',
+			// 	'type'  => 'text',
+			// 	'value' => '',
+			// 	'fw-storage' => array(
+			// 		'type' => 'wp-option',
+			// 		'wp-option' => 'product_order_premium_button_text',
+			// 	),
+			// ),
 			'product_order_popup_title' => array(
 				'label' => 'Tiêu đề form chọn mẫu',
 				'desc'  => '',
@@ -126,7 +141,16 @@ $options = array(
 					'wp-option' => 'product_order_popup_title',
 				),
 			),
-			
+			// 'product_order_premium_popup_title' => array(
+			// 	'label' => 'Tiêu đề form mặt bằng',
+			// 	'desc'  => '',
+			// 	'type'  => 'text',
+			// 	'value' => '',
+			// 	'fw-storage' => array(
+			// 		'type' => 'wp-option',
+			// 		'wp-option' => 'product_order_premium_popup_title',
+			// 	),
+			// ),
 			'product_order_popup_desc' => array(
 				'label' => 'Nội dung miêu tả form chọn mẫu',
 				'desc'  => '',
@@ -139,8 +163,20 @@ $options = array(
 					'wp-option' => 'product_order_popup_desc',
 				),
 			),
+			// 'product_order_premium_popup_desc' => array(
+			// 	'label' => 'Nội dung miêu tả form mặt bằng',
+			// 	'desc'  => '',
+			// 	'type'  => 'wp-editor',
+			// 	'size' => 'large',
+			// 	'editor_height' => '300',
+			// 	'value' => '',
+			// 	'fw-storage' => array(
+			// 		'type' => 'wp-option',
+			// 		'wp-option' => 'product_order_premium_popup_desc',
+			// 	),
+			// ),
+			
 
-			/*
 			'product_links' => array(
 				'type' => 'addable-popup',
 				'value' => array(),
@@ -161,11 +197,12 @@ $options = array(
 					'url' => array(
 						'label' => 'URL',
 						'type' => 'text',
-						'desc' => 'Đường dẫn chuyển đến khi click vào nút.',
+						'desc' => 'Đường dẫn chi tiết nội dung khi click vào nút.',
 						'value' => '',
 					),
 				),
 			),
+			/*
 			'product_kws_open_button_text' => array(
 				'label' => 'Nhãn nút tìm kiếm',
 				'desc'  => '',

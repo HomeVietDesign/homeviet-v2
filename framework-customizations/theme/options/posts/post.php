@@ -210,28 +210,35 @@ $options = array(
 		'title'   => 'VIDEO',
 		'type'    => 'box',
         'options' => array(
-        	// 'video_youtube' => array(
-			// 	'type'  => 'oembed',
-			// 	'value' => '',
-			// 	'label' => 'URL YT Video',
-			// 	'desc' => 'Ưu tiên 1.',
-			// 	'preview' => [
-			// 		'keep_ratio' => true
-			// 	]
-			// ),
+        	'video_youtube' => array(
+				'type'  => 'oembed',
+				'value' => '',
+				'label' => 'URL YT Video',
+				'desc' => 'Ưu tiên 1.',
+				'preview' => [
+					'keep_ratio' => true
+				]
+			),
 			'video_url' => array(
 				'type'  => 'text',
 				'value' => '',
 				'label' => 'Video URL',
-				'desc' => 'Ưu tiên.',
+				'desc' => 'Ưu tiên 2.',
 			),
 			'video' => array(
 				'type'  => 'upload',
 				'value' => '',
 				'label' => 'Tải lên Video',
-				'desc' => 'Sẽ ưu tiên dùng Video URL trước nếu nó có.',
+				'desc' => '',
 				'images_only' => false,
 				'files_ext' => array( 'mp4' ),
+			),
+			'poster' => array(
+				'type'  => 'upload',
+				'value' => '',
+				'label' => 'Ảnh poster',
+				'desc' => '',
+				'images_only' => true,
 			),
         ),
     ),

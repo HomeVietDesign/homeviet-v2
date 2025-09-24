@@ -26,7 +26,7 @@ class WPCF7 {
 	}
 
 	public function wpcf7_convert_phone_number($value, $value_orig, $tag) {
-		$value = '+'.phone_0284(sanitize_phone_number($value));
+		$value = phone_0284(sanitize_phone_number($value));
 
 		return $value;
 	}

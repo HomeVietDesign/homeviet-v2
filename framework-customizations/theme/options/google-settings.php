@@ -5,7 +5,7 @@ if ( ! defined( 'FW' ) ) {
 
 $options = array(
 	'google' => array(
-    'type' => 'tab',
+    	'type' => 'tab',
 		'title' => __('Cài đặt google'),
 		'options' => array(
 			'map_api_key' => array(

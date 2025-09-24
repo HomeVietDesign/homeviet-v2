@@ -9,12 +9,12 @@ class FW_Shortcode_Youtube_Video extends FW_Shortcode
 	{
 		// require thư viện youtube_api_scripts
 
-		add_action( 'wp_footer', [$this, 'youtube_api'] );
+		//add_action( 'wp_footer', [$this, 'youtube_api'] );
 	}
 
 	public function youtube_api() {
 		?>
-		<script type="text/javascript">
+		<script type="text/javascript" id="shortcode-youtube-video">
 		// This code loads the IFrame Player API code asynchronously.
 		var tag = document.createElement('script');
 
@@ -30,6 +30,36 @@ class FW_Shortcode_Youtube_Video extends FW_Shortcode
 			}
 		}
 
+		function onPlayerStateChange(event) {
+			//console.log(event);
+			let settings = JSON.parse(event.target.g.dataset.settings);
+			if(settings.loop && event.data == YT.PlayerState.ENDED) {
+				//event.target.mute();
+				event.target.playVideo();
+			}
+			if(event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.UNSTARTED || event.data == YT.PlayerState.CUED) {
+				event.target.g.closest('.shortcode-youtube-video').classList.add('paused');
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('playing');
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('buffering');
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('ended');
+			} else if(event.data == YT.PlayerState.PLAYING) {
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('paused');
+				event.target.g.closest('.shortcode-youtube-video').classList.add('playing');
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('buffering');
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('ended');
+			} else if(event.data == YT.PlayerState.BUFFERING) {
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('paused');
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('playing');
+				event.target.g.closest('.shortcode-youtube-video').classList.add('buffering');
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('ended');
+			} else if(event.data == YT.PlayerState.ENDED) {
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('paused');
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('playing');
+				event.target.g.closest('.shortcode-youtube-video').classList.remove('buffering');
+				event.target.g.closest('.shortcode-youtube-video').classList.add('ended');
+			}
+		}
+
 		function onYouTubeIframeAPIReady() {
 
 		//window.YT.ready(function() {
@@ -40,37 +70,35 @@ class FW_Shortcode_Youtube_Video extends FW_Shortcode
 				yt_frames.forEach(function(el){
 					//console.log(JSON.parse(el.dataset.settings));
 					let player = new YT.Player(el.id, {
-						height: '720',
-						width: '1280',
+						height: '1080',
+						width: '1920',
 						videoId: el.dataset.id,
 						playerVars: JSON.parse(el.dataset.settings),
 						events: {
-							'onReady': onPlayerReady
+							'onReady': onPlayerReady,
+							'onStateChange': onPlayerStateChange
 						}
 					});
 					yt_players.push(player);
 				});
 			}
 
-			// function onPlayerStateChange() {
-
-			// }
-
-			if ("IntersectionObserver" in window) {
-				let videoObserver = new IntersectionObserver(function(entries, observer) {
-					entries.forEach(function(video) {
-						if (!video.isIntersecting) {
-							video.target.contentWindow.postMessage('{"event":"command","func":"' + 'pauseVideo' + '","args":""}', '*');
-						}	
-					});
-				}, {rootMargin: "0px",threshold: 0.5});
-
-				document.querySelectorAll('iframe.yt-video-iframe').forEach(function(video) {
-					videoObserver.observe(video);
+			let plays = document.querySelectorAll('.shortcode-youtube-video .play');
+			let pauses = document.querySelectorAll('.shortcode-youtube-video .pause');
+			plays.forEach(function(play) {
+				play.addEventListener("click", function() {
+					//console.log('play');
+					//console.log(yt_players[play.dataset.index]);
+					yt_players[play.dataset.index].playVideo();
 				});
-			}
-
-		//});
+			});
+			pauses.forEach(function(pause) {
+				pause.addEventListener("click", function() {
+					//console.log('pause');
+					//console.log(yt_players[pause.dataset.index]);
+					yt_players[pause.dataset.index].pauseVideo();
+				});
+			});
 		}
 		</script>
 		<?php

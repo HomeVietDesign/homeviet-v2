@@ -5,7 +5,7 @@ if ( ! defined( 'FW' ) ) {
 
 $options = array(
 	'facebook' => array(
-    'type' => 'tab',
+    	'type' => 'tab',
 		'title' => __('Cài đặt facebook'),
 		'options' => array(
 			'fb_pixel' => array(

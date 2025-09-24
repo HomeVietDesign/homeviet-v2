@@ -125,10 +125,12 @@ class Ajax {
 				<p style='font-weight:bold;'><?php
 				switch ($type) {
 					case 'premium':
+						$subject = '[ '.$phone.' ] Xem mặt bằng';
 						echo esc_html(get_option('product_order_premium_popup_title', ''));
 						break;
 					
 					default:
+						$subject = '[ '.$phone.' ] Chọn mẫu';
 						echo esc_html(get_option('product_order_popup_title', ''));
 						break;
 				}

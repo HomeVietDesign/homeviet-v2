@@ -9,7 +9,7 @@ class Theme {
 	
 		include_once THEME_DIR.'/inc/global-functions.php';
 		include_once THEME_DIR.'/inc/unyson/class-unyson.php';
-		require_once THEME_DIR.'/inc/simplehtmldom/simple_html_dom.php';
+		include_once THEME_DIR.'/inc/simplehtmldom/simple_html_dom.php';
 		include_once THEME_DIR.'/inc/admin/class-admin.php';
 
 		include_once THEME_DIR.'/inc/class-custom-types.php';
@@ -22,20 +22,12 @@ class Theme {
 			include_once THEME_DIR.'/inc/filebird/class-filebird.php';
 		}
 
-		if(class_exists('\\FacebookPixelPlugin\\FacebookForWordpress')) {
-			include_once THEME_DIR.'/inc/official-facebook-pixel/class-official-facebook-pixel.php';
-		}
-
 		if(class_exists('WPCF7_ContactForm')) {
 			include_once THEME_DIR.'/inc/wpcf7/class-wpcf7.php';
 		}
 
 		if(class_exists('WP_Statistics')) {
 			include_once THEME_DIR.'/inc/wp-statistics/class-wp-statistics.php';
-		}
-
-		if(class_exists('TiktokForBusiness')) {
-			include_once THEME_DIR.'/inc/tiktok-for-business/class-tiktok-for-business.php';
 		}
 
 		//include_once THEME_DIR.'/inc/class-authentication.php';
@@ -72,11 +64,29 @@ class Theme {
 	public function theme_activation() {
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 		global $table_prefix, $wpdb;
+		$charset_collate = $wpdb->get_charset_collate();
 
+		// $table = $table_prefix . "fb_event_logs";
+
+	    // // Tạo bảng nếu chưa có
+	    // $wpdb->query("CREATE TABLE IF NOT EXISTS $table (
+	    //     id BIGINT AUTO_INCREMENT PRIMARY KEY,
+	    //     uid VARCHAR(255),
+	    //     ip VARCHAR(50),
+	    //     ua TEXT,
+	    //     event_name VARCHAR(100),
+	    //     duration INT,
+	    //     event_date DATE,
+	    //     fbc VARCHAR(255),
+	    //     fbp VARCHAR(255),
+	    //     url VARCHAR(255),
+	    //     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	    // ) {$charset_collate}");
+
+		/*
 		$customer_table = $table_prefix . 'customer';
 		$order_stats_table = $table_prefix . 'order_stats';
 		$order_items_table = $table_prefix . 'order_items';
-		$charset_collate = $wpdb->get_charset_collate();
 
 		if( $wpdb->get_var( "show tables like '{$customer_table}'" ) != $customer_table ) {
 			$sql = "CREATE TABLE {$customer_table} (
@@ -127,10 +137,11 @@ class Theme {
 
 			dbDelta( $sql );
 		}
+		*/
 	}
 
 	public function theme_deactivation() {
-		
+		wp_clear_scheduled_hook('cleanup_fb_event_logs_daily');
 	}
 
 	public static function instance() {

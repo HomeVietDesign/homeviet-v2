@@ -29,15 +29,16 @@ $dom_content = str_get_html($content);
 $host = parse_url(home_url(), PHP_URL_HOST);
 
 // Regex: bắt domain và loại trừ /wp-admin
-$regex = '/^https?:\/\/(?:www\.)?' . preg_quote($host, '/') . '(?!\/wp-admin).*$/i';
+$regex = '/^https?:\/\/(?:www\.)?' . preg_quote($host, '/') . '(?!\/(wp-admin|wp-content)).*$/i';
 
-foreach($dom_content->find('a') as $element) {
-	if(preg_match($regex, $element->href)) {
-		$element->setAttribute('class', trim($element->class . ' popup'));
+if($dom_content) {
+	foreach($dom_content->find('a') as $element) {
+		//if(preg_match($regex, $element->href)) {
+			$element->setAttribute('class', trim($element->class . ' popup'));
+		//}
 	}
+	$content = (string)$dom_content;
 }
-
-$content = (string)$dom_content;
 ?>
 <div id="<?=$html_id?>" class="fw-text-block-wrap" <?=$text_block_style?>>
 <?php echo $content; ?>

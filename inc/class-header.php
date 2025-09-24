@@ -15,10 +15,13 @@ class Header {
 		?>
 		<header id="site-header" class="position-sticky">
 		<?php
+		ob_start();
+		
 		self::primary_menu();
 		//self::primary_menu_2();
 
 		if(has_nav_menu('secondary_left') || has_nav_menu('secondary_right')) {
+			
 			?>
 			<nav id="secondary-nav" class="">
 				<div class="container p-0">
@@ -61,6 +64,21 @@ class Header {
 			</nav>
 			<?php
 		}
+
+		$html = str_get_html(ob_get_clean());
+		// Phân tích domain từ URL (loại bỏ schema, path)
+		$host = parse_url(home_url(), PHP_URL_HOST);
+
+		// Regex: bắt domain và loại trừ /wp-admin
+		$regex = '/^https?:\/\/(?:www\.)?' . preg_quote($host, '/') . '(?!\/(wp-admin|wp-content)).*$/i';
+
+		foreach($html->find('a') as $element) {
+			//if(preg_match($regex, $element->href)) {
+				$element->setAttribute('class', trim($element->class . ' popup'));
+			//}
+		}
+
+		echo (string)$html;
 		?>
 		</header>
 		<?php
@@ -148,7 +166,15 @@ class Header {
 
 	public function display_header_html() {
 		global $popup;
-		if( !$popup ) {
+
+		//debug($_SERVER['HTTP_REFERER']);
+
+		// Phân tích domain từ URL (loại bỏ schema, path)
+		$current_host = parse_url(home_url(), PHP_URL_HOST);
+		$referer_host = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST);
+
+
+		if( !$popup || $current_host!=$referer_host ) {
 			add_action('wp_body_open', [$this, 'site_header'], 10);
 		}
 	}

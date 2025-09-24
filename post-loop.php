@@ -3,29 +3,42 @@ global $post;
 
 $src = get_the_post_thumbnail_url( $post, 'full' );
 
+$video_poster = fw_get_db_post_option($post->ID, 'poster');
+
+$video_poster_url = $src;
+// if(!empty($video_poster)) {
+// 	$video_poster_url = get_the_post_thumbnail_url( $video_poster['attachment_id'], 'full' );
+// }
+
 $video_local = fw_get_db_post_option($post->ID, 'video');
 $video_url = fw_get_db_post_option($post->ID, 'video_url');
 $video_youtube = fw_get_db_post_option($post->ID, 'video_youtube');
 
 $data_video = ['type' => '', 'content' => ''];
 
-// if($video_youtube!='') {
-// 	$data_video['type'] = 'youtube';
-// 	$data_video['content'] = '<iframe type="text/html" width="1280" height="720"
-// data-src="https://www.youtube.com/embed/'.get_youtube_id($video_youtube).'?autoplay=0&controls=1&fs=0&loop=1&playsinline=1&mute=1&modestbranding=1"
-// frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>';
+if($video_youtube!='') {
+	$data_video['type'] = 'youtube';
+	ob_start();
+	?>
+	<div id="popup-product-video-wrap">
+		<iframe id="popup-product-video" type="text/html" width="1920" height="1080" src="https://www.youtube.com/embed/<?=get_youtube_id($video_youtube)?>?autoplay=1&controls=0&fs=0&loop=1&enablejsapi=1&playsinline=1&mute=1&modestbranding=1" frameborder="0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"></iframe>
+		<div class="play">
+			<svg height="48" version="1.1" viewBox="0 0 68 48" width="68"><path class="ytp-large-play-button-bg" d="M66.52,7.74c-0.78-2.93-2.49-5.41-5.42-6.19C55.79,.13,34,0,34,0S12.21,.13,6.9,1.55 C3.97,2.33,2.27,4.81,1.48,7.74C0.06,13.05,0,24,0,24s0.06,10.95,1.48,16.26c0.78,2.93,2.49,5.41,5.42,6.19 C12.21,47.87,34,48,34,48s21.79-0.13,27.1-1.55c2.93-0.78,4.64-3.26,5.42-6.19C67.94,34.95,68,24,68,24S67.94,13.05,66.52,7.74z" fill="#f03"></path><path d="M 45,24 27,14 27,34" fill="#fff"></path></svg>
+		</div>
+		<div class="pause"></div>
+	</div>
+	<?php
+	$data_video['content'] = ob_get_clean();
 
-// } else 
-
-if($video_url!='') {
+} else if($video_url!='') {
 	$data_video['type'] = 'url';
 
-	$data_video['content'] = '<video playsinline disablePictureInPicture controlsList="nodownload" data-src="'.esc_url($video_url).'" type="video/mp4" poster="'.esc_url($src).'" controls loop muted></video>';
+	$data_video['content'] = '<video playsinline disablePictureInPicture controlsList="nodownload" data-src="'.esc_url($video_url).'" type="video/mp4" poster="'.esc_url($video_poster_url).'" controls loop muted></video>';
 
 } else if(!empty($video_local)) {
 	$data_video['type'] = 'local';
 	$video_metadata = wp_get_attachment_metadata( $video_local['attachment_id'] );
-	$data_video['content'] = '<video width="'.absint($video_metadata['width']).'" height="'.absint($video_metadata['height']).'" playsinline disablePictureInPicture controlsList="nodownload" data-src="'.esc_url(wp_get_attachment_url($video_local['attachment_id'])).'" type="video/mp4" poster="'.esc_url($src).'" controls loop muted></video>';
+	$data_video['content'] = '<video width="'.absint($video_metadata['width']).'" height="'.absint($video_metadata['height']).'" playsinline disablePictureInPicture controlsList="nodownload" data-src="'.esc_url(wp_get_attachment_url($video_local['attachment_id'])).'" type="video/mp4" poster="'.esc_url($video_poster_url).'" controls loop muted></video>';
 
 }
 
@@ -96,24 +109,33 @@ $_images = get_post_meta($post->ID, '_images', true);
 		</div>
 		<div class="post-summary position-relative">
 			<div class="px-2 d-flex justify-content-between">
-				<div class="left">
+				<div class="left d-flex justify-content-start">
 					<?php
 					if($allow_order=='yes') {
-						echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-danger btn-sm order-product fw-bold text-uppercase text-yellow'], esc_html(fw_get_db_settings_option('product_loop_order_button_text')));	
+						echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'normal', 'class'=>'btn btn-sm btn-danger order-product fw-bold text-uppercase text-yellow me-1'], esc_html(fw_get_db_settings_option('product_loop_order_button_text')));	
+						
+						//echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'premium', 'class'=>'btn btn-sm btn-danger order-product order-product-premium fw-bold text-uppercase text-yellow me-1'], esc_html(fw_get_db_settings_option('product_loop_order_premium_button_text')));	
+					}
+
+					$product_links = fw_get_db_settings_option('product_links', []);
+					if(!empty($product_links)) {
+						foreach ($product_links as $key => $value) {
+							?>
+							<a href="<?php echo esc_url($value['url']); ?>" class="btn btn-sm btn-danger fw-bold text-yellow me-1 popup product-link"><?=esc_html($value['name'])?></a>
+							<?php
+						}
 					}
 					?>
-					<?php if($data_video['type']!='') { ?>
-					<button type="button" class="open-modal-player text-uppercase btn btn-sm btn-danger text-yellow fw-bold ms-1" data-bs-target="#modal-video-player" data-bs-toggle="modal" data-video="<?=esc_attr(json_encode($data_video))?>" data-url="<?php the_permalink(); ?>" title="Xem video">Video</button>
-					<?php } ?>
 				</div>
-				<div class="right pswp-gallery">
+				<div class="right d-flex justify-content-end">
+					<div class="pswp-gallery">
 					<?php
 					if(!empty($_images)) {
 						foreach ($_images as $key => $value) {
 							$src_full = wp_get_attachment_image_src( $value['attachment_id'], 'full' );
 							if($key==0) {
 								?>
-								<a class="text-uppercase btn btn-sm btn-danger text-yellow fw-bold ms-1" href="<?=esc_url($src_full[0])?>" data-pswp-width="<?=$src_full[1]?>" data-pswp-height="<?=$src_full[2]?>" title="Các hình ảnh">Xem ảnh</a>
+								<a class="text-uppercase product-images-lightbox btn btn-sm btn-danger text-yellow fw-bold ms-1" href="<?=esc_url($src_full[0])?>" data-pswp-width="<?=$src_full[1]?>" data-pswp-height="<?=$src_full[2]?>" title="Các hình ảnh">Slice</a>
 								<?php
 							} else {
 								?>
@@ -123,6 +145,10 @@ $_images = get_post_meta($post->ID, '_images', true);
 						}
 					}
 					?>
+					</div>
+					<?php if($data_video['type']!='') { ?>
+					<a class="open-modal-player text-uppercase btn btn-sm btn-danger text-yellow fw-bold ms-1" href="#modal-video-player" data-bs-toggle="modal" data-video="<?=esc_attr(json_encode($data_video))?>" data-url="<?php the_permalink(); ?>" title="Xem video">Video</a>
+					<?php } ?>
 				</div>
 			</div>
 			<?php if($design_price!='' && $display_price=='yes') { ?>
@@ -139,6 +165,8 @@ $_images = get_post_meta($post->ID, '_images', true);
 			<div class="d-flex justify-content-center align-items-center mt-2 flex-wrap">
 				<?php
 				if($_breadth!='' && $_length!='') {
+					$_breadth = floatval($_breadth);
+					$_length = floatval($_length);
 				?>
 				<div class="dimension">
 					<span>KT: </span><span class="fw-bold"><?php echo number_format($_breadth, 0, '.',','); ?></span>x<span class="fw-bold"><?php echo number_format($_length, 0, '.',','); ?></span><span>m</span>

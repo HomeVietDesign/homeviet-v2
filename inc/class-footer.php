@@ -7,9 +7,156 @@ class Footer {
 	private function __construct() {
 		add_action( 'template_redirect', [$this, 'display_footer_html'] );
 		add_action( 'wp_footer', [$this, 'custom_scripts'], 100 );
+		add_action( 'wp_footer', [$this, 'youtube_api'], 100 );
 
 		// remove_action( 'wp_footer', 'snow_fall_print_web_component', 100 );
 		// add_action( 'wp_footer', [$this, 'snow_fall_print_web_component'], 100 );
+	}
+
+	public function youtube_api() {
+		?>
+		<script type="text/javascript" id="youtube-video-api-scripts" data-no-optimize="1">
+			// This code loads the IFrame Player API code asynchronously.
+			var tag = document.createElement('script');
+
+			tag.src = "https://www.youtube.com/iframe_api";
+			var firstScriptTag = document.getElementsByTagName('script')[0];
+			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+			
+			function onShortcodeYTPlayerReady(event) {
+				let settings = JSON.parse(event.target.g.dataset.settings);
+				if(settings.autoplay) {
+					event.target.mute();
+					event.target.playVideo();
+				}
+			}
+
+			function onShortcodeYTPlayerStateChange(event) {
+				//console.log(event);
+				let settings = JSON.parse(event.target.g.dataset.settings);
+				if(settings.loop && event.data == YT.PlayerState.ENDED) {
+					//event.target.mute();
+					event.target.playVideo();
+				}
+				if(event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.UNSTARTED || event.data == YT.PlayerState.CUED) {
+					event.target.g.closest('.shortcode-youtube-video').classList.add('paused');
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('playing');
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('buffering');
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('ended');
+				} else if(event.data == YT.PlayerState.PLAYING) {
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('paused');
+					event.target.g.closest('.shortcode-youtube-video').classList.add('playing');
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('buffering');
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('ended');
+				} else if(event.data == YT.PlayerState.BUFFERING) {
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('paused');
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('playing');
+					event.target.g.closest('.shortcode-youtube-video').classList.add('buffering');
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('ended');
+				} else if(event.data == YT.PlayerState.ENDED) {
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('paused');
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('playing');
+					event.target.g.closest('.shortcode-youtube-video').classList.remove('buffering');
+					event.target.g.closest('.shortcode-youtube-video').classList.add('ended');
+				}
+			}
+
+			function onYouTubeIframeAPIReady() {
+
+				let yt_players = [],
+					yt_frames = document.querySelectorAll('.yt-video-iframe');
+
+				if(yt_frames.length>0) {
+					yt_frames.forEach(function(el){
+						//console.log(JSON.parse(el.dataset.settings));
+						let player = new YT.Player(el.id, {
+							height: '1080',
+							width: '1920',
+							videoId: el.dataset.id,
+							playerVars: JSON.parse(el.dataset.settings),
+							events: {
+								'onReady': onShortcodeYTPlayerReady,
+								'onStateChange': onShortcodeYTPlayerStateChange
+							}
+						});
+						yt_players.push(player);
+					});
+				}
+
+				let shortcodePlays = document.querySelectorAll('.shortcode-youtube-video .play');
+				let shortcodePauses = document.querySelectorAll('.shortcode-youtube-video .pause');
+				shortcodePlays.forEach(function(play) {
+					play.addEventListener("click", function() {
+						//console.log('play');
+						//console.log(yt_players[play.dataset.index]);
+						yt_players[play.dataset.index].playVideo();
+					});
+				});
+				shortcodePauses.forEach(function(pause) {
+					pause.addEventListener("click", function() {
+						//console.log('pause');
+						//console.log(yt_players[pause.dataset.index]);
+						yt_players[pause.dataset.index].pauseVideo();
+					});
+				});
+
+				if (document.body.classList.contains("single")) {
+
+					let singleProductPlayer;
+
+					singleProductPlayer = new YT.Player('single-product-video', {
+						events: {
+							onReady: () => {
+								let plays = document.querySelectorAll('#single-product-video-wrap .play');
+								let pauses = document.querySelectorAll('#single-product-video-wrap .pause');
+								plays.forEach(function(play) {
+									play.addEventListener("click", function() {
+										singleProductPlayer.playVideo();
+									});
+								});
+								pauses.forEach(function(pause) {
+									pause.addEventListener("click", function() {
+										singleProductPlayer.pauseVideo();
+									});
+								});
+								
+							},
+							onStateChange: (event) => {
+								//let settings = JSON.parse(event.target.g.dataset.settings);
+								if(event.data == YT.PlayerState.ENDED) {
+									//event.target.mute();
+									event.target.playVideo();
+								}
+								if(event.data == YT.PlayerState.PAUSED || event.data == YT.PlayerState.UNSTARTED || event.data == YT.PlayerState.CUED) {
+									event.target.g.closest('#single-product-video-wrap').classList.add('paused');
+									event.target.g.closest('#single-product-video-wrap').classList.remove('playing');
+									event.target.g.closest('#single-product-video-wrap').classList.remove('buffering');
+									event.target.g.closest('#single-product-video-wrap').classList.remove('ended');
+								} else if(event.data == YT.PlayerState.PLAYING) {
+									event.target.g.closest('#single-product-video-wrap').classList.remove('paused');
+									event.target.g.closest('#single-product-video-wrap').classList.add('playing');
+									event.target.g.closest('#single-product-video-wrap').classList.remove('buffering');
+									event.target.g.closest('#single-product-video-wrap').classList.remove('ended');
+								} else if(event.data == YT.PlayerState.BUFFERING) {
+									event.target.g.closest('#single-product-video-wrap').classList.remove('paused');
+									event.target.g.closest('#single-product-video-wrap').classList.remove('playing');
+									event.target.g.closest('#single-product-video-wrap').classList.add('buffering');
+									event.target.g.closest('#single-product-video-wrap').classList.remove('ended');
+								} else if(event.data == YT.PlayerState.ENDED) {
+									event.target.g.closest('#single-product-video-wrap').classList.remove('paused');
+									event.target.g.closest('#single-product-video-wrap').classList.remove('playing');
+									event.target.g.closest('#single-product-video-wrap').classList.remove('buffering');
+									event.target.g.closest('#single-product-video-wrap').classList.add('ended');
+								}
+							}
+						}
+					});
+				}
+				//console.log(singleProductPlayer);
+
+			}
+		</script>
+		<?php
 	}
 
 	public function snow_fall_print_web_component() {
@@ -79,6 +226,12 @@ class Footer {
 						if($product_order_popup_desc!='') {
 							?>
 							<div class="mb-3 product-order-popup-desc"><?=wp_get_the_content($product_order_popup_desc)?></div>
+							<?php
+						}
+						$product_order_premium_popup_desc = get_option('product_order_premium_popup_desc', '');
+						if($product_order_premium_popup_desc!='') {
+							?>
+							<div class="mb-3 product-order-premium-popup-desc hide"><?=wp_get_the_content($product_order_premium_popup_desc)?></div>
 							<?php
 						}
 						?>
@@ -228,7 +381,7 @@ class Footer {
 				if($hotline!='' && $hotline_label!='') {
 					?>
 					<div class="hotline w-100 mt-1">
-						<a class="d-block btn btn-primary btn-lg fw-bold" href="tel:<?php echo esc_attr($hotline); ?>"><?php echo esc_html($hotline_label); ?></a>
+						<a class="d-block call-button btn btn-primary btn-lg fw-bold" href="tel:<?php echo esc_attr($hotline); ?>"><?php echo esc_html($hotline_label); ?></a>
 					</div>
 					<?php
 				}
@@ -303,12 +456,12 @@ class Footer {
 		$host = parse_url(home_url(), PHP_URL_HOST);
 
 		// Regex: bắt domain và loại trừ /wp-admin
-		$regex = '/^https?:\/\/(?:www\.)?' . preg_quote($host, '/') . '(?!\/wp-admin).*$/i';
+		$regex = '/^https?:\/\/(?:www\.)?' . preg_quote($host, '/') . '(?!\/(wp-admin|wp-content)).*$/i';
 
 		foreach($html->find('a') as $element) {
-			if(preg_match($regex, $element->href)) {
+			//if(preg_match($regex, $element->href)) {
 				$element->setAttribute('class', trim($element->class . ' popup'));
-			}
+			//}
 		}
 
 		echo (string)$html;
@@ -316,11 +469,19 @@ class Footer {
 
 	public function display_footer_html() {
 		global $popup;
-		if( !$popup ) {
+
+		// Phân tích domain từ URL (loại bỏ schema, path)
+		$current_host = parse_url(home_url(), PHP_URL_HOST);
+		$referer_host = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_HOST);
+
+
+		if( !$popup || $current_host!=$referer_host ) {
 			add_action('wp_footer', [$this, 'site_footer'], 10);
 			add_action('wp_footer', [$this, 'footer_fixed'], 20);
+
 			//add_action('wp_footer', [$this, 'logout_post_password'], 15);
 		}
+
 		add_action('wp_footer', [$this, 'modals'], 20);
 	}
 

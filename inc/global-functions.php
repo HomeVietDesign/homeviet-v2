@@ -8,7 +8,7 @@ function phone_8420($phone_no) {
 }
 
 function phone_0284($phone_no) {
-	return preg_replace('/^0/', '84', $phone_no);
+	return preg_replace('/^0/', '+84', $phone_no);
 }
 
 function phone_number_format($phone_no, $sep=' ') {

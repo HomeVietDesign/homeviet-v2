@@ -164,25 +164,6 @@ class Setup {
 
 		add_action( 'pre_get_posts', [$this, 'query_post_type_for_search'] );
 
-		// global $wpdb;
-		// $table = $wpdb->prefix . "fb_event_logs";
-		// $charset_collate = $wpdb->get_charset_collate();
-
-	    // // Tạo bảng nếu chưa có
-	    // $wpdb->query("CREATE TABLE IF NOT EXISTS $table (
-	    //     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-	    //     uid VARCHAR(255),
-	    //     ip VARCHAR(50),
-	    //     ua TEXT,
-	    //     event_name VARCHAR(100),
-	    //     duration INT,
-	    //     event_date DATE,
-	    //     fbc VARCHAR(255),
-	    //     fbp VARCHAR(255),
-	    //     url VARCHAR(255),
-	    //     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-	    // ) {$charset_collate}");
-
 		// $admin_role = get_role( 'administrator' );
 
 		// $admin_role->add_cap('edit_order');

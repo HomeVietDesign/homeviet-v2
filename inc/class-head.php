@@ -6,7 +6,6 @@ class Head {
 	private static $instance = null;
 
 	private function __construct() {
-		//add_action('wp_head', [$this, 'youtube_api_scripts'], 10);
 		add_action('wp_head', [$this, 'head_scripts'], 50);
 		//add_action('wp_head', [$this, 'noindex'], 10);
 		//add_action('wp_head', [$this, 'product_open_graph'], 10);
@@ -40,20 +39,6 @@ class Head {
 		<meta name="robots" content="noindex, nofollow" />
 		<?php
 		}
-	}
-
-	public function youtube_api_scripts() {
-		?>
-		<script>
-		      // This code loads the IFrame Player API code asynchronously.
-		      var tag = document.createElement('script');
-
-		      tag.src = "https://www.youtube.com/iframe_api";
-		      var firstScriptTag = document.getElementsByTagName('script')[0];
-		      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-		 </script>
-		<?php
 	}
 
 	public static function head_scripts() {
