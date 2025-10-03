@@ -116,10 +116,9 @@ $_images = get_post_meta($post->ID, '_images', true);
 						
 						//echo wp_do_shortcode('order_product', ['attachment'=>$attachment, 'id'=>$post->ID, 'code'=>wp_basename( wp_get_attachment_url($attachment) ), 'type'=>'premium', 'class'=>'btn btn-sm btn-danger order-product order-product-premium fw-bold text-uppercase text-yellow me-1'], esc_html(fw_get_db_settings_option('product_loop_order_premium_button_text')));	
 					}
-
-					$product_links = fw_get_db_settings_option('product_links', []);
-					if(!empty($product_links)) {
-						foreach ($product_links as $key => $value) {
+					$product_links_1 = fw_get_db_settings_option('product_links_1', []);
+					if(!empty($product_links_1)) {
+						foreach ($product_links_1 as $key => $value) {
 							?>
 							<a href="<?php echo esc_url($value['url']); ?>" class="btn btn-sm btn-danger fw-bold text-yellow me-1 popup product-link"><?=esc_html($value['name'])?></a>
 							<?php
@@ -151,6 +150,19 @@ $_images = get_post_meta($post->ID, '_images', true);
 					<?php } ?>
 				</div>
 			</div>
+			
+			<?php
+			$product_links = fw_get_db_settings_option('product_links', []);
+			if(!empty($product_links)) {
+				echo '<div class="product-links d-flex justify-content-center flex-wrap pt-2">';
+				foreach ($product_links as $key => $value) {
+					?>
+					<a href="<?php echo esc_url($value['url']); ?>" class="btn btn-sm btn-danger fw-bold text-yellow mx-1 mt-1 popup product-link"><?=esc_html($value['name'])?></a>
+					<?php
+				}
+				echo '</div>';
+			}
+			?>
 			<?php if($design_price!='' && $display_price=='yes') { ?>
 			<!-- <div class="design-price position-absolute top-0 end-0 d-flex p-2 text-yellow align-items-end"> -->
 			<div class="design-price px-2 mt-3 text-center">

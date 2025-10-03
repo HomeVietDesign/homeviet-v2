@@ -8,7 +8,7 @@ class Shortcode {
 	private function __construct() {
 		
 		add_shortcode( 'order_product', [$this, 'order_product_shortcode'] );
-		
+
 	}
 
 	public function order_product_shortcode( $atts, $content ) {

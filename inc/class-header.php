@@ -65,18 +65,18 @@ class Header {
 			<?php
 		}
 
-		$html = str_get_html(ob_get_clean());
-		// Phân tích domain từ URL (loại bỏ schema, path)
-		$host = parse_url(home_url(), PHP_URL_HOST);
+		// $html = str_get_html(ob_get_clean());
+		// // Phân tích domain từ URL (loại bỏ schema, path)
+		// $host = parse_url(home_url(), PHP_URL_HOST);
 
-		// Regex: bắt domain và loại trừ /wp-admin
-		$regex = '/^https?:\/\/(?:www\.)?' . preg_quote($host, '/') . '(?!\/(wp-admin|wp-content)).*$/i';
+		// // Regex: bắt domain và loại trừ /wp-admin
+		// $regex = '/^https?:\/\/(?:www\.)?' . preg_quote($host, '/') . '(?!\/(wp-admin|wp-content)).*$/i';
 
-		foreach($html->find('a') as $element) {
-			//if(preg_match($regex, $element->href)) {
-				$element->setAttribute('class', trim($element->class . ' popup'));
-			//}
-		}
+		// foreach($html->find('a') as $element) {
+		// 	//if(preg_match($regex, $element->href)) {
+		// 		$element->setAttribute('class', trim($element->class . ' popup'));
+		// 	//}
+		// }
 
 		echo (string)$html;
 		?>

@@ -176,11 +176,35 @@ $options = array(
 			// 	),
 			// ),
 			
-
+			'product_links_1' => array(
+				'type' => 'addable-popup',
+				'value' => array(),
+				'label' => 'Nút link mở rộng trên',
+				'desc'  => '',
+				'template' => '{{=name}}',
+				'popup-title' => 'Thêm link',
+				'size' => 'small', // small, medium, large
+				'limit' => 0, // limit the number of popup`s that can be added
+				'add-button-text' => 'Thêm',
+				'sortable' => true,
+				'popup-options' => array(
+					'name' => array(
+						'label' => 'Nhãn nút',
+						'type' => 'text',
+						'value' => '',
+					),
+					'url' => array(
+						'label' => 'URL',
+						'type' => 'text',
+						'desc' => 'Đường dẫn chi tiết nội dung khi click vào nút.',
+						'value' => '',
+					),
+				),
+			),
 			'product_links' => array(
 				'type' => 'addable-popup',
 				'value' => array(),
-				'label' => 'Nút link mở rộng',
+				'label' => 'Nút link mở rộng dưới',
 				'desc'  => '',
 				'template' => '{{=name}}',
 				'popup-title' => 'Thêm link',
